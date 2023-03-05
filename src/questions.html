@@ -8,12 +8,16 @@
     <title>Questions</title>
 </head>
 <body>
-
+<form>
+    <h2 id="titel-text">Welkom bij de intake vragenlijst</h2>
+    <h4 id="text">Wij willen graag meer over u te weten komen om zo de app zo persoonlijk
+        mogelijk op u af te stellen, hiervoor moet u deze vragenlijst invullen</h4>
 <fieldset class="fieldset-questions">
-    <label>(1)</label>
+   <legend>Beantwoord de onderstaande vraag</legend>
 <!--Questions go here-->
-    <div class="question-container" id="question"></div>
+    <label class="question-container" id="question"></label>
 <!--    <h3>?</h3>-->
+
 <!--options-->
     <div class="option-container">
         <button class="option" onclick="" id="option1"></button>
@@ -25,10 +29,11 @@
 
 <!--next button-->
     <div>
-        <button id="next">Next</button>
+        <input type="button" value="Volgende" id="volgende"/>
+        <input type="button" value="Terug" id="terug"/>
     </div>
 </fieldset>
-
+</form>
 
 
 <script src="assets/js/controllers/questions.js"></script>
