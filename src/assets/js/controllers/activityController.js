@@ -1,5 +1,5 @@
 /**
- *
+ * Controller responsible for all events in activity view
  * @author Jayden Gunhan
  */
 
@@ -8,7 +8,7 @@ import {App} from "../app.js";
 import {Controller} from "./controller.js";
 
 export class ActivityController extends Controller {
-    //# is a private field in Javascript
+
     #activityView
     #activityRepository
 
@@ -20,7 +20,7 @@ export class ActivityController extends Controller {
     }
 
     /**
-     * Loads contents of desired HTML file into the index.html .navigation div
+     * Loads contents of desired HTML file into content class
      * @returns {Promise<void>}
      * @private
      */
@@ -57,20 +57,4 @@ export class ActivityController extends Controller {
             exampleResponse.innerHTML = e;
         }
     }
-
-    // async #fetchGoals(userid) {
-    //     const exampleResponse = this.#activityView.querySelector(".example-response")
-    //
-    //     try {
-    //         //await keyword 'stops' code until data is returned - can only be used in async function
-    //         const goalData = await this.#activityRepository.get(userid);
-    //
-    //         exampleResponse.innerHTML = JSON.stringify(goalData, null, 4);
-    //     } catch (e) {
-    //         console.log("error while fetching goals", e);
-    //
-    //         //for now just show every error on page, normally not all errors are appropriate for user
-    //         exampleResponse.innerHTML = e;
-    //     }
-    // }
 }

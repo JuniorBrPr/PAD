@@ -1,4 +1,6 @@
 /**
+ * This class contains ExpressJS routes specific for the activity entity
+ * this file is automatically loaded in app.js
  *
  * @author Jayden Gunhan
  */
@@ -16,7 +18,7 @@ class ActivityRoute {
     }
 
     /**
-     * dummy data example endpoint - rooms (welcome screen)
+     * dummy data example endpoint - goals (activity screen)
      * get request, data is sent by client via url - req.params
      * @private
      */
