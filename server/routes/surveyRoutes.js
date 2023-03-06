@@ -7,7 +7,8 @@ class surveyRoutes {
         this.#app = app;
 
         this.#getAllQuestions();
-        this.#getQuestionOptions()
+        this.#getNutritionSurvey();
+        this.#getQuestionOptions();
     }
 
     #getAllQuestions() {
@@ -20,6 +21,27 @@ class surveyRoutes {
                                    questionType.type     AS questionType
                             FROM question
                                      INNER JOIN questionType ON question.questionTypeId = questionType.id;`,
+                    values: []
+                });
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    #getNutritionSurvey() {
+        this.#app.get("/survey/nutrition", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT question.id           AS questionId,
+                                   question.questionText AS questionText,
+                                   question.order        AS questionOrder,
+                                   questionType.type     AS questionType
+                            FROM question
+                                     INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            WHERE question.surveyId = 1;`,
                     values: []
                 });
 
