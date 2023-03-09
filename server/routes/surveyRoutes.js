@@ -15,12 +15,12 @@ class surveyRoutes {
         this.#app.get("/survey/all", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT question.id           AS questionId,
-                                   question.questionText AS questionText,
-                                   question.order        AS questionOrder,
-                                   questionType.type     AS questionType
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   questionType.type     AS type
                             FROM question
-                                     INNER JOIN questionType ON question.questionTypeId = questionType.id;`,
+                                     INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            ORDER BY question.order;`,
                     values: []
                 });
 
@@ -35,13 +35,14 @@ class surveyRoutes {
         this.#app.get("/survey/nutrition", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT question.id           AS questionId,
-                                   question.questionText AS questionText,
-                                   question.order        AS questionOrder,
-                                   questionType.type     AS questionType
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   question.order        AS "order",
+                                   questionType.type     AS type
                             FROM question
                                      INNER JOIN questionType ON question.questionTypeId = questionType.id
-                            WHERE question.surveyId = 1;`,
+                            WHERE question.surveyId = 1
+                            ORDER BY question.order;`,
                     values: []
                 });
 
@@ -56,10 +57,12 @@ class surveyRoutes {
         this.#app.get("/survey/options/:questionId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT questionoption.order AS questionOptionOrder,
-                                   questionoption.value AS questionOptionText
+                    query: `SELECT questionoption.order      AS "order",
+                                   questionoption.value      AS text,
+                                   questionoption.openOption AS open
                             FROM questionoption
-                            where questionId = ?;`,
+                            WHERE questionId = ?
+                            ORDER BY questionoption.order;`,
                     values: [req.params.questionId]
                 });
 

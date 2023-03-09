@@ -27,7 +27,7 @@ export class SurveyRepository {
         for (let i = 0; i < data.length; i++) {
             const question = data[i];
             question.options = await this.#networkManager
-                .doRequest(`${this.#route}options/${question.questionId}`, "GET", {});
+                .doRequest(`${this.#route}options/${question.id}`, "GET", {});
         }
 
         return data;

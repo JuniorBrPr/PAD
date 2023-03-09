@@ -26,20 +26,24 @@ export class SurveyController extends Controller {
     // TODO: Remove this method
     #displayQuestions(data) {
         const container = this.#surveyView.querySelector(".survey-form");
-
+        const questionTemplate = this.#surveyView.querySelector("#questionTemplate").cloneNode(true);
         for (let i = 0; i < data.length; i++) {
             const question = data[i];
-            const questionDiv = document.createElement("div")
-            questionDiv.classList.add("question")
-            questionDiv.innerText = question.questionText;
-            container.appendChild(questionDiv)
-            for (let j = 0; j < question.options.length; j++) {
-                const option = question.options[j].questionOptionText;
-                const optionDiv = document.createElement("div")
-                optionDiv.classList.add("option")
-                optionDiv.innerText = option
-                questionDiv.appendChild(optionDiv)
-            }
+            const questionTab = questionTemplate.content.querySelector("#questionTab").cloneNode(true);
+            questionTab.querySelector("#questionText").innerText = question.text;
+            console.log(questionTab);
+            container.appendChild(questionTab);
+            // const questionDiv = document.createElement("div")
+            // questionDiv.classList.add("question")
+            // questionDiv.innerText = question.text;
+            // container.appendChild(questionDiv)
+            // for (let j = 0; j < question.options.length; j++) {
+            //     const option = question.options[j].text;
+            //     const optionDiv = document.createElement("div")
+            //     optionDiv.classList.add("option")
+            //     optionDiv.innerText = option
+            //     questionDiv.appendChild(optionDiv)
+            // }
         }
     }
 }
