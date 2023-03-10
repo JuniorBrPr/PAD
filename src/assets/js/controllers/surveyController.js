@@ -5,6 +5,7 @@ export class SurveyController extends Controller {
     #surveyRepository
     #surveyView
     #currentQuestion
+    #data
 
     constructor() {
         super();
@@ -37,24 +38,24 @@ export class SurveyController extends Controller {
     }
 
     async #fetchNutritionSurvey() {
-        this.#displayQuestions(await this.#surveyRepository.getNutritionSurvey());
+        this.#data = await this.#surveyRepository.getNutritionSurvey();
+        this.#displayQuestions();
         this.#surveyView.querySelector(".survey-form").style.display = "block";
         this.#loadPercentage();
     }
 
-    #displayQuestions(data) {
+    #displayQuestions() {
         const container = this.#surveyView.querySelector(".questionContainer");
         const questionTemplate = this.#surveyView.querySelector("#questionTemplate").cloneNode(true);
         const checkboxOption = this.#surveyView.querySelector("#checkbox").cloneNode(true);
         const checkboxFieldOption = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
 
-
-        for (let i = 0; i < data.length; i++) {
-            const question = data[i];
+        for (let i = 0; i < this.#data.length; i++) {
+            const question = this.#data[i];
             const questionTab = questionTemplate.content.querySelector(".questionTab").cloneNode(true);
             questionTab.style.display = "none";
             questionTab.querySelector(".questionText").innerText = question.text;
-
+            questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
             for (let j = 0; j < question.options.length; j++) {
                 if (question.options[j].open === 0) {
@@ -113,7 +114,46 @@ export class SurveyController extends Controller {
     }
 
     #validateForm() {
-        // @todo: validate form
-        return true;
+        let x = this.#surveyView.getElementsByClassName("questionTab");
+        const alert = x[this.#currentQuestion].querySelector(".alert");
+
+        let y = x[this.#currentQuestion].querySelectorAll(".option");
+        const currentQuestionObj = this.#data[this.#currentQuestion];
+        let valid = false;
+
+        console.log(currentQuestionObj);
+        console.log(y);
+        if (currentQuestionObj.type === "singleChoice") {
+            let checked = 0;
+            for (let i = 0; i < y.length; i++) {
+                if (y[i].querySelector("input").checked) {
+                    checked++;
+                }
+            }
+            if (checked === 1) {
+                valid = true;
+            } else if (checked > 1) {
+                alert.innerText = "Gelieve slechts 1 antwoord te selecteren.";
+            } else {
+                alert.innerText = "Gelieve een antwoord te selecteren.";
+            }
+        } else if (currentQuestionObj.type === "multipleChoice") {
+            for (let i = 0; i < y.length; i++) {
+                if (y[i].querySelector("input").checked) {
+                    valid = true;
+                    break;
+                } else {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
+                }
+            }
+        }
+
+        if (!valid) {
+            const alert = x[this.#currentQuestion].querySelector(".alert");
+            alert.style.display = "block";
+        } else {
+            x[this.#currentQuestion].querySelector(".alert").style.display = "none";
+        }
+        return valid;
     }
 }
