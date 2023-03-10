@@ -26,6 +26,7 @@ export class SurveyController extends Controller {
 
         this.#surveyView.querySelector(".next").addEventListener("click", () => this.#nextPrev(1));
         this.#surveyView.querySelector(".prev").addEventListener("click", () => this.#nextPrev(-1));
+        this.#surveyView.querySelector(".alert").style.display = "none";
     }
 
     async #fetchNutritionSurvey() {
@@ -36,12 +37,31 @@ export class SurveyController extends Controller {
     #displayQuestions(data) {
         const container = this.#surveyView.querySelector(".questionContainer");
         const questionTemplate = this.#surveyView.querySelector("#questionTemplate").cloneNode(true);
+        const checkboxOption = this.#surveyView.querySelector("#checkbox").cloneNode(true);
+        const checkboxFieldOption = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
+
+
 
         for (let i = 0; i < data.length; i++) {
             const question = data[i];
             const questionTab = questionTemplate.content.querySelector(".questionTab").cloneNode(true);
             questionTab.style.display = "none";
             questionTab.querySelector(".questionText").innerText = question.text;
+
+            console.log(question.options);
+            const optionsContainer = questionTab.querySelector(".options-container");
+            for (let j = 0; j < question.options.length; j++) {
+                if (question.options[j].open === 0){
+                    const option = checkboxOption.content.querySelector(".option").cloneNode(true);
+                    option.querySelector(".optionText").innerText = question.options[j].text;
+                    optionsContainer.appendChild(option);
+                } else if (question.options[j].open === 1){
+                    const option = checkboxFieldOption.content.querySelector(".option").cloneNode(true);
+                    option.querySelector(".optionText").innerText = question.options[j].text;
+                    optionsContainer.appendChild(option);
+                }
+            }
+
             container.appendChild(questionTab);
         }
 
@@ -70,7 +90,10 @@ export class SurveyController extends Controller {
         x[this.#currentQuestion].style.display = "none";
         this.#currentQuestion = this.#currentQuestion + n;
         if (this.#currentQuestion >= x.length) {
-            // @todo: submit form
+            this.#surveyView.querySelector(".survey-form").style.display = "none";
+            this.#surveyView.querySelector(".survey-welcome").style.display = "block";
+            this.#surveyView.querySelector(".alert").style.display = "block";
+            this.#surveyView.querySelector("#voeding-survey-btn").classList.add("disabled");
             return false;
         }
         this.#showTab(this.#currentQuestion);
