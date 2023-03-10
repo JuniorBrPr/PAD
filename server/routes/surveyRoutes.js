@@ -37,7 +37,6 @@ class surveyRoutes {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
-                                   question.order        AS "order",
                                    questionType.type     AS type
                             FROM question
                                      INNER JOIN questionType ON question.questionTypeId = questionType.id
@@ -57,8 +56,7 @@ class surveyRoutes {
         this.#app.get("/survey/options/:questionId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT questionoption.order      AS "order",
-                                   questionoption.value      AS text,
+                    query: `SELECT questionoption.value      AS text,
                                    questionoption.openOption AS open
                             FROM questionoption
                             WHERE questionId = ?

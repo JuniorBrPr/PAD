@@ -24,14 +24,22 @@ export class SurveyController extends Controller {
                 this.#surveyView.querySelector(".survey-welcome").style.display = "none";
             });
 
-        this.#surveyView.querySelector(".next").addEventListener("click", () => this.#nextPrev(1));
-        this.#surveyView.querySelector(".prev").addEventListener("click", () => this.#nextPrev(-1));
+        this.#surveyView.querySelector(".next").addEventListener("click", () => {
+            this.#nextPrev(1);
+            this.#loadPercentage();
+        });
+        this.#surveyView.querySelector(".prev").addEventListener("click", () => {
+            this.#nextPrev(-1);
+            this.#loadPercentage();
+        });
+
         this.#surveyView.querySelector(".alert").style.display = "none";
     }
 
     async #fetchNutritionSurvey() {
         this.#displayQuestions(await this.#surveyRepository.getNutritionSurvey());
         this.#surveyView.querySelector(".survey-form").style.display = "block";
+        this.#loadPercentage();
     }
 
     #displayQuestions(data) {
@@ -41,21 +49,19 @@ export class SurveyController extends Controller {
         const checkboxFieldOption = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
 
 
-
         for (let i = 0; i < data.length; i++) {
             const question = data[i];
             const questionTab = questionTemplate.content.querySelector(".questionTab").cloneNode(true);
             questionTab.style.display = "none";
             questionTab.querySelector(".questionText").innerText = question.text;
 
-            console.log(question.options);
             const optionsContainer = questionTab.querySelector(".options-container");
             for (let j = 0; j < question.options.length; j++) {
-                if (question.options[j].open === 0){
+                if (question.options[j].open === 0) {
                     const option = checkboxOption.content.querySelector(".option").cloneNode(true);
                     option.querySelector(".optionText").innerText = question.options[j].text;
                     optionsContainer.appendChild(option);
-                } else if (question.options[j].open === 1){
+                } else if (question.options[j].open === 1) {
                     const option = checkboxFieldOption.content.querySelector(".option").cloneNode(true);
                     option.querySelector(".optionText").innerText = question.options[j].text;
                     optionsContainer.appendChild(option);
@@ -68,23 +74,29 @@ export class SurveyController extends Controller {
         this.#showTab(this.#currentQuestion);
     }
 
+    #loadPercentage() {
+        let x = this.#surveyView.getElementsByClassName("questionTab").length;
+        let percentage = this.#currentQuestion === 0 ? 0 : Math.round((this.#currentQuestion) / x * 100);
+        this.#surveyView.querySelector(".progress-bar").style.width = percentage >= 1 ? percentage + "%" : "fit-content";
+        this.#surveyView.querySelector(".progress-bar").innerText = percentage + "%";
+    }
+
     #showTab(n) {
         let x = this.#surveyView.getElementsByClassName("questionTab");
-        console.log(this.#surveyView.querySelector(".prev"));
         x[n].style.display = "block";
         if (n === 0) {
             this.#surveyView.querySelector(".prev").style.display = "none";
         } else {
-            this.#surveyView.querySelector(".prev").style.display = "inline";
+            this.#surveyView.querySelector(".prev").style.display = "block";
         }
         if (n === (x.length - 1)) {
-            this.#surveyView.querySelector(".next").innerHTML = "Submit";
+            this.#surveyView.querySelector(".next").innerText = "Bevestigen";
         } else {
-            this.#surveyView.querySelector(".next").innerHTML = "Next";
+            this.#surveyView.querySelector(".next").innerText = "Volgende";
         }
     }
 
-    #nextPrev(n) {
+    async #nextPrev(n) {
         let x = this.#surveyView.getElementsByClassName("questionTab");
         if (n === 1 && !this.#validateForm()) return false;
         x[this.#currentQuestion].style.display = "none";
@@ -94,6 +106,7 @@ export class SurveyController extends Controller {
             this.#surveyView.querySelector(".survey-welcome").style.display = "block";
             this.#surveyView.querySelector(".alert").style.display = "block";
             this.#surveyView.querySelector("#voeding-survey-btn").classList.add("disabled");
+            this.#surveyView.querySelector(".questionContainer").innerHTML = "";
             return false;
         }
         this.#showTab(this.#currentQuestion);
