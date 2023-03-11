@@ -3,6 +3,8 @@
  *
  * @author Joey van der Poel
  */
+const {RowDataPacket} = require("mysql/lib/protocol/packets");
+
 class profileRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
@@ -18,35 +20,25 @@ class profileRoutes {
 
         //call method per route for the users entity
         this.#getData()
+        this.#postData()
     }
-
 
     #getData() {
         this.#app.get("/profile", async (req, res) => {
-            const username = req.body.username;
-            //TODO: You shouldn't save a password unencrypted!! Improve this by using this.#cryptoHelper functions :)
-            const password = req.body.password;
-
-            let name = null;
-            let email = null;
-            let age = null;
-            let weight = null;
-            let height = null;
-
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: "SELECT firstname, surname, date_of_birth, emailAdress, weight, height FROM user WHERE id = 1"
                 });
-                //NOG NIET NAAR KIJKEN
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
-                    //return just the username for now, never send password back!
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json({"username": data[0].username});
-                    name = data[0]
-                    email = data[1]
-                    age = data[2]
-                    weight = data[3]
-                    height = data[4]
+                    // Values individually saved
+                    const firstname = {"firstname": data[0].firstname}
+                    const surname = {"surname": data[0].surname}
+                    const date_of_birth = {"date_of_birth": data[0].date_of_birth}
+                    const emailAdress = {"emailAdress": data[0].emailAdress}
+                    const weight = {"weight": data[0].weight}
+                    const height = {"height": data[0].height}
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
                 } else {
                     //wrong username
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Gebruiker bestaat niet"});
@@ -55,6 +47,11 @@ class profileRoutes {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
+    }
+
+
+    #postData() {
+
     }
 }
 
