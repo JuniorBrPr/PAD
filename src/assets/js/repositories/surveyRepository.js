@@ -32,4 +32,10 @@ export class SurveyRepository {
 
         return data;
     }
+
+    // todo: implement use of bearer token instead of userId
+    async putSurveyResult(data, userId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}response/${userId}`, "PUT", data);
+    }
 }

@@ -103,6 +103,7 @@ export class SurveyController extends Controller {
         x[this.#currentQuestion].style.display = "none";
         this.#currentQuestion = this.#currentQuestion + n;
         if (this.#currentQuestion >= x.length) {
+            await this.#surveyRepository.putSurveyResult(this.#getSurveyData(), 1);
             this.#surveyView.querySelector(".survey-form").style.display = "none";
             this.#surveyView.querySelector(".survey-welcome").style.display = "block";
             this.#surveyView.querySelector(".alert").style.display = "block";
@@ -155,5 +156,37 @@ export class SurveyController extends Controller {
             x[this.#currentQuestion].querySelector(".alert").style.display = "none";
         }
         return valid;
+    }
+
+    #getSurveyData() {
+        const surveyData = [];
+        for (let i = 0; i < this.#data.length; i++) {
+            const question = this.#data[i];
+            const questionObj = {
+                id: question.id,
+                options: []
+            };
+
+            const options = this.#surveyView.querySelectorAll(".questionTab")[i].querySelectorAll(".option");
+
+            for (let j = 0; j < options.length; j++) {
+                if (options[j].querySelector("input").checked) {
+                    const option = options[j];
+                    const optionObj = {
+                        optionId: question.options[j].id,
+                        text: question.options[j].text + (question.options[j].open ?
+                            " " + option.querySelector(".input-field").value : "")
+                    };
+                    questionObj.options.push(optionObj);
+                }
+            }
+
+            surveyData.push(questionObj);
+        }
+
+        return {
+            surveyId: this.#data[0].surveyId,
+            data: surveyData,
+        };
     }
 }
