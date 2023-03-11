@@ -82,50 +82,79 @@ class surveyRoutes {
 
     #putSurveyResult() {
         this.#app.put("/survey/response/:userId", async (req, res) => {
-            console.log("putSurveyResult");
             try {
                 const data = req.body;
-                const userId = req.params.userId;
-                console.log(data);
+                const user = req.params.userId;
 
-                await this.#databaseHelper.handleQuery({
+                const responseId = await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO response (id, surveyId, userId)
-                            values (?, ?, ?);`,
-                    values: [0, data.surveyId, userId]
+                            values (?, ?, ?);
+                    SELECT response.id
+                    FROM response
+                    WHERE userId = ?
+                      AND surveyId = ?;`,
+                    values: [0, data.surveyId, user, user, data.surveyId]
+                }).then((result) => {
+                    if (result[1].length === 0) {
+                        throw "No response found";
+                    }
+                    if (result[1].length > 1) {
+                        throw "More than one response found";
+                    }
+                    return result[1][0].id;
+                })
+
+                let answers = [];
+                for (const question of data.data) {
+                    answers.push([null, responseId, question.id, null]);
+                }
+                await this.#databaseHelper.handleQuery({
+                    query: `INSERT INTO answer (id, responseId, questionId, answer)
+                            VALUES ?`,
+                    values: [answers]
                 });
 
+                let answersOptions = [];
                 for (const question of data.data) {
-                    await this.#databaseHelper.handleQuery({
-                        query: `INSERT INTO answer (id, responseId, questionId, answer)
-                                values (0, (SELECT id FROM response WHERE userId = ? AND surveyId = ?), ?, ?);`,
-                        values: [userId, data.surveyId, question.id, question.optionId]
+                    const answerId = await this.#databaseHelper.handleQuery({
+                        query: `SELECT id
+                                FROM answer
+                                WHERE responseId = ?
+                                  AND questionId = ?;`,
+                        values: [responseId, question.id]
+                    }).then((result) => {
+                        if (result.length === 0) {
+                            throw "No answer found";
+                        } else if (result.length > 1) {
+                            throw "More than one answer found";
+                        }
+                        return result[0].id;
                     });
-
                     for (const option of question.options) {
-                        const openOption = await this.#databaseHelper.handleQuery({
+                        const openOption = option.optionId != null ? await this.#databaseHelper.handleQuery({
                             query: `SELECT openOption as open
                                     FROM questionoption
                                     WHERE id = ?;`,
                             values: [option.optionId]
                         }).then((data) => {
                             return data[0].open;
-                        });
+                        }) : 0;
 
-                        await this.#databaseHelper.handleQuery({
-                            query: `INSERT INTO answeroption (id, answerId, questionOtionId, text)
-                                    values (0, (SELECT id
-                                                FROM answer
-                                                WHERE responseId =
-                                                      (SELECT id
-                                                       FROM response
-                                                       WHERE userId = ?
-                                                         AND surveyId = ?)
-                                                  AND questionId = ?), ?, ?);`,
-                            values: [userId, data.surveyId, question.id,
-                                option.optionId, openOption ? option.text : null]
-                        });
+                        answersOptions.push([
+                            null,
+                            answerId,
+                            option.optionId,
+                            openOption === 1 || option.optionId === null ? option.text : null
+                        ])
                     }
                 }
+
+                await this.#databaseHelper.handleQuery({
+                    query: `INSERT INTO answeroption (id, answerId, questionOtionId, answeroption.text)
+                            values ?;`,
+                    values: [answersOptions]
+                });
+
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({message: "Survey response saved"});
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});

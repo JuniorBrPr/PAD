@@ -26,8 +26,12 @@ export class SurveyRepository {
     async getOptions(data) {
         for (let i = 0; i < data.length; i++) {
             const question = data[i];
-            question.options = await this.#networkManager
-                .doRequest(`${this.#route}options/${question.id}`, "GET", {});
+            if (question.type === "multipleChoice" || question.type === "singleChoice") {
+                if (question.type === "multipleChoice" || question.type === "singleChoice") {
+                    question.options = await this.#networkManager
+                        .doRequest(`${this.#route}options/${question.id}`, "GET", {});
+                }
+            }
         }
 
         return data;

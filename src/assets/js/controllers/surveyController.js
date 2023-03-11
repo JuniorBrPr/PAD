@@ -57,21 +57,30 @@ export class SurveyController extends Controller {
             questionTab.querySelector(".questionText").innerText = question.text;
             questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
-            for (let j = 0; j < question.options.length; j++) {
-                if (question.options[j].open === 0) {
+
+            // @todo: move to separate function
+            if (question.hasOwnProperty("options")) {
+                for (let j = 0; j < question.options.length; j++) {
+                    if (question.options[j].open === 0) {
+                        const option = checkboxOption.content.querySelector(".option").cloneNode(true);
+                        option.querySelector(".optionText").innerText = question.options[j].text;
+                        optionsContainer.appendChild(option);
+                    } else if (question.options[j].open === 1) {
+                        const option = checkboxFieldOption.content.querySelector(".option")
+                            .cloneNode(true);
+                        option.querySelector(".optionText").innerText = question.options[j].text;
+                        optionsContainer.appendChild(option);
+                    }
+                }
+            } else if (question.type === "numberScale") {
+                for (let j = 0; j < 8; j++) {
                     const option = checkboxOption.content.querySelector(".option").cloneNode(true);
-                    option.querySelector(".optionText").innerText = question.options[j].text;
-                    optionsContainer.appendChild(option);
-                } else if (question.options[j].open === 1) {
-                    const option = checkboxFieldOption.content.querySelector(".option").cloneNode(true);
-                    option.querySelector(".optionText").innerText = question.options[j].text;
+                    option.querySelector(".optionText").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
                     optionsContainer.appendChild(option);
                 }
             }
-
             container.appendChild(questionTab);
         }
-
         this.#showTab(this.#currentQuestion);
     }
 
@@ -122,11 +131,10 @@ export class SurveyController extends Controller {
         const currentQuestionObj = this.#data[this.#currentQuestion];
         let valid = false;
 
-        console.log(currentQuestionObj);
-        console.log(y);
-        if (currentQuestionObj.type === "singleChoice") {
+        if (currentQuestionObj.type === "singleChoice" || currentQuestionObj.type === "numberScale") {
             let checked = 0;
             for (let i = 0; i < y.length; i++) {
+                if (checked > 1) break;
                 if (y[i].querySelector("input").checked) {
                     checked++;
                 }
@@ -172,10 +180,18 @@ export class SurveyController extends Controller {
             for (let j = 0; j < options.length; j++) {
                 if (options[j].querySelector("input").checked) {
                     const option = options[j];
+
+                    let text;
+                    if (question.hasOwnProperty("options")){
+                        text = question.options[j].text + (question.options[j].open ?
+                            " " + option.querySelector(".input-field").value : "");
+                    } else if (question.type === "numberScale") {
+                        text = option.querySelector(".optionText").innerText;
+                    }
+
                     const optionObj = {
-                        optionId: question.options[j].id,
-                        text: question.options[j].text + (question.options[j].open ?
-                            " " + option.querySelector(".input-field").value : "")
+                        optionId: question.type === "numberScale" ? null : question.options[j].id,
+                        text: text
                     };
                     questionObj.options.push(optionObj);
                 }
