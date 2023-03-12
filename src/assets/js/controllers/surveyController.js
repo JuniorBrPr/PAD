@@ -47,8 +47,10 @@ export class SurveyController extends Controller {
     #displayQuestions() {
         const container = this.#surveyView.querySelector(".questionContainer");
         const questionTemplate = this.#surveyView.querySelector("#questionTemplate").cloneNode(true);
-        const checkboxOption = this.#surveyView.querySelector("#checkbox").cloneNode(true);
-        const checkboxFieldOption = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
+        const CHECKBOX_OPTION = this.#surveyView.querySelector("#checkbox").cloneNode(true);
+        const CHECKBOX_FIELD_OPTION = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
+        const RADIO_OPTION = this.#surveyView.querySelector("#radio").cloneNode(true);
+        const RADIO_BUTTON = this.#surveyView.querySelector("#radioButton").cloneNode(true);
 
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
@@ -58,26 +60,38 @@ export class SurveyController extends Controller {
             questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
 
-            // @todo: move to separate function
+            // @todo: move to separate function, refactor
             if (question.hasOwnProperty("options")) {
                 for (let j = 0; j < question.options.length; j++) {
                     if (question.options[j].open === 0) {
-                        const option = checkboxOption.content.querySelector(".option").cloneNode(true);
+                        const option = CHECKBOX_OPTION.content.querySelector(".option").cloneNode(true);
                         option.querySelector(".optionText").innerText = question.options[j].text;
                         optionsContainer.appendChild(option);
                     } else if (question.options[j].open === 1) {
-                        const option = checkboxFieldOption.content.querySelector(".option")
+                        const option = CHECKBOX_FIELD_OPTION.content.querySelector(".option")
                             .cloneNode(true);
                         option.querySelector(".optionText").innerText = question.options[j].text;
                         optionsContainer.appendChild(option);
                     }
                 }
             } else if (question.type === "numberScale") {
+                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
+                const radioBtnContainer = option.querySelector(".radio-button-container");
                 for (let j = 0; j < 8; j++) {
-                    const option = checkboxOption.content.querySelector(".option").cloneNode(true);
-                    option.querySelector(".optionText").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
-                    optionsContainer.appendChild(option);
+                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
+                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
+                    radioBtnContainer.appendChild(radioBtn);
                 }
+                optionsContainer.appendChild(option);
+            } else if (question.type === "portion") {
+                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
+                const radioBtnContainer = option.querySelector(".radio-button-container");
+                for (let j = 1; j <= 8; j++) {
+                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
+                    radioBtn.querySelector(".form-check-label").innerText = String(j);
+                    radioBtnContainer.appendChild(radioBtn);
+                }
+                optionsContainer.appendChild(option);
             }
             container.appendChild(questionTab);
         }
@@ -112,6 +126,7 @@ export class SurveyController extends Controller {
         x[this.#currentQuestion].style.display = "none";
         this.#currentQuestion = this.#currentQuestion + n;
         if (this.#currentQuestion >= x.length) {
+            // @todo: refactor
             await this.#surveyRepository.putSurveyResult(this.#getSurveyData(), 1);
             this.#surveyView.querySelector(".survey-form").style.display = "none";
             this.#surveyView.querySelector(".survey-welcome").style.display = "block";
@@ -124,44 +139,68 @@ export class SurveyController extends Controller {
     }
 
     #validateForm() {
-        let x = this.#surveyView.getElementsByClassName("questionTab");
-        const alert = x[this.#currentQuestion].querySelector(".alert");
-
-        let y = x[this.#currentQuestion].querySelectorAll(".option");
+        let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
+        const alert = questionTabs[this.#currentQuestion].querySelector(".alert");
+        let optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
         const currentQuestionObj = this.#data[this.#currentQuestion];
         let valid = false;
+        let checked = 0;
 
-        if (currentQuestionObj.type === "singleChoice" || currentQuestionObj.type === "numberScale") {
-            let checked = 0;
-            for (let i = 0; i < y.length; i++) {
-                if (checked > 1) break;
-                if (y[i].querySelector("input").checked) {
-                    checked++;
+        switch (currentQuestionObj.type) {
+            case "singleChoice":
+                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
+                    if (checked > 1) break;
+                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                        checked++;
+                    }
                 }
-            }
-            if (checked === 1) {
-                valid = true;
-            } else if (checked > 1) {
-                alert.innerText = "Gelieve slechts 1 antwoord te selecteren.";
-            } else {
-                alert.innerText = "Gelieve een antwoord te selecteren.";
-            }
-        } else if (currentQuestionObj.type === "multipleChoice") {
-            for (let i = 0; i < y.length; i++) {
-                if (y[i].querySelector("input").checked) {
+                if (checked === 1) {
                     valid = true;
-                    break;
+                } else if (checked > 1) {
+                    alert.innerText = "Gelieve slechts 1 antwoord te selecteren.";
                 } else {
                     alert.innerText = "Gelieve een antwoord te selecteren.";
                 }
-            }
+                break;
+            case "portion":
+            case "numberScale" :
+                optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labels = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
+                    if (optionsCurrentQuestionTab[i].checked) {
+                        console.log(labels[i].innerText);
+                        valid = true;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
+                }
+                break;
+            case "multipleChoice":
+                checked = 0;
+                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
+                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                        valid = true;
+                        break;
+                    } else {
+                        alert.innerText = "Gelieve een antwoord te selecteren.";
+                    }
+                }
+                break;
+            case "weeklyPortions":
+            case "title":
+                valid = true;
+                break;
+            default:
+                valid = false;
+                break;
         }
 
         if (!valid) {
-            const alert = x[this.#currentQuestion].querySelector(".alert");
-            alert.style.display = "block";
+            alert.style.display = valid ? "none" : "block";
         } else {
-            x[this.#currentQuestion].querySelector(".alert").style.display = "none";
+            questionTabs[this.#currentQuestion].querySelector(".alert").style.display = "none";
         }
         return valid;
     }
@@ -182,7 +221,7 @@ export class SurveyController extends Controller {
                     const option = options[j];
 
                     let text;
-                    if (question.hasOwnProperty("options")){
+                    if (question.hasOwnProperty("options")) {
                         text = question.options[j].text + (question.options[j].open ?
                             " " + option.querySelector(".input-field").value : "");
                     } else if (question.type === "numberScale") {
