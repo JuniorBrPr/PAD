@@ -16,5 +16,16 @@ footer {
 }
 
 .profilesection{
-    background-color: #0dcaf0; 
+    background-color: #008C93;
+}
+
+.colProfile{
+    position: relative;
+    top: -30px;
+}
+
+.profielFoto{
+    width: 100px;
+    height: 100px;
+    border: white 3px solid;
 }
