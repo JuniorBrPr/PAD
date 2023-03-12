@@ -12,7 +12,7 @@ export class activityRepository {
     #networkManager
 
     constructor() {
-        this.#route = "/user_goal"
+        this.#route = "/activity"
         this.#networkManager = new NetworkManager();
     }
 
@@ -29,8 +29,12 @@ export class activityRepository {
      * @returns {Promise<>}
      */
 
-    async get(userid) {
-        return await this.#networkManager.doRequest(`${this.#route}/${userid}`, "GET");
+    async getGoals(userid) {
+        return await this.#networkManager.doRequest(`${this.#route}/${userid}/goals`, "GET");
+    }
+
+    async getScore(userid) {
+        return await this.#networkManager.doRequest(`${this.#route}/${userid}/score`, "GET");
     }
 
     async create() {

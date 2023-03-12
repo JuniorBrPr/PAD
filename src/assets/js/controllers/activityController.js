@@ -47,7 +47,7 @@ export class ActivityController extends Controller {
 
         try {
             //await keyword 'stops' code until data is returned - can only be used in async function
-            const goalData = await this.#activityRepository.get(userid);
+            const goalData = await this.#activityRepository.getGoals(userid);
 
             exampleResponse.innerHTML = JSON.stringify(goalData, null, 4);
         } catch (e) {
