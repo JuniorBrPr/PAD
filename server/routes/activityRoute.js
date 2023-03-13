@@ -51,12 +51,12 @@ class ActivityRoute {
                 //Here we are requesting all goals with an end_date, Having an end date means being completed
 
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT ug.userId, a.activity_name, g.difficulty" +
-                        "FROM userGoal ug" +
-                        "INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId" +
-                        "INNER JOIN activity a ON g.activityId = a.activityId" +
-                        "WHERE ug.endDate IS NOT NULL AND ug.userId = ?" +
-                        "GROUP BY ug.userId, a.activity_name, g.difficulty;",
+                    query: `SELECT ug.userId, a.activity_name, g.difficulty 
+                            FROM userGoal ug 
+                            INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId 
+                            INNER JOIN activity a ON g.activityId = a.activityId 
+                            WHERE ug.endDate IS NOT NULL AND ug.userId = ? 
+                            GROUP BY ug.userId, a.activity_name, g.difficulty;`,
                     values: [req.params.userId]
                 });
 

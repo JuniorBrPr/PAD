@@ -34,6 +34,7 @@ export class ActivityController extends Controller {
 
         //for demonstration a hardcoded activity goal that exists in the database of the back-end
         this.#fetchGoals();
+        this.#fetchScore();
     }
 
     /**
@@ -43,18 +44,36 @@ export class ActivityController extends Controller {
      */
 
     async #fetchGoals(userid) {
-        const exampleResponse = this.#activityView.querySelector(".example-response")
+        const activityTitle = this.#activityView.querySelector(".activity-title")
+        const activityDescription = this.#activityView.querySelector(".activity-description")
 
         try {
             //await keyword 'stops' code until data is returned - can only be used in async function
             const goalData = await this.#activityRepository.getGoals(userid);
+            console.log(goalData)
 
-            exampleResponse.innerHTML = JSON.stringify(goalData, null, 4);
+            activityTitle.innerHTML = goalData[1].activity_name
+            activityDescription.innerHTML = goalData[1].difficulty
+
         } catch (e) {
             console.log("error while fetching goals", e);
 
             //for now just show every error on page, normally not all errors are appropriate for user
-            exampleResponse.innerHTML = e;
+            activityDescription.innerHTML = e;
+        }
+    }
+
+    async #fetchScore(userId) {
+        const totalActivityScore = await this.#activityView.querySelector(".total-activity-score")
+
+        try {
+            const totalScore = await this.#activityRepository.getScore(userId);
+
+            totalActivityScore.innerHTML = JSON.stringify(totalScore, null, 4);
+        } catch (e) {
+            console.log("error while fetching score", e)
+
+            totalActivityScore.innerHTML = e;
         }
     }
 }
