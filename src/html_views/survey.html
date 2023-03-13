@@ -1,0 +1,120 @@
+<div class="container">
+    <section class="py-4 py-xl-5">
+
+        <div class="container survey-welcome">
+            <div class="alert alert-success alert-dismissible fade show">
+                <strong>Success!</strong> Jouw antwoorden zijn opgeslagen.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div class="row d-flex">
+                <h1 class="text-center">Intake vragenlijst</h1>
+                <p class="text-center">Vul de intake vragenlijsten in om gepersonaliseerde persoonlijke doelen te
+                    krijgen.</p>
+            </div>
+            <div class="row d-flex mt-4">
+                <div class="col flex-fill">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-8 d-flex justify-content-center">
+                            <button id="voeding-survey-btn"
+                                    class="btn btn-primary btn-lg fs-2 flex-fill justify-content-xxl-center"
+                                    type="button">Voeding
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-8 d-flex justify-content-center mt-5">
+                            <button id="beweging-survey-btn" class="btn btn-primary btn-lg fs-2 flex-fill"
+                                    type="button">Beweging
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="survey-form container mt-3 mb-4">
+            <div class="mt-3 d-flex">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <div class="progress">
+                                <div class="progress-bar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
+                                     style="width: 50%;">50%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row d-flex questionContainer">
+
+                    </div>
+                    <div class="row d-flex">
+                        <div class="col d-flex justify-content-center">
+                            <button class="prev btn btn-primary flex-fill" type="button">Vorige</button>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <button class="next btn btn-primary flex-fill" type="button">Volgende</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<template id="questionTemplate">
+    <div class="col questionTab">
+        <div class="row d-md-flex">
+            <div class="col d-md-flex justify-content-md-center mt-3">
+                <h3 class="questionText">Question text</h3>
+            </div>
+            <div class="alert alert-danger alert-dismissible fade show text-center">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        <div class="row mt-3 mb-4">
+            <ul class="options-container list-group">
+            </ul>
+        </div>
+    </div>
+</template>
+
+<template id="checkbox">
+    <div class="option row d-md-flex">
+        <div class="col d-md-flex">
+            <div class="form-check d-flex align-items-center ">
+                <input id="formCheckBox" class="formCheckBox form-check-input m-3" type="checkbox"/>
+                <label class="optionText form-check-label fs-4" for="formCheckBox">Closed input</label>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="checkboxWithField">
+    <div class="option row">
+        <div class="col d-md-flex">
+            <div class="form-check align-items-center">
+                <input id="formCheckBox1" class="formCheckBox form-check-input d-md-flex m-3" type="checkbox"/>
+                <label class="optionText form-check-label fs-4 d-md-flex" for="formCheckBox1">Open
+                    input</label>
+            </div>
+        </div>
+        <div class="col d-flex justify-content-center">
+            <input class="input-field form-control-plaintext" type="text" placeholder="Vul hier je antwoord in"/>
+        </div>
+    </div>
+</template>
+
+<template id="radio">
+    <div class="option col">
+        <div class="form-check row">
+            <div class="radio-button-container d-flex flex-fill">
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="radioButton">
+    <div class="formRadioBtn form-check d-flex flex-fill justify-content-center">
+        <input id="radioBtn" class="formRadioBtn form-check-input me-auto" type="radio" name="portion"/>
+        <label class="option-text form-check-label me-auto" for="radioBtn"></label>
+    </div>
+</template>
