@@ -68,13 +68,13 @@ export class App {
                 App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_WELCOME:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
-                break;
-
-            case App.CONTROLLER_UPLOAD:
-                App.isLoggedIn(() => new UploadController(), () => new LoginController());
-                break;
+            // case App.CONTROLLER_WELCOME:
+            //     App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            //     break;
+            //
+            // case App.CONTROLLER_UPLOAD:
+            //     App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            //     break;
 
             case App.CONTROLLER_SURVEY:
                 App.isLoggedIn(() => new SurveyController(), () => new LoginController());
