@@ -3,16 +3,19 @@ import {Controller} from "./controller.js";
 
 export class profileController extends Controller {
     #createProfileView
+    #profileRepository
+
     constructor() {
         super();
         this.#setupView();
         this.weight = 74;
         this.height = 183;
         this.age = 18;
+        this.#profileRepository = new profileRepository
+
     }
 
     async #setupView() {
-
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         document.getElementById("profileFullName").innerHTML = this.firstname
         document.getElementById("profileEmail").innerHTML = "TEST@gmail.com"

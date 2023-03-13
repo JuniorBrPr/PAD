@@ -1,21 +1,22 @@
-import { profileRoutes } from '../server/routes/profileRoutes.js';
+import {NetworkManager} from "../framework/utils/networkManager.js";
+
 
 export class RoomsExampleRepository {
     //# is a private field in Javascript
     #route
-    #profileRouteInstance
+    #networkManager
 
     constructor() {
-        this.#route = "/rooms_example"
-        this.#profileRouteInstance = new profileRoutes();
+        this.#route = "/profile"
+        this.#networkManager = new NetworkManager();
     }
 
     async getAll() {
 
     }
 
-    async get(roomId) {
-        return await this.#profileRouteInstance.doRequest(`${this.#route}/${roomId}`, "GET");
+    async getData(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/${userId}/profile`, "GET");
     }
 
     async create() {
