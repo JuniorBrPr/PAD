@@ -17,6 +17,7 @@ class ActivityRoute {
 
         this.#getUserGoalsById();
         this.#getUserScore();
+        this.#handleGoalCompletion();
     }
 
     /**
@@ -37,7 +38,7 @@ class ActivityRoute {
 
                 //just give all data back as json, could also be empty
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-            } catch(e) {
+            } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
             }
         });
@@ -51,11 +52,12 @@ class ActivityRoute {
                 //Here we are requesting all goals with an end_date, Having an end date means being completed
 
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT ug.userId, a.activity_name, g.difficulty 
-                            FROM userGoal ug 
-                            INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId 
-                            INNER JOIN activity a ON g.activityId = a.activityId 
-                            WHERE ug.endDate IS NOT NULL AND ug.userId = ? 
+                    query: `SELECT ug.userId, a.activity_name, g.difficulty
+                            FROM userGoal ug
+                                     INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId
+                                     INNER JOIN activity a ON g.activityId = a.activityId
+                            WHERE ug.endDate IS NOT NULL
+                              AND ug.userId = ?
                             GROUP BY ug.userId, a.activity_name, g.difficulty;`,
                     values: [req.params.userId]
                 });
@@ -88,10 +90,28 @@ class ActivityRoute {
 
                 //just give all data back as json, could also be empty
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(totalScore);
-            } catch(e) {
+            } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
             }
         });
+    }
+
+    #handleGoalCompletion() {
+        this.#app.post("/activity/score/:userId/:goalId", async (req, res) => {
+            try {
+
+                const data2 = await this.#databaseHelper.handleQuery({
+                    query: `UPDATE usergoal
+                            SET endDate = endDate
+                                WHERE userId = ?;`,
+                    values: [req.params.userId]
+                });
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
     }
 }
 

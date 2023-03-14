@@ -33,8 +33,8 @@ export class ActivityController extends Controller {
         this.#activityView.querySelector("span.name").innerHTML = App.sessionManager.get("username");
 
         //for demonstration a hardcoded activity goal that exists in the database of the back-end
-        this.#fetchGoals();
-        this.#fetchScore();
+        this.#fetchGoals(App.sessionManager.get("user_id"));
+        this.#fetchScore(App.sessionManager.get("user_id"));
     }
 
     /**
@@ -76,4 +76,14 @@ export class ActivityController extends Controller {
             totalActivityScore.innerHTML = e;
         }
     }
+
+    // async #handleCompletion(goal_id, user_id) {
+    //     const completedgoal = null;
+    //
+    //     try {
+    //
+    //     } catch (e) {
+    //
+    //     }
+    // }
 }

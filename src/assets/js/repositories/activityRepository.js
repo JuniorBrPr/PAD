@@ -16,10 +16,6 @@ export class activityRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async getAll() {
-
-    }
-
     /**
      * Async function to get a piece of activity data by its id via networkmanager
      * in the back-end we define :goalId as parameter at the end of the endpoint
@@ -35,6 +31,11 @@ export class activityRepository {
 
     async getScore(userid) {
         return await this.#networkManager.doRequest(`${this.#route}/score/${userid}`, "GET");
+    }
+
+    async updateGoal(userid, goalid, endDate) {
+        return await this.#networkManager.doRequest(`${this.#route}/goals/${userid}/${goalid}`, "POST",
+            {"goalid": goalid, "end_date": endDate})
     }
 
     async create() {
