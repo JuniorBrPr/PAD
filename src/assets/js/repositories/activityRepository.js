@@ -35,7 +35,7 @@ export class activityRepository {
 
     async updateGoal(userid, goalid, endDate) {
         return await this.#networkManager.doRequest(`${this.#route}/goals/${userid}/${goalid}`, "POST",
-            {"goalid": goalid, "end_date": endDate})
+            {"goal_id": goalid, "end_date": endDate})
     }
 
     async create() {
