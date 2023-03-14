@@ -30,11 +30,11 @@ export class activityRepository {
      */
 
     async getGoals(userid) {
-        return await this.#networkManager.doRequest(`${this.#route}/${userid}/goals`, "GET");
+        return await this.#networkManager.doRequest(`${this.#route}/goals/${userid}`, "GET");
     }
 
     async getScore(userid) {
-        return await this.#networkManager.doRequest(`${this.#route}/${userid}/score`, "GET");
+        return await this.#networkManager.doRequest(`${this.#route}/score/${userid}`, "GET");
     }
 
     async create() {

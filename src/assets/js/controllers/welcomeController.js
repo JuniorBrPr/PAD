@@ -30,10 +30,10 @@ export class WelcomeController extends Controller{
         this.#welcomeView = await super.loadHtmlIntoContent("html_views/welcome.html")
 
         //from here we can safely get elements from the view via the right getter
-        this.#welcomeView.querySelector("span.name").innerHTML = App.sessionManager.get("username");
+        this.#welcomeView.querySelector("span.name").innerHTML = App.sessionManager.get("firstname");
 
         //for demonstration a hardcoded room id that exists in the database of the back-end
-        this.#fetchRooms(1256);
+        this.#fetchRooms(App.sessionManager.get("user_id"));
     }
 
     /**

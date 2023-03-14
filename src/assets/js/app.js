@@ -70,13 +70,13 @@ export class App {
                 App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
                 break;
 
-            // case App.CONTROLLER_WELCOME:
-            //     App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
-            //     break;
-            //
-            // case App.CONTROLLER_UPLOAD:
-            //     App.isLoggedIn(() => new UploadController(), () => new LoginController());
-            //     break;
+            case App.CONTROLLER_WELCOME:
+                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+                break;
+
+            case App.CONTROLLER_UPLOAD:
+                App.isLoggedIn(() => new UploadController(), () => new LoginController());
+                break;
 
             case App.CONTROLLER_SURVEY:
                 App.isLoggedIn(() => new SurveyController(), () => new LoginController());
@@ -165,7 +165,7 @@ export class App {
      * @param whenNo - function to execute when user is logged in
      */
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("username")) {
+        if (App.sessionManager.get("firstname")) {
             whenYes();
         } else {
             whenNo();
@@ -176,7 +176,7 @@ export class App {
      * Removes username via sessionManager and loads the login screen
      */
     static handleLogout() {
-        App.sessionManager.remove("username");
+        App.sessionManager.clear();
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);

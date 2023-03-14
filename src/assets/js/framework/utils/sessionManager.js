@@ -15,25 +15,29 @@ export class SessionManager {
         }
 
         //create empty object in local storage if it was empty
-        if(!this.#session) {
+        if (!this.#session) {
             this.#session = {};
 
             this.#saveSession();
         }
     }
 
-     get(key) {
+    get(key) {
         return this.#session[key];
     }
 
-     set(key, value) {
+    getAll() {
+        return this.#session;
+    }
+
+    set(key, value) {
         this.#session[key] = value;
 
         this.#saveSession();
     }
 
-     remove(key) {
-        delete(this.#session[key]);
+    remove(key) {
+        delete (this.#session[key]);
 
         this.#saveSession();
     }
@@ -47,7 +51,7 @@ export class SessionManager {
         this.#saveSession();
     }
 
-     #saveSession() {
+    #saveSession() {
         localStorage.setItem("session", JSON.stringify(this.#session));
     }
 

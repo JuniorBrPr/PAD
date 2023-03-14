@@ -26,7 +26,7 @@ class ActivityRoute {
      */
 
     #getUserGoalsById() {
-        this.#app.get("/activity/:userId/goals", async (req, res) => {
+        this.#app.get("/activity/goals/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: "SELECT a.activity_name, gt.difficulty " +
@@ -44,7 +44,7 @@ class ActivityRoute {
     }
 
     #getUserScore() {
-        this.#app.get("/activity/:userId/score", async (req, res) => {
+        this.#app.get("/activity/score/:userId", async (req, res) => {
             try {
                 let totalScore = 0;
 

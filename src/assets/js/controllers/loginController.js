@@ -40,14 +40,16 @@ export class LoginController extends Controller{
         event.preventDefault();
 
         //get the input field elements from the view and retrieve the value
-        const username = this.#loginView.querySelector("#exampleInputUsername").value;
-        const password = this.#loginView.querySelector("#exampleInputPassword").value;
+        const email = this.#loginView.querySelector("#inputEmail").value;
+        const password = this.#loginView.querySelector("#inputPassword").value;
 
         try{
-            const user = await this.#usersRepository.login(username, password);
-
+            const user = await this.#usersRepository.login(email, password);
             //let the session manager know we are logged in by setting the username, never set the password in localstorage
-            App.sessionManager.set("username", user.username);
+            App.sessionManager.set("firstname", user.firstname);
+            App.sessionManager.set("role", user.role)
+            App.sessionManager.set("user_id", user.user_id);
+
             App.loadController(App.CONTROLLER_WELCOME);
         } catch(error) {
             //if unauthorized error code, show error message to the user

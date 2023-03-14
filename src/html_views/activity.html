@@ -2,14 +2,59 @@
   <div class="row justify-content-md-center">
     <section class="col text-center gx-2">
       <h1 class="mt-4">Welkom <span class="name"></span>, bij de activiteiten pagina van groep 2</h1>
+
       <code class="total-activity-score"></code>
-      <div class="card mx-auto" style="width: 18rem; margin: 1.5rem;">
-        <div class="card-body">
-          <h5 class="card-title activity-title"></h5>
-          <p class="card-text activity-description"></p>
-          <a href="#" class="btn btn-primary">Klaar</a>
+
+        <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+
+            <div class="carousel-indicators" style="top: 100%">
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2" aria-current="true" class="active"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+
+                <div class="carousel-item" data-bs-interval="false">
+                    <div class="card mx-auto" style="width: 18rem; margin: 1.5rem;">
+                        <div class="card-body">
+                            <h5 class="card-title prev-activity-title"></h5>
+                            <p class="card-text activity-description"></p>
+                            <a href="#" class="btn btn-primary">Klaar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item active" data-bs-interval="false">
+                    <div class="card mx-auto" style="width: 18rem; margin: 1.5rem;">
+                        <div class="card-body">
+                            <h5 class="card-title current-activity-title"></h5>
+                            <p class="card-text activity-description"></p>
+                            <a href="#" class="btn btn-primary">Klaar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-bs-interval="false">
+                    <div class="card mx-auto" style="width: 18rem; margin: 1.5rem;">
+                        <div class="card-body">
+                            <h5 class="card-title next-activity-title"></h5>
+                            <p class="card-text activity-description"></p>
+                            <a href="#" class="btn btn-primary">Klaar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-      </div>
     </section>
   </div>
 </div>
