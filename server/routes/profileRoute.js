@@ -34,13 +34,6 @@ class profileRoutes {
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
                     // Values individually saved
-                    this.#firstname = {"firstname": data[0].firstname}
-                    this.#surname = {"surname": data[0].surname}
-                    this.#date_of_birth = {"date_of_birth": data[0].date_of_birth}
-                    this.#emailAdress = {"emailAdress": data[0].emailAdress}
-                    this.#weight = {"weight": data[0].weight}
-                    this.#height = {"height": data[0].height}
-                    console.log(this.firstname)
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
                 } else {
                     //wrong username
@@ -50,30 +43,6 @@ class profileRoutes {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
-    }
-
-    get firstname() {
-        return this.#firstname.firstname;
-    }
-
-    get surname() {
-        return this.#surname.surname;
-    }
-
-    get date_of_birth() {
-        return this.#date_of_birth.date_of_birth;
-    }
-
-    get emailAdress() {
-        return this.#emailAdress.emailAdress;
-    }
-
-    get weight() {
-        return this.#weight.weight;
-    }
-
-    get height() {
-        return this.#height.height;
     }
 }
 
