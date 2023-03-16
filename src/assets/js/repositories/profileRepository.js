@@ -1,7 +1,7 @@
 import {NetworkManager} from "../framework/utils/networkManager.js";
 
 
-export class RoomsExampleRepository {
+export class profileRepository {
     //# is a private field in Javascript
     #route
     #networkManager
