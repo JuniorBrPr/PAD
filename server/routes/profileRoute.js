@@ -29,8 +29,7 @@ class profileRoutes {
         this.#app.get("/profile", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT firstname, surname, date_of_birth, emailAdress, weight, height FROM user WHERE id = ?",
-                    values: [userId]
+                    query: "SELECT firstname, surname, date_of_birth, emailAdress, weight, height FROM user WHERE id = 1"
                 });
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
@@ -41,6 +40,7 @@ class profileRoutes {
                     this.#emailAdress = {"emailAdress": data[0].emailAdress}
                     this.#weight = {"weight": data[0].weight}
                     this.#height = {"height": data[0].height}
+                    console.log(this.firstname)
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
                 } else {
                     //wrong username
@@ -53,27 +53,27 @@ class profileRoutes {
     }
 
     get firstname() {
-        return this.#firstname;
+        return this.#firstname.firstname;
     }
 
     get surname() {
-        return this.#surname;
+        return this.#surname.surname;
     }
 
     get date_of_birth() {
-        return this.#date_of_birth;
+        return this.#date_of_birth.date_of_birth;
     }
 
     get emailAdress() {
-        return this.#emailAdress;
+        return this.#emailAdress.emailAdress;
     }
 
     get weight() {
-        return this.#weight;
+        return this.#weight.weight;
     }
 
     get height() {
-        return this.#height;
+        return this.#height.height;
     }
 }
 
