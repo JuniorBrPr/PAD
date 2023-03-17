@@ -18,11 +18,10 @@ export class profileController extends Controller {
     }
 
     async #fetchUserData(userId){
-        const fullname = document.getElementById("profileFullName")
         try {
             const data = await this.#profileRepository.getData(userId);
             console.log(data[0])
-            fullname.innerHTML = data.data[0].firstname + " " + data.data[0].surname
+            document.getElementById("profileFullName").innerHTML = data.data[0].firstname + " " + data.data[0].surname
             document.getElementById("profileEmail").innerHTML = data.data[0].emailAdress
             document.getElementById("profileAge").innerHTML = this.#calculateAge(data.data[0].date_of_birth) + " Jaar"
             document.getElementById("profileHeight").innerHTML = data.data[0].height + " CM"
