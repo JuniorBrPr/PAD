@@ -11,7 +11,7 @@ export class editProfileRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async getData(userId) {
+    async sendData(userId) {
         return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "POST", userId);
     }
 }

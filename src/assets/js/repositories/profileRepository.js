@@ -11,7 +11,7 @@ export class profileRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async sendData(userId) {
+    async getData(userId) {
         return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "GET", userId);
 
     }
