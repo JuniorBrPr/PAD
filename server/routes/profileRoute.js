@@ -25,11 +25,14 @@ class profileRoutes {
         this.#getData()
     }
 
-    #getData(userId) {
-        this.#app.get("/profile", async (req, res) => {
+    #getData() {
+        this.#app.get("/profile/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT firstname, surname, date_of_birth, emailAdress, weight, height FROM user WHERE id = 1"
+                    query: `SELECT firstname, surname, date_of_birth, emailAdress, weight, height
+                            FROM user
+                            WHERE id = ?`,
+                    values: [req.params.userId]
                 });
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
