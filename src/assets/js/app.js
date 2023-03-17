@@ -14,6 +14,7 @@ import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
 import {questionsController} from "./controllers/questionsController.js"
 import {profileController} from "./controllers/profileController.js"
+import {editProfileController} from "./controllers/editProfileController.js"
 
 
 export class App {
@@ -29,6 +30,8 @@ export class App {
     static CONTROLLER_UPLOAD = "upload";
     static CONTROLLER_QUESTION = "questions";
     static CONTROLLER_PROFILE = "profile";
+    static CONTROLLER_EDITPROFILE = "editProfile";
+
 
 
     constructor() {
@@ -86,6 +89,10 @@ export class App {
 
             case App.CONTROLLER_PROFILE:
                 App.isLoggedIn(() => new profileController(), () => new LoginController());
+                break;
+
+            case App.CONTROLLER_EDITPROFILE:
+                App.isLoggedIn(() => new editProfileController(), () => new LoginController());
                 break;
 
             default:

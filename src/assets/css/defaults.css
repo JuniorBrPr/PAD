@@ -29,3 +29,61 @@ footer {
     height: 100px;
     border: white 3px solid;
 }
+
+.container-editProfile{
+    min-height: 100vh;
+    background-color: #eeeeee;
+}
+
+.divForm{
+    border-radius: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.inputFieldEditProfile{
+    display: block;
+    width: 40%;
+    margin: 5%;
+    height: 45px;
+    outline: none;
+    font-size: 16px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border: 2px solid #ccc;
+    border-bottom-width: 3px;
+    transition: all 0.3s ease;
+}
+
+.inputFieldEditProfile:focus{
+    border: 2px solid #008C93;
+    border-bottom-width: 3px;
+
+}
+
+#imagePreview{
+    min-height: 190px;
+    max-height: 190px;
+    min-width: 190px;
+    max-width: 190px;
+    object-fit: cover;
+    object-position: center center;
+    border-radius: 50%;
+    border: 18px solid #008C93;
+}
+
+#choosePhoto {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 30px;
+    background: #008C93;
+    color: white;
+    width: 190px;
+    text-align: center;
+}
+
+#fileUpload{
+    display: none;
+}
+
+

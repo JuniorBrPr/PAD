@@ -11,13 +11,6 @@ class profileRoutes {
     #cryptoHelper = require("../framework/utils/cryptoHelper");
     #app
 
-    #firstname
-    #surname
-    #date_of_birth
-    #emailAdress
-    #weight
-    #height
-
 
     constructor(app) {
         this.#app = app;
