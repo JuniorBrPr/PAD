@@ -15,7 +15,7 @@ class ActivityRoute {
     constructor(app) {
         this.#app = app;
 
-        this.#getUserGoalsById();
+        this.#getUserGoals();
         this.#getUserScore();
         this.#handleGoalCompletion();
     }
@@ -26,16 +26,25 @@ class ActivityRoute {
      * @private
      */
 
-    #getUserGoalsById() {
+    #getUserGoals() {
         this.#app.get("/activity/goals/:userId", async (req, res) => {
             try {
+                //
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT a.activity_name, gt.difficulty " +
-                        "FROM activity a " +
-                        "JOIN goalTemplate gt " +
-                        "ON a.activityId = gt.activityId"
+                    query: `SELECT ug.userId,
+                                   a.activity_name,
+                                   a.activity_description,
+                                   ug.startdate,
+                                   g.difficulty
+                            FROM usergoal ug
+                                     INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId
+                                     INNER JOIN activity a ON g.activityId = a.activityId
+                            WHERE ug.startDate >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+                              AND ug.startDate <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
+                              AND ug.userId = ?
+                            GROUP BY ug.startDate ASC;`,
+                    values: [this.#activityCodes.MIN_DAYS, this.#activityCodes.MAX_DAYS, req.params.userId]
                 });
-
                 //just give all data back as json, could also be empty
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
             } catch (e) {
@@ -96,23 +105,23 @@ class ActivityRoute {
         });
     }
 
-    #handleGoalCompletion() {
-        this.#app.post("/activity/score/:userId/:goalId", async (req, res) => {
-            try {
-
-                const data2 = await this.#databaseHelper.handleQuery({
-                    query: `UPDATE usergoal
-                            SET endDate = ?
-                                WHERE userId = ?;`,
-                    values: [req.params.end_date,req.params.goal_id]
-                });
-
-                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-            } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-            }
-        })
-    }
+    // #handleGoalCompletion() {
+    //     this.#app.post("/activity/goals/:userId", async (req, res) => {
+    //         try {
+    //
+    //             const data2 = await this.#databaseHelper.handleQuery({
+    //                 query: `UPDATE usergoal
+    //                         SET endDate = ?
+    //                         WHERE userId = ?;`,
+    //                 values: [req.params.end_date, req.params.goal_id]
+    //             });
+    //
+    //             res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+    //         } catch (e) {
+    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+    //         }
+    //     })
+    // }
 }
 
 module.exports = ActivityRoute

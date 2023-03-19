@@ -33,10 +33,10 @@ export class activityRepository {
         return await this.#networkManager.doRequest(`${this.#route}/score/${userid}`, "GET");
     }
 
-    async updateGoal(userid, goalid, endDate) {
-        return await this.#networkManager.doRequest(`${this.#route}/goals/${userid}/${goalid}`, "POST",
-            {"goal_id": goalid, "end_date": endDate})
-    }
+    // async updateGoal(userid, goalid, endDate) {
+    //     return await this.#networkManager.doRequest(`${this.#route}/goals/${userid}`, "POST",
+    //         {"goal_id": goalid, "end_date": endDate})
+    // }
 
     async create() {
 

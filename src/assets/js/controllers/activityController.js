@@ -30,7 +30,7 @@ export class ActivityController extends Controller {
         this.#activityView = await super.loadHtmlIntoContent("html_views/activity.html");
 
         //from here we can safely get elements from the view via the right getter
-        this.#activityView.querySelector("span.name").innerHTML = App.sessionManager.get("username");
+        //this.#activityView.querySelector("span.name").innerHTML = App.sessionManager.get("firstname");
 
         //for demonstration a hardcoded activity goal that exists in the database of the back-end
         this.#fetchGoals(App.sessionManager.get("user_id"));
@@ -44,22 +44,50 @@ export class ActivityController extends Controller {
      */
 
     async #fetchGoals(userid) {
-        const activityTitle = this.#activityView.querySelector(".activity-title")
-        const activityDescription = this.#activityView.querySelector(".activity-description")
+
+        //TODO: Getting all of our relevant html elements, i dont like how this looks so mby we change this yes??
+
+        const prevActivityDescription = this.#activityView.querySelector(".prev-activity-description")
+        const prevActivityDate = this.#activityView.querySelector(".prev-activity-date")
+
+        const currentActivityDescription = this.#activityView.querySelector(".current-activity-description")
+        const currentActivityDate = this.#activityView.querySelector(".current-activity-date")
+
+        const nextActivityDescription = this.#activityView.querySelector(".next-activity-description")
+        const nextActivityDate = this.#activityView.querySelector(".next-activity-date")
+
+        const favoriteActivity = await this.#activityView.querySelector(".favorite-activity")
 
         try {
-            //await keyword 'stops' code until data is returned - can only be used in async function
             const goalData = await this.#activityRepository.getGoals(userid);
-            console.log(goalData)
 
-            activityTitle.innerHTML = goalData[1].activity_name
-            activityDescription.innerHTML = goalData[1].difficulty
+            /**
+             * TODO: Validate the dates of every goal and make sure they come in the exact right order for when we
+             *       query more than just today and the adjacent goals.
+             */
 
+            //previous goal data
+            prevActivityDescription.innerHTML = App.ActivityHelper.getDescription(goalData[0].difficulty,
+                goalData[0].activity_name);
+            prevActivityDate.innerHTML = goalData[0].startdate.substring(0, 10);
+
+            //current goal data
+            currentActivityDescription.innerHTML = App.ActivityHelper.getDescription(goalData[1].difficulty,
+                goalData[1].activity_name);
+            currentActivityDate.innerHTML = goalData[1].startdate.substring(0, 10);
+
+            //next goal data
+            nextActivityDescription.innerHTML = App.ActivityHelper.getDescription(goalData[2].difficulty,
+                goalData[2].activity_name);
+            nextActivityDate.innerHTML = goalData[2].startdate.substring(0, 10);
+
+            //favorite activity
+            favoriteActivity.innerHTML = App.ActivityHelper.getFavoriteActivity(goalData);
         } catch (e) {
             console.log("error while fetching goals", e);
 
             //for now just show every error on page, normally not all errors are appropriate for user
-            activityDescription.innerHTML = e;
+            currentActivityDescription.innerHTML = e;
         }
     }
 
@@ -76,6 +104,12 @@ export class ActivityController extends Controller {
             totalActivityScore.innerHTML = e;
         }
     }
+
+    //TODO: Handle goal streak
+
+    //TODO: Handle creation of goals
+
+    //TODO: Handle completion of goals, Repository and Route functions already created but not tested :D
 
     // async #handleCompletion(goal_id, user_id) {
     //     const completedgoal = null;

@@ -8,17 +8,20 @@
  */
 
 import { SessionManager } from "./framework/utils/sessionManager.js"
+import { ActivityHelper } from "./framework/utils/ActivityHelper.js"
 import { LoginController } from "./controllers/loginController.js"
 import { NavbarController }  from "./controllers/navbarController.js"
 import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
 import { ActivityController } from "./controllers/activityController.js";
-import {SurveyController} from "./controllers/surveyController.js";
+import { SurveyController } from "./controllers/surveyController.js";
+
 
 export class App {
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
     static sessionManager = new SessionManager();
+    static ActivityHelper = new ActivityHelper();
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
