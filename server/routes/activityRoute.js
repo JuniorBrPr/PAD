@@ -17,7 +17,7 @@ class ActivityRoute {
 
         this.#getUserGoals();
         this.#getUserScore();
-        this.#handleGoalCompletion();
+        // this.#handleGoalCompletion();
     }
 
     /**
