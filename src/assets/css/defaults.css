@@ -38,7 +38,10 @@ footer {
 .divForm{
     border-radius: 20px;
     margin-top: 10px;
-    margin-bottom: 10px;
+}
+
+.formEditProfile{
+    margin-bottom: 50px;
 }
 
 .inputFieldEditProfileWithLabel{
@@ -62,7 +65,6 @@ footer {
 .inputFieldEditProfile:focus{
     border: 2px solid #008C93;
     border-bottom-width: 3px;
-
 }
 
 #imagePreview{

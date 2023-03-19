@@ -15,12 +15,13 @@ export class profileController extends Controller {
     async #setupView() {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         this.#fetchUserData(1);
+        document.getElementById("buttonWijzig").addEventListener("click", (event) => super.loadHtmlIntoContent("html_views/editProfile.html"));
+
     }
 
     async #fetchUserData(userId){
         try {
             const data = await this.#profileRepository.getData(userId);
-            console.log(data[0])
             document.getElementById("profileFullName").innerHTML = data.data[0].firstname + " " + data.data[0].surname
             document.getElementById("profileEmail").innerHTML = data.data[0].emailAdress
             document.getElementById("profileAge").innerHTML = this.#calculateAge(data.data[0].date_of_birth) + " Jaar"
