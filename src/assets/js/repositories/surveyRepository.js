@@ -9,6 +9,11 @@ export class SurveyRepository {
         this.#networkManager = new NetworkManager();
     }
 
+    async getUnansweredSurveys(userId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}answered/${userId}`, "GET", {});
+    }
+
     async getAll() {
         const data = await this.#networkManager
             .doRequest(`${this.#route}all`, "GET", {});
@@ -16,9 +21,10 @@ export class SurveyRepository {
         return await this.getOptions(data);
     }
 
-    async getNutritionSurvey() {
+    //TODO: implement use of bearer token instead of userId
+    async getNutritionSurvey(userId) {
         const data = await this.#networkManager
-            .doRequest(`${this.#route}nutrition`, "GET", {});
+            .doRequest(`${this.#route}nutrition/${userId}`, "GET", {});
 
         return await this.getOptions(data);
     }
@@ -37,8 +43,9 @@ export class SurveyRepository {
         return data;
     }
 
-    // todo: implement use of bearer token instead of userId
+    //TODO: implement use of bearer token instead of userId
     async putSurveyResult(data, userId) {
+        console.log(data);
         return await this.#networkManager
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
