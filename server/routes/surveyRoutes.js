@@ -1,3 +1,9 @@
+/**
+ *This file contains the routes for the survey. The routes are used to get all questions, get all questions for the
+ *nutrition survey, get the options for a question and put the survey result.
+ *
+ *@author Junior Javier Brito Perez
+ */
 class surveyRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
@@ -10,45 +16,88 @@ class surveyRoutes {
         this.#getNutritionSurvey();
         this.#getQuestionOptions();
         this.#putSurveyResult();
+        this.#getUnansweredSurveys();
     }
 
+    /**
+     * Get the ID's of all surveys that have not been answered by the user.
+     * @private
+     * @returns {Promise<>} - The ID's of the surveys that have not been answered by the user.
+     */
+    #getUnansweredSurveys() {
+        this.#app.get("/survey/answered/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT survey.id AS id
+                            FROM survey
+                                     INNER JOIN question on survey.id = question.surveyId
+                            WHERE question.id NOT IN (SELECT questionId
+                                                      FROM answer
+                                                               JOIN response on response.id = answer.responseId
+                                                      WHERE response.userId = ?)
+                            GROUP BY survey.id;`,
+                    values: [req.params.userId]
+                });
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    /**
+     * Gets all questions from the database. The questions are ordered by the order column.
+     * @private
+     * @returns {Promise<>} - All questions from the database.
+     * */
     #getAllQuestions() {
         this.#app.get("/survey/all", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT question.id           AS id,
-                                   question.questionText AS text,
-                                   questionType.type     AS type,
-                                   question.surveyId     AS surveyId
-                            FROM question
-                                     INNER JOIN questionType ON question.questionTypeId = questionType.id
-                            ORDER BY question.order;`,
+                    query:
+                        `SELECT question.id           AS id,
+                                question.questionText AS text,
+                                questionType.type     AS type,
+                                question.surveyId     AS surveyId
+                         FROM question
+                                  INNER JOIN questionType ON question.questionTypeId = questionType.id
+                         ORDER BY question.order;`,
                     values: []
                 });
-
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-            } catch (e) {
+            } catch
+                (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
-        });
+        })
+        ;
     }
 
+    /**
+     * Gets all questions from the nutrition survey that the use has not answered. The questions are ordered by
+     * the order column.
+     * @private
+     * @returns {Promise<>} - All questions from the nutrition survey that the user has not answered.
+     */
     #getNutritionSurvey() {
-        this.#app.get("/survey/nutrition", async (req, res) => {
+        //TODO: Implement bearer token authentication instead of using the userId in the url.
+        this.#app.get("/survey/nutrition/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
                                    questionType.type     AS type,
                                    question.surveyId     AS surveyId
-
                             FROM question
                                      INNER JOIN questionType ON question.questionTypeId = questionType.id
                             WHERE question.surveyId = 1
+                              AND question.id NOT IN (SELECT questionId
+                                                      FROM answer
+                                                               join response on response.id = answer.responseId
+                                                      WHERE response.userId = ?)
                             ORDER BY question.order;`,
-                    values: []
+                    values: [req.params.userId]
                 });
-
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
@@ -56,6 +105,11 @@ class surveyRoutes {
         });
     }
 
+    /**
+     * Gets all options for a question. The options are ordered by the order column.
+     * @private
+     * @returns {Promise<>} - All options for a question.
+     */
     #getQuestionOptions() {
         this.#app.get("/survey/options/:questionId", async (req, res) => {
             try {
@@ -80,6 +134,29 @@ class surveyRoutes {
         });
     }
 
+    /**
+     * Puts the survey result in the database. The survey result is a JSON object with the following structure:
+     * @private
+     * @example
+     * {
+     *  "surveyId": 1,
+     *  "data": [
+     *      {
+     *      "id": 1,
+     *      "options": [
+     *          {
+     *           "optionId": 1,
+     *           "text": "Option 1"
+     *          },
+     *          {
+     *           "optionId": 2,
+     *           "text": "Option 2"
+     *          }
+     *        ]
+     *      },
+     * }
+     * @returns {Promise<>}
+     */
     #putSurveyResult() {
         this.#app.put("/survey/response/:userId", async (req, res) => {
             try {
@@ -97,9 +174,6 @@ class surveyRoutes {
                 }).then((result) => {
                     if (result[1].length === 0) {
                         throw "No response found";
-                    }
-                    if (result[1].length > 1) {
-                        throw "More than one response found";
                     }
                     return result[1][0].id;
                 })
@@ -125,11 +199,10 @@ class surveyRoutes {
                     }).then((result) => {
                         if (result.length === 0) {
                             throw "No answer found";
-                        } else if (result.length > 1) {
-                            throw "More than one answer found";
                         }
                         return result[0].id;
                     });
+
                     for (const option of question.options) {
                         const openOption = option.optionId != null ? await this.#databaseHelper.handleQuery({
                             query: `SELECT openOption as open
@@ -155,9 +228,16 @@ class surveyRoutes {
                     values: [answersOptions]
                 });
 
-                res.status(this.#errorCodes.HTTP_OK_CODE).json({message: "Survey response saved"});
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                    failure: false,
+                    message: "Vragenlijst antwoorden opgeslagen!"
+                });
             } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({
+                    reason: e,
+                    failure: true,
+                    message: "Er is iets fout gegaan bij het opslaan van de vragenlijst antwoorden."
+                });
             }
         });
     }
