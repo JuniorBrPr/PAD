@@ -12,6 +12,8 @@ import { LoginController } from "./controllers/loginController.js"
 import { NavbarController }  from "./controllers/navbarController.js"
 import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
+import {SurveyController} from "./controllers/surveyController.js";
+import {activityFrequencyController} from "./controllers/activityFrequencyController.js"
 import {questionsController} from "./controllers/questionsController.js"
 import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
@@ -28,6 +30,8 @@ export class App {
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_UPLOAD = "upload";
+    static CONTROLLER_SURVEY = "survey";
+    static CONTROLLER_FREQUENCY = "frequency";
     static CONTROLLER_QUESTION = "questions";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
@@ -75,12 +79,20 @@ export class App {
                 App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_WELCOME:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            // case App.CONTROLLER_WELCOME:
+            //     App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            //     break;
+            //
+            // case App.CONTROLLER_UPLOAD:
+            //     App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            //     break;
+
+            case App.CONTROLLER_SURVEY:
+                App.isLoggedIn(() => new SurveyController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_UPLOAD:
-                App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            case App.CONTROLLER_FREQUENCY:
+                App.isLoggedIn(() => new activityFrequencyController(), () => new LoginController());
                 break;
 
             case App.CONTROLLER_QUESTION:
@@ -152,6 +164,7 @@ export class App {
     /**
      * Sets current controller name in URL of the browser
      * @param name
+     * @param controllerData
      */
     static setCurrentController(name, controllerData) {
         if(App.dontSetCurrentController) {
