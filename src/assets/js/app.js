@@ -84,10 +84,6 @@ export class App {
                 App.isLoggedIn(() => new SurveyController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_FREQUENCY:
-                App.isLoggedIn(() => new activityFrequencyController(), () => new LoginController());
-                break;
-
             case App.CONTROLLER_REGISTER:
                 App.setCurrentController(name);
                 App.isLoggedIn(() => new RegisterController(), new LoginController())
