@@ -12,6 +12,8 @@ import { LoginController } from "./controllers/loginController.js"
 import { NavbarController }  from "./controllers/navbarController.js"
 import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
+import {SurveyController} from "./controllers/surveyController.js";
+import {activityFrequencyController} from "./controllers/activityFrequencyController.js"
 import {RegisterController} from "./controllers/registerController.js";
 
 
@@ -28,6 +30,8 @@ export class App {
     static CONTROLLER_UPLOAD = "upload";
     static CONTROLLER_REGISTER = "register";
 
+    static CONTROLLER_SURVEY = "survey";
+    static CONTROLLER_FREQUENCY = "frequency";
 
     constructor() {
         //Always load the navigation
@@ -70,12 +74,20 @@ export class App {
                 App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_WELCOME:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            // case App.CONTROLLER_WELCOME:
+            //     App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            //     break;
+            //
+            // case App.CONTROLLER_UPLOAD:
+            //     App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            //     break;
+
+            case App.CONTROLLER_SURVEY:
+                App.isLoggedIn(() => new SurveyController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_UPLOAD:
-                App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            case App.CONTROLLER_FREQUENCY:
+                App.isLoggedIn(() => new activityFrequencyController(), () => new LoginController());
                 break;
 
             case App.CONTROLLER_REGISTER:
@@ -139,6 +151,7 @@ export class App {
     /**
      * Sets current controller name in URL of the browser
      * @param name
+     * @param controllerData
      */
     static setCurrentController(name, controllerData) {
         if(App.dontSetCurrentController) {

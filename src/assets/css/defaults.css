@@ -14,3 +14,11 @@ footer {
     padding-left: 0.5rem;
     color: #cbbde2;
 }
+
+.profilesection{
+    background-color: #0dcaf0;
+}
+
+.questionContainer {
+    height: 70vh;
+}
