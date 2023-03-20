@@ -3,6 +3,7 @@
 *.iws
 *.iml
 *.ipr
+*.xml
 /.idea/
 
 node_modules

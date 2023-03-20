@@ -17,12 +17,11 @@ class ActivityRoute {
 
         this.#getUserGoals();
         this.#getUserScore();
-        // this.#handleGoalCompletion();
     }
 
     /**
-     * dummy data example endpoint - goals (activity screen)
-     * get request, data is sent by client via url - req.params
+     * Gets back our user goals with userId.
+     * Gives us the userId, activity name, activity description, start date, end date and the difficulty
      * @private
      */
 
@@ -52,6 +51,11 @@ class ActivityRoute {
             }
         });
     }
+
+    /**
+     * Returns the total score of a given user
+     * @private
+     */
 
     #getUserScore() {
         this.#app.get("/activity/score/:userId", async (req, res) => {
@@ -104,24 +108,6 @@ class ActivityRoute {
             }
         });
     }
-
-    // #handleGoalCompletion() {
-    //     this.#app.post("/activity/goals/:userId", async (req, res) => {
-    //         try {
-    //
-    //             const data2 = await this.#databaseHelper.handleQuery({
-    //                 query: `UPDATE usergoal
-    //                         SET endDate = ?
-    //                         WHERE userId = ?;`,
-    //                 values: [req.params.end_date, req.params.goal_id]
-    //             });
-    //
-    //             res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-    //         } catch (e) {
-    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-    //         }
-    //     })
-    // }
 }
 
 module.exports = ActivityRoute
