@@ -14,6 +14,8 @@ import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
 import {SurveyController} from "./controllers/surveyController.js";
 import {activityFrequencyController} from "./controllers/activityFrequencyController.js"
+import {RegisterController} from "./controllers/registerController.js";
+
 
 export class App {
     //we only need one instance of the sessionManager, thus static use here
@@ -26,6 +28,8 @@ export class App {
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_UPLOAD = "upload";
+    static CONTROLLER_REGISTER = "register";
+
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_FREQUENCY = "frequency";
 
@@ -85,6 +89,10 @@ export class App {
             case App.CONTROLLER_FREQUENCY:
                 App.isLoggedIn(() => new activityFrequencyController(), () => new LoginController());
                 break;
+
+            case App.CONTROLLER_REGISTER:
+                App.setCurrentController(name);
+                App.isLoggedIn(() => new RegisterController(), new LoginController())
 
             default:
                 return false;
