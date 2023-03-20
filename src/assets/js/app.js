@@ -7,11 +7,10 @@
  * @author Lennard Fonteijn & Pim Meijer
  */
 
-import { SessionManager } from "./framework/utils/sessionManager.js"
-import { LoginController } from "./controllers/loginController.js"
-import { NavbarController }  from "./controllers/navbarController.js"
-import { UploadController }  from "./controllers/uploadController.js"
-import { WelcomeController }  from "./controllers/welcomeController.js"
+import {SessionManager} from "./framework/utils/sessionManager.js"
+import {LoginController} from "./controllers/loginController.js"
+import {NavbarController} from "./controllers/navbarController.js"
+import {WelcomeController} from "./controllers/welcomeController.js"
 import {SurveyController} from "./controllers/surveyController.js";
 import {questionsController} from "./controllers/questionsController.js"
 import {profileController} from "./controllers/profileController.js"
@@ -63,7 +62,7 @@ export class App {
         }
 
         //Check for a special controller that shouldn't modify the URL
-        switch(name) {
+        switch (name) {
             case App.CONTROLLER_NAVBAR:
                 new NavbarController();
                 return true;
@@ -75,7 +74,7 @@ export class App {
 
         //Otherwise, load any of the other controllers
         App.setCurrentController(name, controllerData);
-        
+
         switch (name) {
             case App.CONTROLLER_LOGIN:
                 App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
@@ -113,6 +112,11 @@ export class App {
                 App.setCurrentController(name);
                 App.isLoggedIn(() => new RegisterController(), new LoginController())
             break;
+            case App.CONTROLLER_REGISTER:
+                App.setCurrentController(name);
+                App.isLoggedIn(() => new RegisterController(), new LoginController())
+                break;
+
             default:
                 return false;
         }
@@ -143,20 +147,19 @@ export class App {
     static getCurrentController() {
         const fullPath = location.hash.slice(1);
 
-        if(!fullPath) {
+        if (!fullPath) {
             return undefined;
         }
 
         const queryStringIndex = fullPath.indexOf("?");
-        
+
         let path;
         let queryString;
 
-        if(queryStringIndex >= 0) {
+        if (queryStringIndex >= 0) {
             path = fullPath.substring(0, queryStringIndex);
             queryString = Object.fromEntries(new URLSearchParams(fullPath.substring(queryStringIndex + 1)));
-        }
-        else {
+        } else {
             path = fullPath;
             queryString = undefined
         }
@@ -173,15 +176,13 @@ export class App {
      * @param controllerData
      */
     static setCurrentController(name, controllerData) {
-        if(App.dontSetCurrentController) {
+        if (App.dontSetCurrentController) {
             return;
         }
 
-        if(controllerData) {
-            history.pushState(undefined, undefined, `#${name}?${new URLSearchParams(controllerData)}`);    
-        }
-        else
-        {
+        if (controllerData) {
+            history.pushState(undefined, undefined, `#${name}?${new URLSearchParams(controllerData)}`);
+        } else {
             history.pushState(undefined, undefined, `#${name}`);
         }
     }
@@ -210,7 +211,7 @@ export class App {
     }
 }
 
-window.addEventListener("hashchange", function() {
+window.addEventListener("hashchange", function () {
     App.dontSetCurrentController = true;
     App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
     App.dontSetCurrentController = false;
