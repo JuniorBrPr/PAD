@@ -12,6 +12,7 @@ import { LoginController } from "./controllers/loginController.js"
 import { NavbarController }  from "./controllers/navbarController.js"
 import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
+import {SurveyController} from "./controllers/surveyController.js";
 
 export class App {
     //we only need one instance of the sessionManager, thus static use here
@@ -24,6 +25,7 @@ export class App {
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_UPLOAD = "upload";
+    static CONTROLLER_SURVEY = "survey";
 
     constructor() {
         //Always load the navigation
@@ -66,12 +68,16 @@ export class App {
                 App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_WELCOME:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
-                break;
+            // case App.CONTROLLER_WELCOME:
+            //     App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            //     break;
+            //
+            // case App.CONTROLLER_UPLOAD:
+            //     App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            //     break;
 
-            case App.CONTROLLER_UPLOAD:
-                App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            case App.CONTROLLER_SURVEY:
+                App.isLoggedIn(() => new SurveyController(), () => new LoginController());
                 break;
 
             default:
@@ -131,6 +137,7 @@ export class App {
     /**
      * Sets current controller name in URL of the browser
      * @param name
+     * @param controllerData
      */
     static setCurrentController(name, controllerData) {
         if(App.dontSetCurrentController) {
