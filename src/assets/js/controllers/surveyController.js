@@ -192,6 +192,7 @@ export class SurveyController extends Controller {
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
         const alert = questionTabs[this.#currentQuestion].querySelector(".alert");
         let optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
+        let optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll(".formRadioBtn");
         const currentQuestionObj = this.#data[this.#currentQuestion];
         let valid = false;
         let checked = 0;
@@ -243,47 +244,59 @@ export class SurveyController extends Controller {
                 valid = true;
                 break;
             case "frequency":
-                checked = 0;
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labelFrequency = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
+                    if (optionsCurrentQuestionTabRadio[i].checked) {
+                        console.log(labelFrequency[i].innerText);
                         valid = true;
                         break;
-                    } else {
-                        alert.innerText = "Gelieve een antwoord te selecteren.";
                     }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
                 }
                 break;
             case "yesNo":
-                checked = 0;
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labelYesNo = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
+                    if (optionsCurrentQuestionTabRadio[i].checked) {
+                        console.log(labelYesNo[i].innerText);
                         valid = true;
                         break;
-                    } else {
-                        alert.innerText = "Gelieve een antwoord te selecteren.";
                     }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
                 }
                 break;
             case "time":
-                checked = 0;
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labelTime = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
+                    if (optionsCurrentQuestionTabRadio[i].checked) {
+                        console.log(labelTime[i].innerText);
                         valid = true;
                         break;
-                    } else {
-                        alert.innerText = "Gelieve een antwoord te selecteren.";
                     }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
                 }
                 break;
             case "effort":
-                checked = 0;
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labelEffort = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
+                    if (optionsCurrentQuestionTabRadio[i].checked) {
+                        console.log(labelEffort[i].innerText);
                         valid = true;
                         break;
-                    } else {
-                        alert.innerText = "Gelieve een antwoord te selecteren.";
                     }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
                 }
                 break;
             default:
