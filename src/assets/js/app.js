@@ -15,7 +15,7 @@ import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
 import { ActivityController } from "./controllers/activityController.js";
 import { SurveyController } from "./controllers/surveyController.js";
-
+import { activityFrequencyController } from "./controllers/activityFrequencyController.js"
 
 export class App {
     //we only need one instance of the sessionManager, thus static use here
@@ -31,6 +31,7 @@ export class App {
     static CONTROLLER_UPLOAD = "upload";
     static CONTROLLER_ACTIVITY = "activity";
     static CONTROLLER_SURVEY = "survey";
+    static CONTROLLER_FREQUENCY = "frequency";
 
     constructor() {
         //Always load the navigation
@@ -87,6 +88,10 @@ export class App {
 
             case App.CONTROLLER_ACTIVITY:
                 App.isLoggedIn(() => new ActivityController(), () => new LoginController());
+                break;
+                
+            case App.CONTROLLER_FREQUENCY:
+                App.isLoggedIn(() => new activityFrequencyController(), () => new LoginController());
                 break;
 
             default:
