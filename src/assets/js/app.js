@@ -13,10 +13,10 @@ import { NavbarController }  from "./controllers/navbarController.js"
 import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
 import {SurveyController} from "./controllers/surveyController.js";
-import {activityFrequencyController} from "./controllers/activityFrequencyController.js"
 import {questionsController} from "./controllers/questionsController.js"
 import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
+import {RegisterController} from "./controllers/registerController.js";
 
 
 export class App {
@@ -30,6 +30,8 @@ export class App {
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_UPLOAD = "upload";
+    static CONTROLLER_REGISTER = "register";
+
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_FREQUENCY = "frequency";
     static CONTROLLER_QUESTION = "questions";
@@ -107,6 +109,10 @@ export class App {
                 App.isLoggedIn(() => new editProfileController(), () => new LoginController());
                 break;
 
+            case App.CONTROLLER_REGISTER:
+                App.setCurrentController(name);
+                App.isLoggedIn(() => new RegisterController(), new LoginController())
+            break;
             default:
                 return false;
         }
