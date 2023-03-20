@@ -6,10 +6,6 @@ import {Controller} from "./controller.js";
 import {RegisterRepository} from "../repositories/registerRepository.js";
 import {App} from "../app.js";
 
-
-
-
-
 export class RegisterController extends Controller {
     #registerView
     #registerRepository;
@@ -29,7 +25,8 @@ export class RegisterController extends Controller {
 
     }
 
-    async #saveRegister(event){
+
+    async #saveRegister(event) { //async later toevoegen || event tussen () zetten
         event.preventDefault();
 
         const firstName = this.#registerView.querySelector("#inputFirstName").value;
@@ -39,11 +36,13 @@ export class RegisterController extends Controller {
         const confirmPassword = this.#registerView.querySelector("#inputConfirmPassword").value;
 
         const errorBox = this.#registerView.querySelector(".error")
-        if(firstName.length === 0 || lastName.length === 0 || email.length === 0 || password.length === 0 || confirmPassword.length === 0){
+
+        if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || password.length === 0 || confirmPassword.length === 0) {
             errorBox.innerHTML = "U moet eerst uw gegevens invullen";
 
-            return ;
-        }
+            return;
+        } else {
+
             errorBox.innerHTML = "";
             console.log(firstName + lastName + email + password + confirmPassword);
             try {
@@ -51,13 +50,17 @@ export class RegisterController extends Controller {
                 const data = await this.#registerRepository.createRegister(firstName, lastName, email, password, confirmPassword);
                 console.log(data);
 
-                if(data.id){
+                if (data.id) {
                     App.loadController(App.CONTROLLER_WELCOME);
                 }
-            }catch(e){
+            } catch (e) {
                 errorBox.innerHTML = "Er is iets fout gegaan!"
                 console.log(e)
             }
+        }
+
+
+
 
 
     }
