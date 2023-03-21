@@ -12,7 +12,6 @@ import {LoginController} from "./controllers/loginController.js"
 import {NavbarController} from "./controllers/navbarController.js"
 import {WelcomeController} from "./controllers/welcomeController.js"
 import {SurveyController} from "./controllers/surveyController.js";
-import {questionsController} from "./controllers/questionsController.js"
 import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
@@ -33,10 +32,8 @@ export class App {
 
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_FREQUENCY = "frequency";
-    static CONTROLLER_QUESTION = "questions";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
-
 
 
     constructor() {
@@ -92,14 +89,6 @@ export class App {
                 App.isLoggedIn(() => new SurveyController(), () => new LoginController());
                 break;
 
-            case App.CONTROLLER_FREQUENCY:
-                App.isLoggedIn(() => new activityFrequencyController(), () => new LoginController());
-                break;
-
-            case App.CONTROLLER_QUESTION:
-                App.isLoggedIn(() => new questionsController(), () => new LoginController());
-                break;
-
             case App.CONTROLLER_PROFILE:
                 App.isLoggedIn(() => new profileController(), () => new LoginController());
                 break;
@@ -109,12 +98,7 @@ export class App {
                 break;
 
             case App.CONTROLLER_REGISTER:
-                App.setCurrentController(name);
-                App.isLoggedIn(() => new RegisterController(), new LoginController())
-            break;
-            case App.CONTROLLER_REGISTER:
-                App.setCurrentController(name);
-                App.isLoggedIn(() => new RegisterController(), new LoginController())
+                App.isLoggedIn(() => new RegisterController(),() => new LoginController());
                 break;
 
             default:
