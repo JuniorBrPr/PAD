@@ -57,14 +57,22 @@ export class SurveyController extends Controller {
                 }
             }
 
-            //Add event listener to window to prevent user from leaving the page.
+            //TODO: Remove hardcoded userId
             window.addEventListener("beforeunload", async (e) => {
                 if (this.#questionsAnswered !== 0) {
                     e.preventDefault();
-                    const response = await this.#surveyRepository.putSurveyResult(
-                        this.#getSurveyResponseData(false), 1);
-                    alert(response.status === 200 ? "Survey saved." : "Survey not saved.");
-                    window.removeEventListener("beforeunload", () => {});
+                    await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    window.removeEventListener("beforeunload", () => {
+                    });
+                }
+            });
+
+            //TODO: Remove hardcoded userId
+            window.addEventListener("click", async (e) => {
+                if (e.target.classList.contains("nav-link")) {
+                    await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    window.removeEventListener("click", () => {
+                    });
                 }
             });
 
