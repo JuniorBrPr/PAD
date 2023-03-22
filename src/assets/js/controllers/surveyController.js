@@ -434,7 +434,7 @@ export class SurveyController extends Controller {
 
     /**
      * Gets the survey response data.
-     * @param completed {boolean} true if the survey is completed.
+     * @param completed {boolean} true if the user has answered all the questions in the current survey.
      * @returns {{surveyId: number, data: [{id: number, options: [{text: string, open: boolean}] }] }}
      * @private
      */
