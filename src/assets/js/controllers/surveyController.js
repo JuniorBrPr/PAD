@@ -10,6 +10,7 @@ export class SurveyController extends Controller {
     #surveyRepository
     #surveyView
     #currentQuestion
+    #questionsAnswered
     #data
 
     #CONTAINER;
@@ -23,6 +24,7 @@ export class SurveyController extends Controller {
         super();
         this.#surveyRepository = new SurveyRepository();
         this.#currentQuestion = 0;
+        this.#questionsAnswered = 0;
         this.#data = [];
 
         this.#setupView();
@@ -54,6 +56,17 @@ export class SurveyController extends Controller {
                         break;
                 }
             }
+
+            //Add event listener to window to prevent user from leaving the page.
+            window.addEventListener("beforeunload", async (e) => {
+                if (this.#questionsAnswered !== 0) {
+                    e.preventDefault();
+                    const response = await this.#surveyRepository.putSurveyResult(
+                        this.#getSurveyResponseData(false), 1);
+                    alert(response.status === 200 ? "Survey saved." : "Survey not saved.");
+                    window.removeEventListener("beforeunload", () => {});
+                }
+            });
 
             nutritionSurveyBtn.addEventListener("click", () => {
                 this.#fetchNutritionSurvey();
@@ -257,10 +270,12 @@ export class SurveyController extends Controller {
 
         questionTabs[this.#currentQuestion].style.display = "none";
         this.#currentQuestion = this.#currentQuestion + nextTabNumber;
+        this.#questionsAnswered = this.#currentQuestion > this.#questionsAnswered ?
+            this.#currentQuestion : this.#questionsAnswered;
 
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
-            const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(), 1);
+            const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(true), 1);
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
             alert.style.display = "block";
@@ -271,6 +286,7 @@ export class SurveyController extends Controller {
             alert.innerText = response.message;
 
             this.#surveyView.querySelector(".questionContainer").innerHTML = "";
+            this.#questionsAnswered = 0;
             return false;
         }
         this.#showTab(this.#currentQuestion);
@@ -410,14 +426,16 @@ export class SurveyController extends Controller {
 
     /**
      * Gets the survey response data.
-     * @private
+     * @param completed {boolean} true if the survey is completed.
      * @returns {{surveyId: number, data: [{id: number, options: [{text: string, open: boolean}] }] }}
+     * @private
      */
-    #getSurveyResponseData() {
+    #getSurveyResponseData(completed) {
         //TODO: Implement data collection for all types of questions.
         let responseData;
         const surveyData = [];
-        for (let i = 0; i < this.#data.length; i++) {
+        const range = completed ? this.#data.length : this.#questionsAnswered;
+        for (let i = 0; i < range; i++) {
             const question = this.#data[i];
             const questionObj = {
                 id: question.id,

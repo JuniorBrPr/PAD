@@ -2,5 +2,5 @@
 node_modules
 package-lock.json
 .DS_Store
-cypress/support
-cypress/fixtures
+server/cypress/support
+server/cypress/fixtures
