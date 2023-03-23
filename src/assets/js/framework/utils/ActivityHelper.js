@@ -129,7 +129,12 @@ export class ActivityHelper {
                 favorite = activity;
             }
         }
-        return favorite;
+
+        if (favorite != null) {
+            return favorite;
+        } else {
+            return "Geen favoriet"
+        }
     }
 }
 

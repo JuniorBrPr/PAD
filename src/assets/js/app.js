@@ -12,6 +12,8 @@ import {LoginController} from "./controllers/loginController.js"
 import {NavbarController} from "./controllers/navbarController.js"
 import {WelcomeController} from "./controllers/welcomeController.js"
 import {SurveyController} from "./controllers/surveyController.js";
+import {profileController} from "./controllers/profileController.js"
+import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {ActivityHelper} from "./framework/utils/ActivityHelper.js"
 import {ActivityController} from "./controllers/activityController.js";
@@ -30,6 +32,10 @@ export class App {
     static CONTROLLER_REGISTER = "register";
     static CONTROLLER_ACTIVITY = "activity";
     static CONTROLLER_SURVEY = "survey";
+    static CONTROLLER_FREQUENCY = "frequency";
+    static CONTROLLER_PROFILE = "profile";
+    static CONTROLLER_EDITPROFILE = "editProfile";
+
 
     constructor() {
         //Always load the navigation
@@ -84,12 +90,18 @@ export class App {
                 App.isLoggedIn(() => new ActivityController(), () => new LoginController());
                 break;
                 
-
-            case App.CONTROLLER_REGISTER:
-                App.setCurrentController(name);
-                App.isLoggedIn(() => new RegisterController(), new LoginController())
+            case App.CONTROLLER_PROFILE:
+                App.isLoggedIn(() => new profileController(), () => new LoginController());
                 break;
 
+            case App.CONTROLLER_EDITPROFILE:
+                App.isLoggedIn(() => new editProfileController(), () => new LoginController());
+                break;
+                
+            case App.CONTROLLER_REGISTER:
+                App.isLoggedIn(() => new RegisterController(),() => new LoginController());
+            break;
+            
             default:
                 return false;
         }
