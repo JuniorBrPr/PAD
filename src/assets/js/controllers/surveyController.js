@@ -138,6 +138,16 @@ export class SurveyController extends Controller {
                     radioBtnContainer.appendChild(radioBtn);
                 }
                 optionsContainer.appendChild(option);
+            }  else if (question.type === "disabilities") {
+                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
+                const radioBtnContainer = option.querySelector(".radio-button-container");
+                for (let j = 0; j < 4; j++) {
+                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
+                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "niet van toepassing" : j === 1 ? "been gerelateerde problemen"
+                        : j === 2 ? "arm gerelateerde problemen" : j === 3 ? "rug gerelateerde problemen" : String(j);
+                    radioBtnContainer.appendChild(radioBtn);
+                }
+                optionsContainer.appendChild(option);
             }
             container.appendChild(questionTab);
         }
@@ -149,9 +159,6 @@ export class SurveyController extends Controller {
         let percentage = this.#currentQuestion === 0 ? 0 : Math.round((this.#currentQuestion) / x * 100);
         this.#surveyView.querySelector(".progress-bar").style.width = percentage >= 1 ? percentage + "%" : "fit-content";
         this.#surveyView.querySelector(".progress-bar").innerText = percentage + "%";
-        if(percentage > 99){
-            this.#displayQuestions.querySelector(".questionText").innerText = "Bedankt voor het invullen van onze vragenlijst!";
-        }
     }
 
     #showTab(n) {
@@ -291,6 +298,20 @@ export class SurveyController extends Controller {
                 for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
                     if (optionsCurrentQuestionTabRadio[i].checked) {
                         console.log(labelEffort[i].innerText);
+                        valid = true;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
+                }
+                break;
+            case "disabilities":
+                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labelDisabilities = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
+                    if (optionsCurrentQuestionTabRadio[i].checked) {
+                        console.log(labelDisabilities[i].innerText);
                         valid = true;
                         break;
                     }
