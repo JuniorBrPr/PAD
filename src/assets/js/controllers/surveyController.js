@@ -1,8 +1,10 @@
 import {SurveyRepository} from "../repositories/surveyRepository.js";
+import {ActivityFrequencyRepository} from "../repositories/activityFrequencyRepository.js";
 import {Controller} from "./controller.js";
 
 export class SurveyController extends Controller {
     #surveyRepository
+    #surveyActivity
     #surveyView
     #currentQuestion
     #data
@@ -10,6 +12,7 @@ export class SurveyController extends Controller {
     constructor() {
         super();
         this.#surveyRepository = new SurveyRepository();
+        this.#surveyActivity = new ActivityFrequencyRepository();
         this.#currentQuestion = 0;
 
         this.#setupView();
@@ -45,6 +48,13 @@ export class SurveyController extends Controller {
         this.#surveyView.querySelector(".alert").style.display = "none";
     }
 
+    async #fetchFrequencyQuestions() {
+        this.#data = await this.#surveyActivity.getQuestions();
+        this.#displayQuestions();
+        this.#surveyView.querySelector(".survey-form").style.display = "block";
+        this.#loadPercentage();
+    }
+
     async #fetchNutritionSurvey() {
         this.#data = await this.#surveyRepository.getNutritionSurvey();
         this.#displayQuestions();
@@ -59,6 +69,8 @@ export class SurveyController extends Controller {
         const CHECKBOX_FIELD_OPTION = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
         const RADIO_OPTION = this.#surveyView.querySelector("#radio").cloneNode(true);
         const RADIO_BUTTON = this.#surveyView.querySelector("#radioButton").cloneNode(true);
+
+        console.log(this.#data);
 
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
