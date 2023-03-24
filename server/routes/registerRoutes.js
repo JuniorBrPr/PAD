@@ -18,8 +18,8 @@ class RegisterRoutes{
         this.#app.post("/register", async (req, res) => {
             try{
              const data = await this.#databaseHelper.handleQuery({
-                    query: "INSERT INTO registerTest(firstName, lastName, email, password, confirmPassword) VALUES (?, ?, ?, ?, ?)",
-                    values: [req.body.firstName, req.body.lastName, req.body.email, req.body.password, req.body.confirmPassword]
+                    query: "INSERT INTO user(id, firstname, surname, emailAdress, password) VALUES (?, ?, ?, ?, ?)",//id moet aangepast worden in db
+                    values: [50, req.body.firstname, req.body.surname, req.body.emailAdress, req.body.password],
                 });
 
              if(data.insertId){

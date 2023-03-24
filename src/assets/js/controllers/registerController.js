@@ -26,42 +26,53 @@ export class RegisterController extends Controller {
     }
 
 
-    async #saveRegister(event) { //async later toevoegen || event tussen () zetten
+    async #saveRegister(event) {
         event.preventDefault();
 
-        const firstName = this.#registerView.querySelector("#inputFirstName").value;
-        const lastName = this.#registerView.querySelector("#inputLastName").value;
-        const email = this.#registerView.querySelector("#inputEmail").value;
-        const password = this.#registerView.querySelector("#inputPassword").value;
-        const confirmPassword = this.#registerView.querySelector("#inputConfirmPassword").value;
+        let firstname = this.#registerView.querySelector("#inputFirstName").value;
+        let surname = this.#registerView.querySelector("#inputLastName").value;
+        let emailAdress = this.#registerView.querySelector("#inputEmail").value;
+        let password = this.#registerView.querySelector("#inputPassword").value;
+        let confirmPassword = this.#registerView.querySelector("#inputConfirmPassword").value;
+
+        let mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
         const errorBox = this.#registerView.querySelector(".error")
 
-        if (firstName.length === 0 || lastName.length === 0 || email.length === 0 || password.length === 0 || confirmPassword.length === 0) {
+        if (firstname.length === 0 || surname.length === 0 || emailAdress.length === 0 || password.length === 0 || confirmPassword.length === 0) {
             errorBox.innerHTML = "U moet eerst uw gegevens invullen";
-
-            return;
-        } else {
-
-            errorBox.innerHTML = "";
-            console.log(firstName + lastName + email + password + confirmPassword);
-            try {
-                errorBox.innerHTML = "";
-                const data = await this.#registerRepository.createRegister(firstName, lastName, email, password, confirmPassword);
-                console.log(data);
-
-                if (data.id) {
-                    App.loadController(App.CONTROLLER_WELCOME);
-                }
-            } catch (e) {
-                errorBox.innerHTML = "Er is iets fout gegaan!"
-                console.log(e)
-            }
+        } else if (mailFormat.test(emailAdress) == false ) {
+            errorBox.innerHTML = "Email klopt niet"
+        } else if (password !== confirmPassword) {
+           errorBox.innerHTML = "wachtwoorden matchen niet!";
+        }
+        else {
+           window.alert("U hebt succesvol geregistreerd, u wordt zo omgeleid naar de vragenlijst");
         }
 
 
-
+        // else {
+        //     errorBox.innerHTML = "";
+        //     console.log(firstname + surname + emailAdress + password + confirmPassword);
+        //
+        //     try {
+        //         errorBox.innerHTML = "";
+        //         const data = await this.#registerRepository.createRegister(firstname, surname, emailAdress, password);
+        //         console.log(data);
+        //
+        //         if (data.id) {
+        //             App.loadController(App.CONTROLLER_WELCOME);
+        //         }
+        //     } catch (e) {
+        //         errorBox.innerHTML = "Er is iets fout gegaan!"
+        //         console.log(e)
+        //     }
+        // }
 
 
     }
+
+
+
+
 }
