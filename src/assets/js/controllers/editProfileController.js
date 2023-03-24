@@ -32,7 +32,8 @@ export class editProfileController extends Controller {
             await this.#checkWeightOrHeightSyntax(weight) &&
             await this.#calculateMinBirthDay(age) &&
             await this.#checkWeightValue(weight) &&
-            await this.#checkHeightValue(height)
+            await this.#checkHeightValue(height) &&
+            await this.#checkEmailValue(email)
         ) {
             if (confirm("Weet je zeker dat je je wijzigingen wilt opslaan?")) {
                 await this.#sendData(firstname, surname, email, height, weight, age, 1)
@@ -85,6 +86,17 @@ export class editProfileController extends Controller {
             return false;
         }
     }
+
+    async #checkEmailValue(email){
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+        if (emailRegex.test(email)) {
+            return true;
+        } else {
+            alert("Email is incorrect, juiste manier: Voorbeeld@domein.com");
+            return false;
+        }
+    }
+
 
     #correctWeightOrHeight(inputValue){
         let inputValueWithDot = inputValue.replace(',', '.');
