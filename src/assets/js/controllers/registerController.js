@@ -38,36 +38,41 @@ export class RegisterController extends Controller {
         let mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
         const errorBox = this.#registerView.querySelector(".error")
+        const validBox = this.#registerView.querySelector(".valid-feedback");
+        const invalidBox = this.#registerView.querySelector(".invalid-feedback");
 
         if (firstname.length === 0 || surname.length === 0 || emailAdress.length === 0 || password.length === 0 || confirmPassword.length === 0) {
-            errorBox.innerHTML = "U moet eerst uw gegevens invullen";
+            invalidBox.innerHTML = "Vul dit veld in!";
+           errorBox.innerHTML = "U moet eerst uw gegevens invullen";
         } else if (mailFormat.test(emailAdress) == false ) {
-            errorBox.innerHTML = "Email klopt niet"
+           errorBox.innerHTML = "Email klopt niet"
+
         } else if (password !== confirmPassword) {
-           errorBox.innerHTML = "wachtwoorden matchen niet!";
+          errorBox.innerHTML = "wachtwoorden komen niet overeen!";
+          // invalidBox.innerHTML = "wachtwoorden komen niet overeen!";
         }
         else {
            window.alert("U hebt succesvol geregistreerd, u wordt zo omgeleid naar de vragenlijst");
-        }
+                    console.log(firstname + surname + emailAdress + password + confirmPassword);
+
+                    try {
+                        errorBox.innerHTML = "";
+                        const data = await this.#registerRepository.createRegister(firstname, surname, emailAdress, password);
+                        console.log(data);
+
+                        if (data.id) {
+                            App.loadController(App.CONTROLLER_WELCOME);
+                        }
+                    } catch (e) {
+                        errorBox.innerHTML = "Er is iets fout gegaan!"
+                        console.log(e)
+                    }
+            App.loadController(App.CONTROLLER_SURVEY);
+                }
 
 
-        // else {
-        //     errorBox.innerHTML = "";
-        //     console.log(firstname + surname + emailAdress + password + confirmPassword);
-        //
-        //     try {
-        //         errorBox.innerHTML = "";
-        //         const data = await this.#registerRepository.createRegister(firstname, surname, emailAdress, password);
-        //         console.log(data);
-        //
-        //         if (data.id) {
-        //             App.loadController(App.CONTROLLER_WELCOME);
-        //         }
-        //     } catch (e) {
-        //         errorBox.innerHTML = "Er is iets fout gegaan!"
-        //         console.log(e)
-        //     }
-        // }
+
+
 
 
     }
