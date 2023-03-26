@@ -17,6 +17,7 @@ class RegisterRoutes{
     #createRegister(){
         this.#app.post("/register", async (req, res) => {
             try{
+
              const data = await this.#databaseHelper.handleQuery({
                     query: "INSERT INTO registerTest(firstName, lastName, email, password, confirmPassword) VALUES (?, ?, ?, ?, ?)",
                     values: [req.body.firstName, req.body.lastName, req.body.email, req.body.password, req.body.confirmPassword]
