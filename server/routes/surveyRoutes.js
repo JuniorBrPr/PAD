@@ -93,7 +93,7 @@ class surveyRoutes {
                             WHERE question.surveyId = 1
                               AND question.id NOT IN (SELECT questionId
                                                       FROM answer
-                                                               join response on response.id = answer.responseId
+                                                               INNER JOIN response ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             ORDER BY question.order;`,
                     values: [req.params.userId]

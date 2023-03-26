@@ -15,6 +15,11 @@ footer {
     color: #cbbde2;
 }
 
+.questionContainer {
+    min-height: min-content;
+    height: 60vh;
+}
+
 .profilesection{
     background-color: #008C93;
 }

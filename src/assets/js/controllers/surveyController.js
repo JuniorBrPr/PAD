@@ -123,7 +123,18 @@ export class SurveyController extends Controller {
      */
     async #fetchNutritionSurvey() {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
-        this.#data = await this.#surveyRepository.getNutritionSurvey(1);
+        // TODO: Remove filter, just for testing purposes.
+        this.#data = await this.#surveyRepository.getNutritionSurvey(1)
+        //     .then((data) => {
+        //     let arr = [];
+        //     for (let i = 0; i < data.length; i++) {
+        //         if (data[i].type === "weeklyPortions") {
+        //             arr.push(data[i]);
+        //         }
+        //     }
+        //     return arr;
+        // });
+
         this.#displayQuestions();
         this.#surveyView.querySelector(".survey-form").style.display = "block";
         this.#loadPercentage();
@@ -138,7 +149,8 @@ export class SurveyController extends Controller {
             const question = this.#data[i];
             const questionTab = this.#QUESTION_TEMPLATE.content.querySelector(".questionTab").cloneNode(true);
             questionTab.style.display = "none";
-            questionTab.querySelector(".questionText").innerText = question.text;
+            questionTab.querySelector(".questionText").innerText =
+                `(${i + 1}/${this.#data.length}) ${question.text}`;
             questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
 
@@ -158,44 +170,60 @@ export class SurveyController extends Controller {
                     case "yesNo":
                     case "time":
                     case "effort":
-                        const option = this.#RADIO_OPTION.content.querySelector(".option").cloneNode(true);
+                        const option = this.#RADIO_OPTION.content.querySelector(".option")
+                            .cloneNode(true);
                         const radioBtnContainer = option.querySelector(".radio-button-container");
                         switch (question.type) {
                             case "frequency":
                             case "numberScale":
                                 for (let j = 0; j < 8; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
                                 break;
                             case "portion":
                                 for (let j = 1; j <= 8; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
                                     radioBtn.querySelector(".form-check-label").innerText = String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
                                 break;
                             case "yesNo":
                                 for (let j = 0; j < 2; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Ja" : j === 1 ? "Niet van toepassing" : String(j);
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Ja" : j === 1 ?
+                                            "Niet van toepassing" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
                                 break;
                             case "time":
                                 for (let j = 0; j < 5; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "0 minuten" : j === 1 ? "15 minuten" : j === 2 ? "30 minuten"
-                                        : j === 3 ? "45 minuten" : j === 4 ? "60+ minuten" : String(j);
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "0 minuten" : j === 1 ?
+                                            "15 minuten" : j === 2 ?
+                                                "30 minuten" : j === 3 ?
+                                                    "45 minuten" : j === 4 ?
+                                                        "60+ minuten" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
                                 break;
                             case "effort":
                                 for (let j = 0; j < 3; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "licht inspannend" : j === 1 ? "matig inspannend"
-                                        : j === 2 ? "zwaar inspannend" : String(j);
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "licht inspannend" : j === 1 ?
+                                            "matig inspannend" : j === 2 ?
+                                                "zwaar inspannend" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
                                 break;
@@ -220,9 +248,6 @@ export class SurveyController extends Controller {
         this.#surveyView.querySelector(".progress-bar").style.width = percentage >= 1 ?
             percentage + "%" : "fit-content";
         this.#surveyView.querySelector(".progress-bar").innerText = percentage + "%";
-        if (percentage > 99) {
-            this.#displayQuestions.querySelector(".questionText").innerText = "Bedankt voor het invullen van onze vragenlijst!";
-        }
     }
 
     /**
@@ -427,6 +452,7 @@ export class SurveyController extends Controller {
         let responseData;
         const surveyData = [];
         const range = completed ? this.#data.length : this.#questionsAnswered;
+
         for (let i = 0; i < range; i++) {
             const question = this.#data[i];
             const questionObj = {
@@ -439,7 +465,6 @@ export class SurveyController extends Controller {
             for (let j = 0; j < options.length; j++) {
                 if (options[j].querySelector("input").checked) {
                     const option = options[j];
-
                     let text;
                     let open = false;
                     if (question.hasOwnProperty("options")) {
