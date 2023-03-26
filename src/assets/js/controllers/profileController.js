@@ -16,7 +16,7 @@ export class profileController extends Controller {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => super.loadHtmlIntoContent("html_views/editProfile.html"));
-
+        this.#setProfileImage()
     }
 
     async #fetchUserData(userId){
@@ -43,5 +43,10 @@ export class profileController extends Controller {
         return age;
     }
 
+    async #setProfileImage() {
+        const url = localStorage.getItem("profile-image")
+        const img = document.getElementById("profileImage")
+        img.src = url;
+    }
 }
 

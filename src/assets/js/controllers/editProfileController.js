@@ -16,7 +16,7 @@ export class editProfileController extends Controller {
     async #setupView() {
         this.#createProfileEditView = await super.loadHtmlIntoContent("html_views/editProfile.html")
         document.getElementById("saveProfileBtn").addEventListener("click", (event) => this.#validateForm());
-        document.getElementById("InputProfileImage").addEventListener("change", () => this.#getProfileImage())
+        document.getElementById("InputProfileImage").addEventListener("change", () => this.#setProfileImage())
     }
 
     async #validateForm() {
@@ -26,7 +26,6 @@ export class editProfileController extends Controller {
         let height = this.#correctWeightOrHeight(document.getElementById("InputHeight").value)
         let weight = this.#correctWeightOrHeight(document.getElementById("InputWeight").value)
         let age = document.getElementById("InputAge").value
-        // const profileImageURL = await this.#getProfileImage()
         if (
             await this.#checkWeightOrHeightSyntax(height) &&
             await this.#checkWeightOrHeightSyntax(weight) &&
@@ -36,8 +35,9 @@ export class editProfileController extends Controller {
             await this.#checkEmailValue(email)
         ) {
             if (confirm("Weet je zeker dat je je wijzigingen wilt opslaan?")) {
+                await this.#saveProfileImage()
                 await this.#sendData(firstname, surname, email, height, weight, age, 1)
-                // location.reload();
+                location.reload();
             }
         } else {
             console.log("Input values are not all correct")
@@ -82,7 +82,7 @@ export class editProfileController extends Controller {
         if(height < 246 && height > 54){
             return true;
         } else {
-            alert("Lengte moet tussen 25 en 246 cm zijn");
+            alert("Lengte moet tussen 54 en 246 cm zijn");
             return false;
         }
     }
@@ -103,20 +103,24 @@ export class editProfileController extends Controller {
         return inputValueWithDot
     }
 
-    async #getProfileImage() {
+    async #setProfileImage() {
         let profileImage = document.getElementById("InputProfileImage")
         const reader = new FileReader();
         reader.addEventListener("load", () => {
-            localStorage.setItem("recent-image", reader.result);
-            const recentImageDataUrl = localStorage.getItem("recent-image")
-            console.log(recentImageDataUrl)
-            document.getElementById("imagePreview").setAttribute("src", recentImageDataUrl);
+            document.getElementById("imagePreview").setAttribute("src", reader.result);
         })
-        reader.readAsDataURL(profileImage.files[0])
-        const binaryData = atob((localStorage.getItem("recent-image")).split(',')[1]);
-        const file = new File([binaryData], "image.png", {type: "image/png"});
-        console.log(file)
-        return file;
+        reader.readAsDataURL(profileImage.files[0]);
+    }
+
+    async #saveProfileImage() {
+        let profileImage = document.getElementById("InputProfileImage")
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            localStorage.setItem("profile-image", reader.result);
+            console.log(localStorage.getItem("profile-image"))
+            document.getElementById("imagePreview").setAttribute("src", localStorage.getItem("profile-image"));
+        })
+        reader.readAsDataURL(profileImage.files[0]);
     }
 
     async #sendData(firstname, surname, email, height, weight, age, userId) {
