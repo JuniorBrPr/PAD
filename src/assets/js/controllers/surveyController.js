@@ -1,4 +1,5 @@
 import {SurveyRepository} from "../repositories/surveyRepository.js";
+import {ActivityFrequencyRepository} from "../repositories/activityFrequencyRepository.js";
 import {Controller} from "./controller.js";
 
 /**
@@ -8,6 +9,7 @@ import {Controller} from "./controller.js";
  */
 export class SurveyController extends Controller {
     #surveyRepository
+    #frequencyRepository
     #surveyView
     #currentQuestion
     #questionsAnswered
@@ -23,6 +25,7 @@ export class SurveyController extends Controller {
     constructor() {
         super();
         this.#surveyRepository = new SurveyRepository();
+        this.#frequencyRepository = new ActivityFrequencyRepository();
         this.#currentQuestion = 0;
         this.#questionsAnswered = 0;
         this.#data = [];
@@ -62,6 +65,7 @@ export class SurveyController extends Controller {
                 if (this.#questionsAnswered !== 0) {
                     e.preventDefault();
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
                     window.removeEventListener("beforeunload", () => {
                     });
                 }
@@ -71,6 +75,8 @@ export class SurveyController extends Controller {
             window.addEventListener("click", async (e) => {
                 if (e.target.classList.contains("nav-link")) {
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
+
                     window.removeEventListener("click", () => {
                     });
                 }
@@ -86,7 +92,7 @@ export class SurveyController extends Controller {
                     this.#fetchFrequencyQuestions();
                     this.#surveyView.querySelector(".survey-welcome").style.display = "none";
                 });
-
+            
             this.#surveyView.querySelector(".next").addEventListener("click", () => {
                 this.#nextPrev(1);
                 this.#loadPercentage();
@@ -108,10 +114,6 @@ export class SurveyController extends Controller {
         }
     }
 
-    async #fetchFrequencyQuestions() {
-        return await this.#surveyRepository.getFrequencyQuestions();
-    }
-
     async #fetchUnansweredSurveys() {
         //TODO: Replace hardcoded id with actual id or remove id parameter.
         return await this.#surveyRepository.getUnansweredSurveys(1);
@@ -124,6 +126,13 @@ export class SurveyController extends Controller {
     async #fetchNutritionSurvey() {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
         this.#data = await this.#surveyRepository.getNutritionSurvey(1);
+        this.#displayQuestions();
+        this.#surveyView.querySelector(".survey-form").style.display = "block";
+        this.#loadPercentage();
+    }
+
+    async #fetchFrequencyQuestions() {
+        this.#data = await this.#frequencyRepository.getQuestions(2);
         this.#displayQuestions();
         this.#surveyView.querySelector(".survey-form").style.display = "block";
         this.#loadPercentage();
@@ -219,6 +228,16 @@ export class SurveyController extends Controller {
                     radioBtnContainer.appendChild(radioBtn);
                 }
                 optionsContainer.appendChild(option);
+            } else if (question.type === "disabilities") {
+                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
+                const radioBtnContainer = option.querySelector(".radio-button-container");
+                for (let j = 0; j < 4; j++) {
+                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
+                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "niet van toepassing" : j === 1 ? "been gerelateerde problemen"
+                        : j === 2 ? "arm gerelateerde problemen" : j === 3 ? "rug gerelateerde problemen" : String(j);
+                    radioBtnContainer.appendChild(radioBtn);
+                }
+                optionsContainer.appendChild(option);
             }
             this.#CONTAINER.appendChild(questionTab);
         }
@@ -284,6 +303,8 @@ export class SurveyController extends Controller {
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
             const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(true), 1);
+            const frequencyResponse = await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(true), 2);
+
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
             alert.style.display = "block";
@@ -419,6 +440,20 @@ export class SurveyController extends Controller {
                     alert.innerText = "Gelieve een antwoord te selecteren.";
                 }
                 break;
+            case "disabilities":
+                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
+                const labelDisabilities = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
+                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
+                    if (optionsCurrentQuestionTabRadio[i].checked) {
+                        console.log(labelDisabilities[i].innerText);
+                        valid = true;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    alert.innerText = "Gelieve een antwoord te selecteren.";
+                }
+                break;
             default:
                 valid = false;
                 break;
@@ -463,6 +498,17 @@ export class SurveyController extends Controller {
                         text = question.options[j].text + (open ?
                             " " + option.querySelector(".input-field").value : "");
                     } else if (question.type === "numberScale") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "frequency") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "yesNo") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "time") {
+                        text = option.querySelector(".optionText").innerText;
+                    }  else if (question.type === "effort") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "disabilities") {
+                        console.log(option.querySelector(".option-text").innerText);
                         text = option.querySelector(".optionText").innerText;
                     }
 
