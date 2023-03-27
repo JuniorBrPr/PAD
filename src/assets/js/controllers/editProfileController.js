@@ -6,6 +6,7 @@ export class editProfileController extends Controller {
     #createProfileEditView
     #editProfileRepository
     #data
+
     constructor() {
         super();
         this.#editProfileRepository = new editProfileRepository()
@@ -15,41 +16,35 @@ export class editProfileController extends Controller {
     async #setupView() {
         this.#createProfileEditView = await super.loadHtmlIntoContent("html_views/editProfile.html")
         document.getElementById("saveProfileBtn").addEventListener("click", (event) => this.#validateForm());
+        document.getElementById("InputProfileImage").addEventListener("change", () => this.#setProfileImage())
     }
 
-    async #sendData(userId) {
-        const firstname = document.getElementById("InputFirstname").value
-        const surname = document.getElementById("InputSurname").value
-        const email = document.getElementById("InputEmail").value
-        const weight = document.getElementById("InputWeight").value
-        const height = document.getElementById("InputHeight").value
-        const age = document.getElementById("InputAge").value
-
-        try {
-            const data = await this.#editProfileRepository.sendData(firstname,surname,email,weight,height,age, userId)
-        } catch (e){
-            console.log("Er is iets fout gegaan", e)
-        }
-    }
-
-    async #validateForm(){
-        if(
-        await this.#checkWeightOrHeight(document.getElementById("InputWeight").value) &&
-        await this.#checkWeightOrHeight(document.getElementById("InputHeight").value) &&
-        await this.#calculateMinBirthDay(document.getElementById("InputAge").value)
-    ){
+    async #validateForm() {
+        let firstname = document.getElementById("InputFirstname").value
+        let surname = document.getElementById("InputSurname").value
+        let email = document.getElementById("InputEmail").value
+        let height = this.#correctWeightOrHeight(document.getElementById("InputHeight").value)
+        let weight = this.#correctWeightOrHeight(document.getElementById("InputWeight").value)
+        let age = document.getElementById("InputAge").value
+        if (
+            await this.#checkWeightOrHeightSyntax(height) &&
+            await this.#checkWeightOrHeightSyntax(weight) &&
+            await this.#calculateMinBirthDay(age) &&
+            await this.#checkWeightValue(weight) &&
+            await this.#checkHeightValue(height) &&
+            await this.#checkEmailValue(email)
+        ) {
             if (confirm("Weet je zeker dat je je wijzigingen wilt opslaan?")) {
-                await this.#sendData(1)
-                // location.reload();
+                await this.#saveProfileImage()
+                await this.#sendData(firstname, surname, email, height, weight, age, 1)
+                location.reload();
             }
-
-        } else{
-            console.log("NO GOOD")
+        } else {
+            console.log("Input values are not all correct")
         }
-
     }
 
-    async #calculateMinBirthDay(inputDate){
+    async #calculateMinBirthDay(inputDate) {
         let today = new Date();
         let dob = new Date(inputDate)
         let ageDiff = today.getTime() - dob.getTime();
@@ -57,24 +52,82 @@ export class editProfileController extends Controller {
         let age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
         if (age < 18 || age > 100) {
-            alert("You must be between 18 and 100 years old to use this service.");
+            alert("Om deze website te gebruiken moet uw leeftijd moet tussen 18 en 100 liggen.");
             return false;
         }
         return true;
     }
 
-    async #checkWeightOrHeight(inputValue) {
-        // Replace comma with dot
-        let inputValueWithDot = inputValue.replace(",", ".");
-
+    async #checkWeightOrHeightSyntax(inputValue) {
         // Check if the input is a valid floating-point number with a dot separator
         let regex = /^-?\d+(\.\d)?$/;
-        if (regex.test(inputValueWithDot)) {
+        if (regex.test(inputValue)) {
             return true;
         } else {
-            alert("You must enter a weight and height rounded by max 1 digit with a dot separator.");
-            console.log(inputValue)
+            alert("Gewicht en lengte moeten op 1 decimaal afgerond worden");
             return false;
+        }
+    }
+
+    async #checkWeightValue(weight){
+        if(weight < 635 && weight > 25){
+            return true;
+        } else {
+            alert("Gewicht moet tussen 25 en 635 kilo zijn");
+            return false;
+        }
+    }
+
+    async #checkHeightValue(height){
+        if(height < 246 && height > 54){
+            return true;
+        } else {
+            alert("Lengte moet tussen 54 en 246 cm zijn");
+            return false;
+        }
+    }
+
+    async #checkEmailValue(email){
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+        if (emailRegex.test(email)) {
+            return true;
+        } else {
+            alert("Email is incorrect, juiste manier: Voorbeeld@domein.com");
+            return false;
+        }
+    }
+
+
+    #correctWeightOrHeight(inputValue){
+        let inputValueWithDot = inputValue.replace(',', '.');
+        return inputValueWithDot
+    }
+
+    async #setProfileImage() {
+        let profileImage = document.getElementById("InputProfileImage")
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            document.getElementById("imagePreview").setAttribute("src", reader.result);
+        })
+        reader.readAsDataURL(profileImage.files[0]);
+    }
+
+    async #saveProfileImage() {
+        let profileImage = document.getElementById("InputProfileImage")
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            localStorage.setItem("profile-image", reader.result);
+            console.log(localStorage.getItem("profile-image"))
+            document.getElementById("imagePreview").setAttribute("src", localStorage.getItem("profile-image"));
+        })
+        reader.readAsDataURL(profileImage.files[0]);
+    }
+
+    async #sendData(firstname, surname, email, height, weight, age, userId) {
+        try {
+            const data = await this.#editProfileRepository.sendData(firstname, surname, email, weight, height, age, userId)
+        } catch (e) {
+            console.log("Er is iets fout gegaan", e)
         }
     }
 }
