@@ -84,14 +84,32 @@ export class ActivityController extends Controller {
         });
 
         if (selectedDays.length === 0) {
+            // TODO: Display this message!
             console.log("No days selected");
         } else {
             console.log("trying to save selected goals...");
             console.log([App.sessionManager.get("user_id"), templateId, selectedDays, templateValue]);
 
-            await this.#activityRepository.createGoals(
-                App.sessionManager.get("user_id"), templateId, selectedDays, templateValue
-            );
+            let data = [];
+
+            const date = new Date()
+
+            console.log(date.toISOString())
+
+            selectedDays.forEach((day) => {
+                data.push([
+                    null,
+                    App.sessionManager.get("user_id"),
+                    templateId,
+                    date.toISOString().substring(0, 10),
+                    day,
+                    templateValue
+                ]);
+            });
+
+            console.log(data);
+
+            await this.#activityRepository.createGoals(data);
         }
     }
 

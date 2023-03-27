@@ -16,7 +16,6 @@ class ActivityRoute {
         this.#app = app;
 
         this.#getUserGoals();
-        // this.#getUserScore();
         this.#getGoalTemplates();
         this.#createUserGoal();
     }
@@ -24,18 +23,14 @@ class ActivityRoute {
     #createUserGoal() {
         this.#app.put("/activity/create", async (req, res) => {
 
-            console.log(req.body);
+            const data = req.body;
 
             try {
                 const createGoal = await this.#databaseHelper.handleQuery({
 
-                    query: `INSERT INTO usergoal(userId, activityId, dateMade, dayOfTheWeek, value)
-                            values (?,?,CURRENT_DATE,?,?);`,
-                    values: [req.body.userid,
-                        req.body.templateid,
-                        req.body.data,
-                        req.body.value
-                    ]
+                    query: `INSERT INTO usergoal(id,userId, activityId, dateMade, dayOfTheWeek, value)
+                            values ?;`,
+                    values: [data[0]]
                 });
                 res.status(this.#errorCodes.HTTP_OK_CODE);
             } catch (e) {

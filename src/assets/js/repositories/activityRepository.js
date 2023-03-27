@@ -37,9 +37,9 @@ export class activityRepository {
         return await this.#networkManager.doRequest(`${this.#route}/templates`, "GET");
     }
 
-    async createGoals(userid, templateid, data, value) {
+    async createGoals(data) {
         return await this.#networkManager.doRequest(`${this.#route}/create`, "PUT",
-            [userid, data, templateid, value]
+            [data]
         );
     }
 
