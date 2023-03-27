@@ -65,6 +65,7 @@ export class SurveyController extends Controller {
                 if (this.#questionsAnswered !== 0) {
                     e.preventDefault();
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
                     window.removeEventListener("beforeunload", () => {
                     });
                 }
@@ -74,6 +75,8 @@ export class SurveyController extends Controller {
             window.addEventListener("click", async (e) => {
                 if (e.target.classList.contains("nav-link")) {
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
+
                     window.removeEventListener("click", () => {
                     });
                 }
@@ -89,7 +92,7 @@ export class SurveyController extends Controller {
                     this.#fetchFrequencyQuestions();
                     this.#surveyView.querySelector(".survey-welcome").style.display = "none";
                 });
-
+            
             this.#surveyView.querySelector(".next").addEventListener("click", () => {
                 this.#nextPrev(1);
                 this.#loadPercentage();
@@ -111,13 +114,6 @@ export class SurveyController extends Controller {
         }
     }
 
-    async #fetchFrequencyQuestions() {
-        return await this.#frequencyRepository.getQuestions();
-        this.#displayQuestions();
-        this.#surveyView.querySelector(".survey-form").style.display = "block";
-        this.#loadPercentage();
-    }
-
     async #fetchUnansweredSurveys() {
         //TODO: Replace hardcoded id with actual id or remove id parameter.
         return await this.#surveyRepository.getUnansweredSurveys(1);
@@ -130,6 +126,13 @@ export class SurveyController extends Controller {
     async #fetchNutritionSurvey() {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
         this.#data = await this.#surveyRepository.getNutritionSurvey(1);
+        this.#displayQuestions();
+        this.#surveyView.querySelector(".survey-form").style.display = "block";
+        this.#loadPercentage();
+    }
+
+    async #fetchFrequencyQuestions() {
+        this.#data = await this.#frequencyRepository.getQuestions(2);
         this.#displayQuestions();
         this.#surveyView.querySelector(".survey-form").style.display = "block";
         this.#loadPercentage();
@@ -300,6 +303,8 @@ export class SurveyController extends Controller {
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
             const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(true), 1);
+            const frequencyResponse = await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(true), 2);
+
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
             alert.style.display = "block";
@@ -493,6 +498,17 @@ export class SurveyController extends Controller {
                         text = question.options[j].text + (open ?
                             " " + option.querySelector(".input-field").value : "");
                     } else if (question.type === "numberScale") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "frequency") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "yesNo") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "time") {
+                        text = option.querySelector(".optionText").innerText;
+                    }  else if (question.type === "effort") {
+                        text = option.querySelector(".optionText").innerText;
+                    } else if (question.type === "disabilities") {
+                        console.log(option.querySelector(".option-text").innerText);
                         text = option.querySelector(".optionText").innerText;
                     }
 

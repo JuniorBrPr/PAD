@@ -17,7 +17,7 @@ export class ActivityFrequencyRepository {
         return await this.getOptions(data);
     }
 
-    async getQuestions() {
+    async getQuestions(userId) {
         return await this.#networkManager
             .doRequest(`${this.#route}questions`, "GET", {});
     }
@@ -25,5 +25,11 @@ export class ActivityFrequencyRepository {
     async getOptions() {
         return await this.#networkManager
             .doRequest(`${this.#route}answerOptions`, "GET", {});
+    }
+
+    async postSurveyAnswers(data, userId) {
+        console.log(data);
+        return await this.#networkManager
+            .doRequest(`${this.#route}putAnswers/${userId}`, "PUT", {});
     }
 }

@@ -1,12 +1,4 @@
 import {Controller} from "./controller.js";
-<<<<<<< HEAD
-
-export class profileController extends Controller {
-    #createProfileView
-
-    constructor() {
-        super();
-=======
 import {profileRepository} from "../repositories/profileRepository.js";
 
 
@@ -17,15 +9,11 @@ export class profileController extends Controller {
     constructor() {
         super();
         this.#profileRepository = new profileRepository()
->>>>>>> cefd42cd7d11bd82b28e71143bb564c8a8c93b4e
         this.#setupView();
     }
 
     async #setupView() {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
-<<<<<<< HEAD
-    }
-=======
         this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => super.loadHtmlIntoContent("html_views/editProfile.html"));
 
@@ -55,6 +43,5 @@ export class profileController extends Controller {
         return age;
     }
 
->>>>>>> cefd42cd7d11bd82b28e71143bb564c8a8c93b4e
 }
 
