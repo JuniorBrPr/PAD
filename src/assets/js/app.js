@@ -15,6 +15,7 @@ import {SurveyController} from "./controllers/surveyController.js";
 import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
+import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 
 
 export class App {
@@ -29,6 +30,7 @@ export class App {
     static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_UPLOAD = "upload";
     static CONTROLLER_REGISTER = "register";
+    static CONTROLLER_WEEKPLANNING = "weekPlanning";
 
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_FREQUENCY = "frequency";
@@ -99,6 +101,10 @@ export class App {
 
             case App.CONTROLLER_REGISTER:
                 App.isLoggedIn(() => new RegisterController(),() => new LoginController());
+                break;
+
+            case App.CONTROLLER_WEEKPLANNING:
+                App.isLoggedIn(() => new WeekPlanningController(),() => new LoginController());
                 break;
 
             default:
