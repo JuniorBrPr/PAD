@@ -92,7 +92,7 @@ export class SurveyController extends Controller {
                     this.#fetchFrequencyQuestions();
                     this.#surveyView.querySelector(".survey-welcome").style.display = "none";
                 });
-            
+
             this.#surveyView.querySelector(".next").addEventListener("click", () => {
                 this.#nextPrev(1);
                 this.#loadPercentage();
@@ -143,105 +143,151 @@ export class SurveyController extends Controller {
      * @private
      */
     #displayQuestions() {
-        const container = this.#surveyView.querySelector(".questionContainer");
-        const questionTemplate = this.#surveyView.querySelector("#questionTemplate").cloneNode(true);
-        const CHECKBOX_OPTION = this.#surveyView.querySelector("#checkbox").cloneNode(true);
-        const CHECKBOX_FIELD_OPTION = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
-        const RADIO_OPTION = this.#surveyView.querySelector("#radio").cloneNode(true);
-        const RADIO_BUTTON = this.#surveyView.querySelector("#radioButton").cloneNode(true);
-
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
             const questionTab = this.#QUESTION_TEMPLATE.content.querySelector(".questionTab").cloneNode(true);
             questionTab.style.display = "none";
-            questionTab.querySelector(".questionText").innerText = question.text;
+            questionTab.querySelector(".questionText").innerText =
+                `(${i + 1}/${this.#data.length}) ${question.text}`;
             questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
 
-            // @todo: move to separate function, refactor
             if (question.hasOwnProperty("options")) {
                 for (let j = 0; j < question.options.length; j++) {
-                    if (question.options[j].open === 0) {
-                        const option = this.#CHECKBOX_OPTION.content.querySelector(".option").cloneNode(true);
-                        option.querySelector(".optionText").innerText = question.options[j].text;
-                        optionsContainer.appendChild(option);
-                    } else if (question.options[j].open === 1) {
-                        const option = this.#CHECKBOX_FIELD_OPTION.content.querySelector(".option")
+                    const option = question.options[j].open === 0 ?
+                        this.#CHECKBOX_OPTION.content.querySelector(".option").cloneNode(true) :
+                        this.#CHECKBOX_FIELD_OPTION.content.querySelector(".option").cloneNode(true);
+                    option.querySelector(".optionText").innerText = question.options[j].text;
+                    optionsContainer.appendChild(option);
+                }
+            } else if (question.hasOwnProperty("type")) {
+                switch (question.type) {
+                    case "numberScale":
+                    case "portion":
+                    case "frequency":
+                    case "yesNo":
+                    case "time":
+                    case "effort":
+                    case "weeklyPortions":
+                        const option = this.#RADIO_OPTION.content.querySelector(".option")
                             .cloneNode(true);
-                        option.querySelector(".optionText").innerText = question.options[j].text;
-                        optionsContainer.appendChild(option);
-                    }
+                        const radioBtnContainer = option.querySelector(".radio-button-container");
+
+                        switch (question.type) {
+                            case "frequency":
+                            case "numberScale":
+                                for (let j = 0; j < 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "weeklyPortions" :
+                                const daysLbl = document.createElement("h4");
+                                daysLbl.classList.add("text-center");
+                                daysLbl.innerText = "Hoeveel dagen?";
+
+                                const portionsLbl = document.createElement("h4");
+                                portionsLbl.innerText = "Hoeveel porties per dag?";
+                                portionsLbl.classList.add("text-center");
+
+                                for (let j = 0; j < 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
+                                    if (j === 0) {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            portionOption.style.display = "none";
+                                            portionsLbl.style.display = "none";
+                                        });
+                                    } else {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            portionOption.style.display = "block";
+                                            portionsLbl.style.display = "block";
+                                        });
+                                    }
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+
+                                const portionOption = this.#RADIO_OPTION.content.querySelector(".option")
+                                    .cloneNode(true);
+                                const portionBtnContainer = portionOption.querySelector(".radio-button-container");
+
+                                for (let j = 1; j <= 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector("#radioBtn").name = "p";
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 8 ?
+                                        "Meer dan 7" : String(j);
+                                    portionBtnContainer.appendChild(radioBtn);
+                                }
+
+                                portionOption.style.display = "none";
+                                portionsLbl.style.display = "none";
+                                optionsContainer.appendChild(daysLbl);
+                                optionsContainer.appendChild(option);
+                                optionsContainer.appendChild(portionsLbl);
+                                optionsContainer.appendChild(portionOption)
+                                break;
+                            case "portion":
+                                for (let j = 1; j <= 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "yesNo":
+                                for (let j = 0; j < 2; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Ja" : j === 1 ?
+                                            "Niet van toepassing" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "time":
+                                for (let j = 0; j < 5; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "0 minuten" : j === 1 ?
+                                            "15 minuten" : j === 2 ?
+                                                "30 minuten" : j === 3 ?
+                                                    "45 minuten" : j === 4 ?
+                                                        "60+ minuten" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "effort":
+                                for (let j = 0; j < 3; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "licht inspannend" : j === 1 ?
+                                            "matig inspannend" : j === 2 ?
+                                                "zwaar inspannend" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                        }
+                        break;
                 }
-            } else if (question.type === "numberScale") {
-                const option = this.#RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 8; j++) {
-                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "portion") {
-                const option = this.#RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 1; j <= 8; j++) {
-                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "frequency") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 8; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "yesNo") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 2; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Ja" : j === 1 ? "Niet van toepassing" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "time") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 5; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "0 minuten" : j === 1 ? "15 minuten" : j === 2 ? "30 minuten"
-                        : j === 3 ? "45 minuten" : j === 4 ? "60+ minuten" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "effort") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 3; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "licht inspannend" : j === 1 ? "matig inspannend"
-                        : j === 2 ? "zwaar inspannend" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "disabilities") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 4; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "niet van toepassing" : j === 1 ? "been gerelateerde problemen"
-                        : j === 2 ? "arm gerelateerde problemen" : j === 3 ? "rug gerelateerde problemen" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
             }
             this.#CONTAINER.appendChild(questionTab);
         }
-        this.#showTab(this.#currentQuestion);
+        this.#showTab();
     }
 
     /**
@@ -255,9 +301,6 @@ export class SurveyController extends Controller {
         this.#surveyView.querySelector(".progress-bar").style.width = percentage >= 1 ?
             percentage + "%" : "fit-content";
         this.#surveyView.querySelector(".progress-bar").innerText = percentage + "%";
-        if (percentage > 99) {
-            this.#displayQuestions.querySelector(".questionText").innerText = "Bedankt voor het invullen van onze vragenlijst!";
-        }
     }
 
     /**
@@ -318,7 +361,7 @@ export class SurveyController extends Controller {
             this.#questionsAnswered = 0;
             return false;
         }
-        this.#showTab(this.#currentQuestion);
+        this.#showTab();
     }
 
     /**
@@ -478,6 +521,7 @@ export class SurveyController extends Controller {
         let responseData;
         const surveyData = [];
         const range = completed ? this.#data.length : this.#questionsAnswered;
+
         for (let i = 0; i < range; i++) {
             const question = this.#data[i];
             const questionObj = {
@@ -490,7 +534,6 @@ export class SurveyController extends Controller {
             for (let j = 0; j < options.length; j++) {
                 if (options[j].querySelector("input").checked) {
                     const option = options[j];
-
                     let text;
                     let open = false;
                     if (question.hasOwnProperty("options")) {

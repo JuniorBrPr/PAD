@@ -50,5 +50,4 @@ export class SurveyRepository {
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
 
-
 }
