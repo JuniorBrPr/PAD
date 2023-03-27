@@ -16,8 +16,8 @@ footer {
 }
 
 .questionContainer {
-    min-height: min-content;
-    height: 60vh;
+    min-height: fit-content;
+    height: 70vh;
 }
 
 .profilesection{

@@ -43,10 +43,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row d-flex questionContainer">
+                    <div class="row d-flex questionContainer mb-1">
 
                     </div>
-                    <div class="row d-flex">
+                    <div class="row d-flex mt-2">
                         <div class="col d-flex justify-content-center">
                             <button class="prev btn btn-primary flex-fill" type="button">Vorige</button>
                         </div>
@@ -63,7 +63,7 @@
 <template id="questionTemplate">
     <div class="col questionTab">
         <div class="row d-md-flex">
-            <div class="col d-md-flex justify-content-md-center mt-3">
+            <div class="col d-md-flex justify-content-md-center mt-3 mb-4">
                 <h3 class="questionText">Question text</h3>
             </div>
             <div class="alert alert-danger alert-dismissible fade show text-center">
@@ -78,8 +78,8 @@
 </template>
 
 <template id="checkbox">
-    <div class="option row d-md-flex">
-        <div class="col d-md-flex">
+    <div class="option row d-flex">
+        <div class="col d-flex">
             <div class="form-check d-flex align-items-center ">
                 <input id="formCheckBox" class="formCheckBox form-check-input m-3" type="checkbox"/>
                 <label class="optionText form-check-label fs-4" for="formCheckBox">Closed input</label>
@@ -90,7 +90,7 @@
 
 <template id="checkboxWithField">
     <div class="option row">
-        <div class="col d-md-flex">
+        <div class="col d-flex">
             <div class="form-check align-items-center">
                 <input id="formCheckBox1" class="formCheckBox form-check-input d-md-flex m-3" type="checkbox"/>
                 <label class="optionText form-check-label fs-4 d-md-flex" for="formCheckBox1">Open
@@ -98,7 +98,7 @@
             </div>
         </div>
         <div class="col d-flex justify-content-center">
-            <input class="input-field form-control-plaintext" type="text" placeholder="Vul hier je antwoord in"/>
+            <input class="input-field form-control-plaintext border" type="text" placeholder="Vul hier je antwoord in"/>
         </div>
     </div>
 </template>
@@ -113,7 +113,7 @@
 </template>
 
 <template id="radioButton">
-    <div class="formRadioBtn form-check d-flex flex-fill justify-content-center border mx-1 rounded">
+    <div class="formRadioBtn form-check d-flex flex-fill justify-content-center border mx-1 rounded mt-3 mb-1">
         <input id="radioBtn" class="formRadioBtn form-check-input ms-0 me-auto" type="radio" name="portion"/>
         <label class="option-text form-check-label me-auto" for="radioBtn"></label>
     </div>

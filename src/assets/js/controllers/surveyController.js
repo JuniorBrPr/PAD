@@ -125,14 +125,14 @@ export class SurveyController extends Controller {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
         // TODO: Remove filter, just for testing purposes.
         this.#data = await this.#surveyRepository.getNutritionSurvey(1)
-        //     .then((data) => {
-        //     let arr = [];
-        //     for (let i = 0; i < data.length; i++) {
-        //         if (data[i].type === "weeklyPortions") {
-        //             arr.push(data[i]);
-        //         }
-        //     }
-        //     return arr;
+            // .then((data) => {
+            // let arr = [];
+            // for (let i = 0; i < data.length; i++) {
+            //     if (data[i].type === "weeklyPortions") {
+            //         arr.push(data[i]);
+            //     }
+            // }
+            // return arr;
         // });
 
         this.#displayQuestions();
@@ -170,9 +170,11 @@ export class SurveyController extends Controller {
                     case "yesNo":
                     case "time":
                     case "effort":
+                    case "weeklyPortions":
                         const option = this.#RADIO_OPTION.content.querySelector(".option")
                             .cloneNode(true);
                         const radioBtnContainer = option.querySelector(".radio-button-container");
+
                         switch (question.type) {
                             case "frequency":
                             case "numberScale":
@@ -184,6 +186,56 @@ export class SurveyController extends Controller {
                                             "Elke dag" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "weeklyPortions" :
+                                const daysLbl = document.createElement("h4");
+                                daysLbl.classList.add("text-center");
+                                daysLbl.innerText = "Hoeveel dagen?";
+
+                                const portionsLbl = document.createElement("h4");
+                                portionsLbl.innerText = "Hoeveel porties per dag?";
+                                portionsLbl.classList.add("text-center");
+
+                                for (let j = 0; j < 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
+                                    if (j === 0) {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            portionOption.style.display = "none";
+                                            portionsLbl.style.display = "none";
+                                        });
+                                    } else {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            portionOption.style.display = "block";
+                                            portionsLbl.style.display = "block";
+                                        });
+                                    }
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+
+                                const portionOption = this.#RADIO_OPTION.content.querySelector(".option")
+                                    .cloneNode(true);
+                                const portionBtnContainer = portionOption.querySelector(".radio-button-container");
+
+                                for (let j = 1; j <= 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector("#radioBtn").name = "p";
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 8 ?
+                                        "Meer dan 7" : String(j);
+                                    portionBtnContainer.appendChild(radioBtn);
+                                }
+                                
+                                portionOption.style.display = "none";
+                                portionsLbl.style.display = "none";
+                                optionsContainer.appendChild(daysLbl);
+                                optionsContainer.appendChild(option);
+                                optionsContainer.appendChild(portionsLbl);
+                                optionsContainer.appendChild(portionOption)
                                 break;
                             case "portion":
                                 for (let j = 1; j <= 8; j++) {
@@ -192,6 +244,7 @@ export class SurveyController extends Controller {
                                     radioBtn.querySelector(".form-check-label").innerText = String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
+                                optionsContainer.appendChild(option);
                                 break;
                             case "yesNo":
                                 for (let j = 0; j < 2; j++) {
@@ -202,6 +255,7 @@ export class SurveyController extends Controller {
                                             "Niet van toepassing" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
+                                optionsContainer.appendChild(option);
                                 break;
                             case "time":
                                 for (let j = 0; j < 5; j++) {
@@ -215,6 +269,7 @@ export class SurveyController extends Controller {
                                                         "60+ minuten" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
+                                optionsContainer.appendChild(option);
                                 break;
                             case "effort":
                                 for (let j = 0; j < 3; j++) {
@@ -226,9 +281,9 @@ export class SurveyController extends Controller {
                                                 "zwaar inspannend" : String(j);
                                     radioBtnContainer.appendChild(radioBtn);
                                 }
+                                optionsContainer.appendChild(option);
                                 break;
                         }
-                        optionsContainer.appendChild(option);
                         break;
                 }
             }
