@@ -1,6 +1,6 @@
 /**
  * Controller responsible for all events in activity view
- * @author Jayden Gunhan
+ * @author Jayden.G
  */
 
 import {activityRepository} from "../repositories/activityRepository.js";
@@ -21,7 +21,9 @@ export class ActivityController extends Controller {
     }
 
     /**
+     * @author Jayden.G
      * Loads contents of desired HTML file into content class
+     *
      * @returns {Promise<void>}
      * @private
      */
@@ -30,6 +32,16 @@ export class ActivityController extends Controller {
 
         await this.#loadGoalTemplates();
     }
+
+    /**
+     * @author Jayden.G & Junior.B
+     * Loads goal templates and puts the fetched data into the activity view with the templates from selectGoal.
+     *
+     * Each goal card displays the template's name, base value, unit, and description.
+     * Users can select a goal, which will reveal selectable days for submitting the goal.
+     * When a goal is submitted, the #handleGoalSubmit method is called with the goal's id and base value.
+     * @private
+     */
 
     async #loadGoalTemplates() {
         const data = await this.#fetchGoalTemplates();
@@ -61,8 +73,19 @@ export class ActivityController extends Controller {
     }
 
     /**
+     * @author Jayden.G
+     * Handles the submission of a goal by saving the selected goals to the activity repository.
+     * This function is asynchronous and should be called with the 'await' keyword.
      *
-     * @returns {*[selectedDays]}
+     * @function handleGoalSubmit
+     * @param {number|string} templateId - The templateId refers to which template. This value
+     * is bound to what goal it is in the #loadGoalTemplates function.
+     * @param {*} templateValue - The value associated with the template which refers to the
+     * goal value. This is also bound to what the value of the goal in #loadGoalTemplates is.
+     *
+     * @throws {Error} If no days are selected.
+     * @returns {Promise<void>} A promise that resolves when the goals are successfully saved.
+     * @private
      */
 
     async #handleGoalSubmit(templateId, templateValue) {
@@ -85,10 +108,9 @@ export class ActivityController extends Controller {
 
         if (selectedDays.length === 0) {
             // TODO: Display this message!
-            console.log("No days selected");
+            console.log("No days selected...");
         } else {
             console.log("trying to save selected goals...");
-            console.log([App.sessionManager.get("user_id"), templateId, selectedDays, templateValue]);
 
             let data = [];
 
@@ -113,87 +135,16 @@ export class ActivityController extends Controller {
         }
     }
 
+    /**
+     * @author Jayden.G
+     * Asynchronously fetches goal templates from the activity repository.
+     *
+     * @function fetchGoalTemplates
+     * @returns {Promise<Array>} A promise that resolves to an array of goal templates.
+     * @private
+     */
+
     async #fetchGoalTemplates() {
         return await this.#activityRepository.getGoalTemplates();
     }
-
-    // async #fetchGoals() {
-    //
-    //     //TODO: Getting all of our relevant html elements, i dont like how this looks so mby we change this yes??
-    //
-    //     const prevActivityDescription = this.#activityView.querySelector(".prev-activity-description")
-    //     const prevActivityDate = this.#activityView.querySelector(".prev-activity-date")
-    //
-    //     const currentActivityDescription = this.#activityView.querySelector(".current-activity-description")
-    //     const currentActivityDate = this.#activityView.querySelector(".current-activity-date")
-    //
-    //     const nextActivityDescription = this.#activityView.querySelector(".next-activity-description")
-    //     const nextActivityDate = this.#activityView.querySelector(".next-activity-date")
-    //
-    //     try {
-    //         const goalData = await this.#activityRepository.getGoals(userid);
-    //
-    //         /**
-    //          * TODO: Validate the dates of every goal and make sure they come in the exact right order for when we
-    //          *       query more than just today and the adjacent goals.
-    //          */
-    //
-    //         //previous goal data
-    //         prevActivityDescription.innerHTML = App.ActivityHelper.getDescription(goalData[0].difficulty,
-    //             goalData[0].activity_name);
-    //         prevActivityDate.innerHTML = goalData[0].startdate.substring(0, 10);
-    //
-    //         //current goal data
-    //         currentActivityDescription.innerHTML = App.ActivityHelper.getDescription(goalData[1].difficulty,
-    //             goalData[1].activity_name);
-    //         currentActivityDate.innerHTML = goalData[1].startdate.substring(0, 10);
-    //
-    //         //next goal data
-    //         nextActivityDescription.innerHTML = App.ActivityHelper.getDescription(goalData[2].difficulty,
-    //             goalData[2].activity_name);
-    //         nextActivityDate.innerHTML = goalData[2].startdate.substring(0, 10);
-    //
-    //     } catch (e) {
-    //         console.log("error while fetching goals", e);
-    //
-    //         //for now just show every error on page, normally not all errors are appropriate for user
-    //         currentActivityDescription.innerHTML = e;
-    //     }
-    // }
-
-    //TODO: Handle goal streak
-
-    //TODO: Handle creation of goals
-
-    //TODO: Handle completion of goals
-
-    // async #fetchFavoriteActivity(userId){
-    //     return await this.#activityRepository.getFavoriteActivity(
-    //         App.sessionManager.get("user_id")
-    //     );
-    // }
-
-    // async #handleCompletion(goal_id, user_id) {
-    //     const completedgoal = null;
-    //
-    //     try {
-    //
-    //     } catch (e) {
-    //
-    //     }
-    // }
-
-    // async #fetchScore(userId) {
-    //     const totalActivityScore = await this.#activityView.querySelector(".total-activity-score")
-    //
-    //     try {
-    //         const totalScore = await this.#activityRepository.getScore(userId);
-    //
-    //         totalActivityScore.innerHTML = JSON.stringify(totalScore, null, 4);
-    //     } catch (e) {
-    //         console.log("error while fetching score", e)
-    //
-    //         totalActivityScore.innerHTML = e;
-    //     }
-    // }
 }

@@ -2,7 +2,7 @@
  * Constants file with all activity codes and difficulty/score coefficients
  * Add new codes here
  *
- * @author Jayden Gunhan
+ * @author Jayden.G
  */
 
 //Variables for calculating score

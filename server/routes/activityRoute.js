@@ -2,7 +2,7 @@
  * This class contains ExpressJS routes specific for the activity entity
  * this file is automatically loaded in app.js
  *
- * @author Jayden Gunhan
+ * @author Jayden.G
  */
 
 class ActivityRoute {
@@ -20,15 +20,24 @@ class ActivityRoute {
         this.#createUserGoal();
     }
 
+    /**
+     * @author Jayden.G & Junior.B
+     * Creates a new user goal.
+     *
+     * Inserts selected goals into the 'usergoal' table in the database.
+     * @throws {Error} If there is an error during the database query execution.
+     * @private
+     */
+
+
     #createUserGoal() {
         this.#app.put("/activity/create", async (req, res) => {
 
             const data = req.body;
 
             try {
-                const createGoal = await this.#databaseHelper.handleQuery({
-
-                    query: `INSERT INTO usergoal(id,userId, activityId, dateMade, dayOfTheWeek, value)
+                await this.#databaseHelper.handleQuery({
+                    query: `INSERT INTO usergoal(id, userId, activityId, dateMade, dayOfTheWeek, value)
                             values ?;`,
                     values: [data[0]]
                 });
@@ -38,6 +47,16 @@ class ActivityRoute {
             }
         });
     }
+
+    /**
+     * @author Jayden.G
+     * Retrieves goal templates.
+     *
+     * Fetches goal template data from the 'goaltemplate' and 'activity' tables in the database which
+     * we end up putting into the template in selectGoal.html, this is handled in the activitycontroller.
+     * @throws {Error} If there is an error during the database query execution.
+     * @private
+     */
 
     #getGoalTemplates() {
         this.#app.get("/activity/templates", async (req, res) => {
@@ -60,9 +79,12 @@ class ActivityRoute {
     }
 
     /**
-     * Gets back our user goals with userId.
-     * Gives us the userId, activity name, activity description, start date, end date and the difficulty
-     * @privated
+     * @author Jayden.G
+     * Retrieves userGoals for userId.
+     *
+     * Fetches user goal data from the 'usergoal', 'goalTemplate', and 'activity' tables in the database.
+     * @throws {Error} If there is an error during the database query execution.
+     * @private
      */
 
     #getUserGoals() {
@@ -90,63 +112,6 @@ class ActivityRoute {
             }
         });
     }
-
-    /**
-     * Returns the total score of a given user
-     * @private
-     */
-
-    // #getUserScore() {
-    //     this.#app.get("/activity/score/:userId", async (req, res) => {
-    //         try {
-    //             let totalScore = 0;
-    //
-    //             //Here we are requesting all goals with an end_date, Having an end date means being completed
-    //
-    //             const data = await this.#databaseHelper.handleQuery({
-    //                 query: `SELECT ug.userId, a.activity_name, g.difficulty
-    //                         FROM userGoal ug
-    //                                  INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId
-    //                                  INNER JOIN activity a ON g.activityId = a.activityId
-    //                         WHERE ug.endDate IS NOT NULL
-    //                           AND ug.userId = ?
-    //                         GROUP BY ug.userId, a.activity_name, g.difficulty;`,
-    //                 values: [req.params.userId]
-    //             });
-    //
-    //             for (const item of data) {
-    //
-    //                 /**
-    //                  * Switch statement to add to totalScore that we give back to the user.
-    //                  * Will be used to calculate future goals
-    //                  */
-    //
-    //                 switch (item.difficulty) {
-    //                     case 1:
-    //                         totalScore += this.#activityCodes.VERY_EASY_COEF;
-    //                         break;
-    //                     case 2:
-    //                         totalScore += this.#activityCodes.EASY_COEF;
-    //                         break;
-    //                     case 3:
-    //                         totalScore += this.#activityCodes.NORMAL_COEF;
-    //                         break;
-    //                     case 4:
-    //                         totalScore += this.#activityCodes.HARD_COEF;
-    //                         break;
-    //                     case 5:
-    //                         totalScore += this.#activityCodes.VERY_HARD_COEF;
-    //                         break;
-    //                 }
-    //             }
-    //
-    //             //just give all data back as json, could also be empty
-    //             res.status(this.#errorCodes.HTTP_OK_CODE).json(totalScore);
-    //         } catch (e) {
-    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
-    //         }
-    //     });
-    // }
 }
 
 module.exports = ActivityRoute
