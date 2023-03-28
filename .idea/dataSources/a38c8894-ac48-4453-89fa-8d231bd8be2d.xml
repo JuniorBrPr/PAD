@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="pad_nut_2_dev">
+<dataSource name="pad_nut_2_dev@db.hbo-ict.cloud">
   <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.43">
-    <root id="1">
-      <DefaultCasing>lower/lower</DefaultCasing>
-      <DefaultEngine>InnoDB</DefaultEngine>
-      <DefaultTmpEngine>InnoDB</DefaultTmpEngine>
-      <ServerVersion>8.0.12</ServerVersion>
-    </root>
+    <root id="1"/>
     <schema id="2" parent="1" name="information_schema"/>
     <schema id="3" parent="1" name="pad_nut_2_dev">
       <Current>1</Current>
