@@ -5,6 +5,21 @@ import {Controller} from "./controller.js";
 /**
  * Responsible for handling the actions happening on the survey view.
  *
+ * @class SurveyController
+ * @classdesc Handles the actions happening on the survey view.
+ * @property {SurveyRepository} #surveyRepository - The repository for survey related requests.
+ * @property {ActivityFrequencyRepository} #frequencyRepository - The repository for activity frequency related
+ * requests.
+ * @property {HTMLElement} #surveyView - The HTML element containing the survey view.
+ * @property {number} #currentQuestion - The index of the current question.
+ * @property {number} #questionsAnswered - The number of questions answered.
+ * @property {[Object]} #data - The data of the survey.
+ * @property {HTMLElement} #CONTAINER - The HTML element containing the survey questions.
+ * @property {HTMLElement} #QUESTION_TEMPLATE - The HTML element containing the template for a question.
+ * @property {HTMLElement} #CHECKBOX_OPTION - The HTML element containing the template for a checkbox option.
+ * @property {HTMLElement} #CHECKBOX_FIELD_OPTION - The HTML element containing the template for a checkbox field
+ * option.
+ * @property {HTMLElement} #RADIO_OPTION - The HTML element containing the template for a radio option.
  * @author Junior Javier Brito Perez
  */
 export class SurveyController extends Controller {
@@ -34,8 +49,10 @@ export class SurveyController extends Controller {
     }
 
     /**
-     * Loads contents of desired HTML file into the index.html .content div
-     * @returns {Promise<void>}
+     * Loads contents of desired HTML file into the index.html .content div.
+     * @async
+     * @private
+     * @author Junior Javier Brito Perez
      */
     async #setupView() {
         this.#surveyView = await super.loadHtmlIntoContent("html_views/survey.html");
@@ -65,7 +82,6 @@ export class SurveyController extends Controller {
                 if (this.#questionsAnswered !== 0) {
                     e.preventDefault();
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
-                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
                     window.removeEventListener("beforeunload", () => {
                     });
                 }
@@ -75,8 +91,6 @@ export class SurveyController extends Controller {
             window.addEventListener("click", async (e) => {
                 if (e.target.classList.contains("nav-link")) {
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
-                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
-
                     window.removeEventListener("click", () => {
                     });
                 }
@@ -92,7 +106,7 @@ export class SurveyController extends Controller {
                     this.#fetchFrequencyQuestions();
                     this.#surveyView.querySelector(".survey-welcome").style.display = "none";
                 });
-            
+
             this.#surveyView.querySelector(".next").addEventListener("click", () => {
                 this.#nextPrev(1);
                 this.#loadPercentage();
@@ -114,6 +128,13 @@ export class SurveyController extends Controller {
         }
     }
 
+    /**
+     * Fetches the unanswered surveys from the database.
+     * @async
+     * @private
+     * @returns {Promise<*>} - The unanswered surveys.
+     * @author Junior Javier Brito Perez
+     */
     async #fetchUnansweredSurveys() {
         //TODO: Replace hardcoded id with actual id or remove id parameter.
         return await this.#surveyRepository.getUnansweredSurveys(1);
@@ -121,7 +142,10 @@ export class SurveyController extends Controller {
 
     /**
      * Fetches the nutrition survey from the database.
+     * @async
+     * @private
      * @returns {Promise<void>}
+     * @author Junior Javier Brito Perez
      */
     async #fetchNutritionSurvey() {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
@@ -141,112 +165,160 @@ export class SurveyController extends Controller {
     /**
      * Displays the questions on the survey view.
      * @private
+     * @author Junior Javier Brito Perez
      */
     #displayQuestions() {
-        const container = this.#surveyView.querySelector(".questionContainer");
-        const questionTemplate = this.#surveyView.querySelector("#questionTemplate").cloneNode(true);
-        const CHECKBOX_OPTION = this.#surveyView.querySelector("#checkbox").cloneNode(true);
-        const CHECKBOX_FIELD_OPTION = this.#surveyView.querySelector("#checkboxWithField").cloneNode(true);
-        const RADIO_OPTION = this.#surveyView.querySelector("#radio").cloneNode(true);
-        const RADIO_BUTTON = this.#surveyView.querySelector("#radioButton").cloneNode(true);
-
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
             const questionTab = this.#QUESTION_TEMPLATE.content.querySelector(".questionTab").cloneNode(true);
             questionTab.style.display = "none";
-            questionTab.querySelector(".questionText").innerText = question.text;
+            questionTab.querySelector(".questionText").innerText =
+                `(${i + 1}/${this.#data.length}) ${question.text}`;
             questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
 
-            // @todo: move to separate function, refactor
             if (question.hasOwnProperty("options")) {
                 for (let j = 0; j < question.options.length; j++) {
-                    if (question.options[j].open === 0) {
-                        const option = this.#CHECKBOX_OPTION.content.querySelector(".option").cloneNode(true);
-                        option.querySelector(".optionText").innerText = question.options[j].text;
-                        optionsContainer.appendChild(option);
-                    } else if (question.options[j].open === 1) {
-                        const option = this.#CHECKBOX_FIELD_OPTION.content.querySelector(".option")
+                    const option = question.options[j].open === 0 ?
+                        this.#CHECKBOX_OPTION.content.querySelector(".option").cloneNode(true) :
+                        this.#CHECKBOX_FIELD_OPTION.content.querySelector(".option").cloneNode(true);
+                    option.querySelector(".optionText").innerText = question.options[j].text;
+                    optionsContainer.appendChild(option);
+                }
+            } else if (question.hasOwnProperty("type")) {
+                switch (question.type) {
+                    case "numberScale":
+                    case "portion":
+                    case "frequency":
+                    case "yesNo":
+                    case "time":
+                    case "effort":
+                    case "weeklyPortions":
+                        const option = this.#RADIO_OPTION.content.querySelector(".option")
                             .cloneNode(true);
-                        option.querySelector(".optionText").innerText = question.options[j].text;
-                        optionsContainer.appendChild(option);
-                    }
+                        const radioBtnContainer = option.querySelector(".radio-button-container");
+
+                        switch (question.type) {
+                            case "frequency":
+                            case "numberScale":
+                                for (let j = 0; j < 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "weeklyPortions" :
+                                const daysLbl = document.createElement("h4");
+                                daysLbl.classList.add("text-center");
+                                daysLbl.innerText = "Hoeveel dagen?";
+
+                                const portionsLbl = document.createElement("h4");
+                                portionsLbl.innerText = "Hoeveel porties per dag?";
+                                portionsLbl.classList.add("text-center");
+
+                                for (let j = 0; j < 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
+                                    if (j === 0) {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            portionOption.style.display = "none";
+                                            portionsLbl.style.display = "none";
+                                        });
+                                    } else {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            portionOption.style.display = "block";
+                                            portionsLbl.style.display = "block";
+                                        });
+                                    }
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+
+                                const portionOption = this.#RADIO_OPTION.content.querySelector(".option")
+                                    .cloneNode(true);
+                                const portionBtnContainer = portionOption.querySelector(".radio-button-container");
+
+                                for (let j = 1; j <= 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector("#radioBtn").name = "p";
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 8 ?
+                                        "Meer dan 7" : String(j);
+                                    portionBtnContainer.appendChild(radioBtn);
+                                }
+
+                                portionOption.style.display = "none";
+                                portionsLbl.style.display = "none";
+                                optionsContainer.appendChild(daysLbl);
+                                optionsContainer.appendChild(option);
+                                optionsContainer.appendChild(portionsLbl);
+                                optionsContainer.appendChild(portionOption)
+                                break;
+                            case "portion":
+                                for (let j = 1; j <= 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "yesNo":
+                                for (let j = 0; j < 2; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Ja" : j === 1 ?
+                                            "Niet van toepassing" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "time":
+                                for (let j = 0; j < 5; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "0 minuten" : j === 1 ?
+                                            "15 minuten" : j === 2 ?
+                                                "30 minuten" : j === 3 ?
+                                                    "45 minuten" : j === 4 ?
+                                                        "60+ minuten" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                            case "effort":
+                                for (let j = 0; j < 3; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "licht inspannend" : j === 1 ?
+                                            "matig inspannend" : j === 2 ?
+                                                "zwaar inspannend" : String(j);
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+                                optionsContainer.appendChild(option);
+                                break;
+                        }
+                        break;
                 }
-            } else if (question.type === "numberScale") {
-                const option = this.#RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 8; j++) {
-                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "portion") {
-                const option = this.#RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 1; j <= 8; j++) {
-                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "frequency") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 8; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Nooit" : j === 7 ? "Elke dag" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "yesNo") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 2; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "Ja" : j === 1 ? "Niet van toepassing" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "time") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 5; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "0 minuten" : j === 1 ? "15 minuten" : j === 2 ? "30 minuten"
-                        : j === 3 ? "45 minuten" : j === 4 ? "60+ minuten" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "effort") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 3; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "licht inspannend" : j === 1 ? "matig inspannend"
-                        : j === 2 ? "zwaar inspannend" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
-            } else if (question.type === "disabilities") {
-                const option = RADIO_OPTION.content.querySelector(".option").cloneNode(true);
-                const radioBtnContainer = option.querySelector(".radio-button-container");
-                for (let j = 0; j < 4; j++) {
-                    const radioBtn = RADIO_BUTTON.content.querySelector(".form-check").cloneNode(true);
-                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ? "niet van toepassing" : j === 1 ? "been gerelateerde problemen"
-                        : j === 2 ? "arm gerelateerde problemen" : j === 3 ? "rug gerelateerde problemen" : String(j);
-                    radioBtnContainer.appendChild(radioBtn);
-                }
-                optionsContainer.appendChild(option);
             }
             this.#CONTAINER.appendChild(questionTab);
         }
-        this.#showTab(this.#currentQuestion);
+        this.#showTab();
     }
 
     /**
      * Loads the progress bar percentage.
      * @private
+     * @author Junior Javier Brito Perez
      */
     #loadPercentage() {
         let x = this.#surveyView.getElementsByClassName("questionTab").length;
@@ -255,14 +327,12 @@ export class SurveyController extends Controller {
         this.#surveyView.querySelector(".progress-bar").style.width = percentage >= 1 ?
             percentage + "%" : "fit-content";
         this.#surveyView.querySelector(".progress-bar").innerText = percentage + "%";
-        if (percentage > 99) {
-            this.#displayQuestions.querySelector(".questionText").innerText = "Bedankt voor het invullen van onze vragenlijst!";
-        }
     }
 
     /**
      * Shows the current question.
      * @private
+     * @author Junior Javier Brito Perez
      */
     #showTab() {
         const questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -287,6 +357,7 @@ export class SurveyController extends Controller {
      * @private
      * @param {number} nextTabNumber -1 for previous question, 1 for next question.
      * @returns {Promise<boolean>} true if the user is on the last question.
+     * @author Junior Javier Brito Perez
      */
     async #nextPrev(nextTabNumber) {
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -302,8 +373,9 @@ export class SurveyController extends Controller {
 
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
-            const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(true), 1);
-            const frequencyResponse = await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(true), 2);
+            const response = await this.#surveyRepository
+                .putSurveyResult(this.#getSurveyResponseData(true), 1);
+            // const frequencyResponse = await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(true), 2);
 
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
@@ -318,13 +390,14 @@ export class SurveyController extends Controller {
             this.#questionsAnswered = 0;
             return false;
         }
-        this.#showTab(this.#currentQuestion);
+        this.#showTab();
     }
 
     /**
      * Validates the form of the current question.
      * @private
      * @returns {boolean} true if the form is valid.
+     * @author Junior Javier Brito Perez
      */
     #validateForm() {
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -469,15 +542,17 @@ export class SurveyController extends Controller {
 
     /**
      * Gets the survey response data.
-     * @param completed {boolean} true if the user has answered all the questions in the current survey.
-     * @returns {{surveyId: number, data: [{id: number, options: [{text: string, open: boolean}] }] }}
      * @private
+     * @param completed {boolean} true if the user has answered all the questions in the current survey.
+     * @returns {[Object]} An array of objects containing the survey response data.
+     * @todo Implement data collection for all types of questions.
+     * @author Junior Javier Brito Perez.
      */
     #getSurveyResponseData(completed) {
-        //TODO: Implement data collection for all types of questions.
         let responseData;
         const surveyData = [];
         const range = completed ? this.#data.length : this.#questionsAnswered;
+
         for (let i = 0; i < range; i++) {
             const question = this.#data[i];
             const questionObj = {
@@ -490,7 +565,6 @@ export class SurveyController extends Controller {
             for (let j = 0; j < options.length; j++) {
                 if (options[j].querySelector("input").checked) {
                     const option = options[j];
-
                     let text;
                     let open = false;
                     if (question.hasOwnProperty("options")) {
@@ -505,7 +579,7 @@ export class SurveyController extends Controller {
                         text = option.querySelector(".optionText").innerText;
                     } else if (question.type === "time") {
                         text = option.querySelector(".optionText").innerText;
-                    }  else if (question.type === "effort") {
+                    } else if (question.type === "effort") {
                         text = option.querySelector(".optionText").innerText;
                     } else if (question.type === "disabilities") {
                         console.log(option.querySelector(".option-text").innerText);
