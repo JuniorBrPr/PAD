@@ -5,6 +5,21 @@ import {Controller} from "./controller.js";
 /**
  * Responsible for handling the actions happening on the survey view.
  *
+ * @class SurveyController
+ * @classdesc Handles the actions happening on the survey view.
+ * @property {SurveyRepository} #surveyRepository - The repository for survey related requests.
+ * @property {ActivityFrequencyRepository} #frequencyRepository - The repository for activity frequency related
+ * requests.
+ * @property {HTMLElement} #surveyView - The HTML element containing the survey view.
+ * @property {number} #currentQuestion - The index of the current question.
+ * @property {number} #questionsAnswered - The number of questions answered.
+ * @property {[Object]} #data - The data of the survey.
+ * @property {HTMLElement} #CONTAINER - The HTML element containing the survey questions.
+ * @property {HTMLElement} #QUESTION_TEMPLATE - The HTML element containing the template for a question.
+ * @property {HTMLElement} #CHECKBOX_OPTION - The HTML element containing the template for a checkbox option.
+ * @property {HTMLElement} #CHECKBOX_FIELD_OPTION - The HTML element containing the template for a checkbox field
+ * option.
+ * @property {HTMLElement} #RADIO_OPTION - The HTML element containing the template for a radio option.
  * @author Junior Javier Brito Perez
  */
 export class SurveyController extends Controller {
@@ -34,8 +49,10 @@ export class SurveyController extends Controller {
     }
 
     /**
-     * Loads contents of desired HTML file into the index.html .content div
-     * @returns {Promise<void>}
+     * Loads contents of desired HTML file into the index.html .content div.
+     * @async
+     * @private
+     * @author Junior Javier Brito Perez
      */
     async #setupView() {
         this.#surveyView = await super.loadHtmlIntoContent("html_views/survey.html");
@@ -65,7 +82,6 @@ export class SurveyController extends Controller {
                 if (this.#questionsAnswered !== 0) {
                     e.preventDefault();
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
-                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
                     window.removeEventListener("beforeunload", () => {
                     });
                 }
@@ -75,8 +91,6 @@ export class SurveyController extends Controller {
             window.addEventListener("click", async (e) => {
                 if (e.target.classList.contains("nav-link")) {
                     await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
-                    await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(false), 2);
-
                     window.removeEventListener("click", () => {
                     });
                 }
@@ -114,6 +128,13 @@ export class SurveyController extends Controller {
         }
     }
 
+    /**
+     * Fetches the unanswered surveys from the database.
+     * @async
+     * @private
+     * @returns {Promise<*>} - The unanswered surveys.
+     * @author Junior Javier Brito Perez
+     */
     async #fetchUnansweredSurveys() {
         //TODO: Replace hardcoded id with actual id or remove id parameter.
         return await this.#surveyRepository.getUnansweredSurveys(1);
@@ -121,7 +142,10 @@ export class SurveyController extends Controller {
 
     /**
      * Fetches the nutrition survey from the database.
+     * @async
+     * @private
      * @returns {Promise<void>}
+     * @author Junior Javier Brito Perez
      */
     async #fetchNutritionSurvey() {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
@@ -141,6 +165,7 @@ export class SurveyController extends Controller {
     /**
      * Displays the questions on the survey view.
      * @private
+     * @author Junior Javier Brito Perez
      */
     #displayQuestions() {
         for (let i = 0; i < this.#data.length; i++) {
@@ -293,6 +318,7 @@ export class SurveyController extends Controller {
     /**
      * Loads the progress bar percentage.
      * @private
+     * @author Junior Javier Brito Perez
      */
     #loadPercentage() {
         let x = this.#surveyView.getElementsByClassName("questionTab").length;
@@ -306,6 +332,7 @@ export class SurveyController extends Controller {
     /**
      * Shows the current question.
      * @private
+     * @author Junior Javier Brito Perez
      */
     #showTab() {
         const questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -330,6 +357,7 @@ export class SurveyController extends Controller {
      * @private
      * @param {number} nextTabNumber -1 for previous question, 1 for next question.
      * @returns {Promise<boolean>} true if the user is on the last question.
+     * @author Junior Javier Brito Perez
      */
     async #nextPrev(nextTabNumber) {
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -345,8 +373,9 @@ export class SurveyController extends Controller {
 
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
-            const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(true), 1);
-            const frequencyResponse = await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(true), 2);
+            const response = await this.#surveyRepository
+                .putSurveyResult(this.#getSurveyResponseData(true), 1);
+            // const frequencyResponse = await this.#frequencyRepository.postSurveyAnswers(this.#getSurveyResponseData(true), 2);
 
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
@@ -368,6 +397,7 @@ export class SurveyController extends Controller {
      * Validates the form of the current question.
      * @private
      * @returns {boolean} true if the form is valid.
+     * @author Junior Javier Brito Perez
      */
     #validateForm() {
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -512,12 +542,13 @@ export class SurveyController extends Controller {
 
     /**
      * Gets the survey response data.
-     * @param completed {boolean} true if the user has answered all the questions in the current survey.
-     * @returns {{surveyId: number, data: [{id: number, options: [{text: string, open: boolean}] }] }}
      * @private
+     * @param completed {boolean} true if the user has answered all the questions in the current survey.
+     * @returns {[Object]} An array of objects containing the survey response data.
+     * @todo Implement data collection for all types of questions.
+     * @author Junior Javier Brito Perez.
      */
     #getSurveyResponseData(completed) {
-        //TODO: Implement data collection for all types of questions.
         let responseData;
         const surveyData = [];
         const range = completed ? this.#data.length : this.#questionsAnswered;
@@ -548,7 +579,7 @@ export class SurveyController extends Controller {
                         text = option.querySelector(".optionText").innerText;
                     } else if (question.type === "time") {
                         text = option.querySelector(".optionText").innerText;
-                    }  else if (question.type === "effort") {
+                    } else if (question.type === "effort") {
                         text = option.querySelector(".optionText").innerText;
                     } else if (question.type === "disabilities") {
                         console.log(option.querySelector(".option-text").innerText);

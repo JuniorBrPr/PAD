@@ -23,6 +23,7 @@ class surveyRoutes {
      * Get the ID's of all surveys that have not been answered by the user.
      * @private
      * @returns {Promise<>} - The ID's of the surveys that have not been answered by the user.
+     * @author Junior Javier Brito Perez
      */
     #getUnansweredSurveys() {
         this.#app.get("/survey/answered/:userId", async (req, res) => {
@@ -49,6 +50,7 @@ class surveyRoutes {
      * Gets all questions from the database. The questions are ordered by the order column.
      * @private
      * @returns {Promise<>} - All questions from the database.
+     * @author Junior Javier Brito Perez
      * */
     #getAllQuestions() {
         this.#app.get("/survey/all", async (req, res) => {
@@ -78,6 +80,7 @@ class surveyRoutes {
      * the order column.
      * @private
      * @returns {Promise<>} - All questions from the nutrition survey that the user has not answered.
+     * @author Junior Javier Brito Perez
      */
     #getNutritionSurvey() {
         //TODO: Implement bearer token authentication instead of using the userId in the url.
@@ -109,6 +112,7 @@ class surveyRoutes {
      * Gets all options for a question. The options are ordered by the order column.
      * @private
      * @returns {Promise<>} - All options for a question.
+     * @author Junior Javier Brito Perez
      */
     #getQuestionOptions() {
         this.#app.get("/survey/options/:questionId", async (req, res) => {
@@ -156,6 +160,7 @@ class surveyRoutes {
      *      },
      * }
      * @returns {Promise<>}
+     * @author Junior Javier Brito Perez
      */
     #putSurveyResult() {
         this.#app.put("/survey/response/:userId", async (req, res) => {
@@ -189,6 +194,7 @@ class surveyRoutes {
                 });
 
                 let answersOptions = [];
+
                 for (const question of data.data) {
                     const answerId = await this.#databaseHelper.handleQuery({
                         query: `SELECT id
@@ -222,11 +228,13 @@ class surveyRoutes {
                     }
                 }
 
-                await this.#databaseHelper.handleQuery({
-                    query: `INSERT INTO answeroption (id, answerId, questionOtionId, answeroption.text)
-                            values ?;`,
-                    values: [answersOptions]
-                });
+                if (answersOptions.length > 0) {
+                    await this.#databaseHelper.handleQuery({
+                        query: `INSERT INTO answeroption (id, answerId, questionOtionId, answeroption.text)
+                                values ?;`,
+                        values: [answersOptions]
+                    });
+                }
 
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({
                     failure: false,
