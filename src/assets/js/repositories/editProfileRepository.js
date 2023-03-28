@@ -4,6 +4,8 @@
  * @author Joey_Poel
  * @class
  */
+import {NetworkManager} from "../framework/utils/networkManager.js";
+
 export class editProfileRepository {
     /**
      * The route for the edit profile API.

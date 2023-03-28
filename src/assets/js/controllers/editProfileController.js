@@ -4,6 +4,7 @@
  */
 import {Controller} from "./controller.js";
 import {editProfileRepository} from "../repositories/editProfileRepository.js";
+import {App} from "../app.js";
 
 
 export class editProfileController extends Controller {
@@ -51,7 +52,7 @@ export class editProfileController extends Controller {
             if (confirm("Weet je zeker dat je je wijzigingen wilt opslaan?")) {
                 await this.#saveProfileImage()
                 await this.#sendData(firstname, surname, email, height, weight, age, 1)
-                location.reload();
+                App.loadController(App.CONTROLLER_PROFILE)
             }
         } else {
             console.log("Input values are not all correct")

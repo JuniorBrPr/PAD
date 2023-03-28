@@ -29,9 +29,9 @@ export class profileController extends Controller {
      */
     async #setupView() {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
-        this.#fetchUserData(1);
+        await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
-        this.#setProfileImage()
+        await this.#setProfileImage()
     }
 
     /**

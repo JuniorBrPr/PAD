@@ -6,7 +6,6 @@
  * @author Joey_Poel
  * @class
  */
-const {RowDataPacket} = require("mysql/lib/protocol/packets");
 
 class profileRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")

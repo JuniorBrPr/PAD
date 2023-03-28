@@ -5,9 +5,9 @@
  * @author Joey_Poel
  */
 
-import {NetworkManager} from "../framework/utils/networkManager";
+import {NetworkManager} from "../framework/utils/networkManager.js";
 
-export class ProfileRepository {
+export class profileRepository {
     //# is a private field in Javascript
     #route
     #networkManager
