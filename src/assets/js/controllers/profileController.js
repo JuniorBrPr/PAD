@@ -1,11 +1,13 @@
 import {Controller} from "./controller.js";
 import {profileRepository} from "../repositories/profileRepository.js";
+import {App} from "../app.js";
 
 
 export class profileController extends Controller {
     #createProfileView
     #profileRepository
     #data
+    #app
     constructor() {
         super();
         this.#profileRepository = new profileRepository()
@@ -15,7 +17,7 @@ export class profileController extends Controller {
     async #setupView() {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         this.#fetchUserData(1);
-        document.getElementById("buttonWijzig").addEventListener("click", (event) => super.loadHtmlIntoContent("html_views/editProfile.html"));
+        document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         this.#setProfileImage()
     }
 
