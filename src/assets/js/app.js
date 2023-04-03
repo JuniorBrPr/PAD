@@ -100,7 +100,7 @@ export class App {
                 break;
 
             case App.CONTROLLER_REGISTER:
-                App.isLoggedIn(() => new RegisterController(),() => new LoginController());
+                App.isLoggedIn(() => new RegisterController(),() => new RegisterController());
                 break;
 
             case App.CONTROLLER_WEEKPLANNING:
