@@ -1,0 +1,17 @@
+
+.planningSection{
+    background-color: #dadada;
+}
+
+.dayBox{
+    border-radius: 40px;
+    margin: 20px;
+}
+
+.deleteButtonPlanning{
+    border-radius: 50px;
+}
+
+.completeButtonPlanning{
+    border-radius: 50px;
+}
