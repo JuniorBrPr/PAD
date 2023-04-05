@@ -88,6 +88,7 @@ export class profileController extends Controller {
                 // Constant we are gonna use
                 let activityTitle = goals.data[i].name;
                 let activityAmount = goals.data[i].value;
+                let valueType = goals.data[i].valueType
                 let usergoalID = goals.data[i].usergoalID;
 
                 // This is the layout of every card, it will be filled with the constants of the parameters
@@ -97,7 +98,7 @@ export class profileController extends Controller {
     <div class="card w-50 mx-auto my-5">
       <div class="card-body justify-content-center text-center">
         <h5 id="activity-title" class="card-title">${activityTitle}</h5>
-        <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${activityAmount}</h6>
+        <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${activityAmount} ${valueType}</h6>
         <div class="btn-group-sm" data-toggle="buttons">
           <button id="activity-btn-completed" class="btn-primary mx-lg-2 w-25">Gehaald</button>
           <button id="activity-btm-notCompleted" class="btn-secondary  w-25">Niet gehaald</button>
