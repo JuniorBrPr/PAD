@@ -13,8 +13,6 @@ class surveyRoutes {
         this.#app = app;
 
         this.#getAllQuestions();
-        this.#getNutritionSurvey();
-        this.#getQuestionOptions();
         this.#putSurveyResult();
         this.#getUnansweredSurveys();
         this.#getSurvey();
@@ -74,43 +72,9 @@ class surveyRoutes {
         ;
     }
 
-    /**
-     * Gets all questions from the nutrition survey that the use has not answered. The questions are ordered by
-     * the order column.
-     * @private
-     * @returns {Promise<>} - All questions from the nutrition survey that the user has not answered.
-     */
-    #getNutritionSurvey() {
-        //TODO: Implement bearer token authentication instead of using the userId in the url.
-        this.#app.get("/survey/nutrition/:userId", async (req, res) => {
-            try {
-                const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT question.id           AS id,
-                                   question.questionText AS text,
-                                   questionType.type     AS type,
-                                   question.surveyId     AS surveyId
-                            FROM question
-                                     INNER JOIN questionType ON question.questionTypeId = questionType.id
-                            WHERE question.surveyId = 1
-                              AND question.id NOT IN (SELECT questionId
-                                                      FROM answer
-                                                               INNER JOIN response ON response.id = answer.responseId
-                                                      WHERE response.userId = ?)
-                            ORDER BY question.order;`,
-                    values: [req.params.userId]
-                });
-                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-            } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-            }
-        });
-    }
-
     #getSurvey() {
-        //TODO: Implement bearer token authentication instead of using the userId in the url.
-        this.#app.get("/survey/questions", async (req, res) => {
+        this.#app.post("/survey/questions", async (req, res) => {
             try {
-                const data = await req.body;
                 const response = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
@@ -124,20 +88,18 @@ class surveyRoutes {
                                                                INNER JOIN response ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             ORDER BY question.order;`,
-                    values: [data.surveyId, data.userId]
+                    values: [req.body.surveyId, req.body.userId]
                 });
 
-                const questionIds = response.map(question => question.id);
-
                 const options = await this.#databaseHelper.handleQuery({
-                   query: `SELECT questionoption.id         AS id,
-                                  questionoption.questionId as questionId,
-                                  questionoption.value      AS text,
-                                  questionoption.openOption AS open
-                           FROM questionoption
-                           WHERE questionId IN (?)
-                           ORDER BY questionoption.order;`,
-                     values: [questionIds]
+                    query: `SELECT questionoption.id         AS id,
+                                   questionoption.questionId as questionId,
+                                   questionoption.value      AS text,
+                                   questionoption.openOption AS open
+                            FROM questionoption
+                            WHERE questionId IN (?)
+                            ORDER BY questionoption.order;`,
+                    values: [response.map(question => question.id)]
                 });
 
                 for (let i = 0; i < response.length; i++) {
@@ -145,35 +107,6 @@ class surveyRoutes {
                 }
 
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(response);
-            } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-            }
-        });
-    }
-
-    /**
-     * Gets all options for a question. The options are ordered by the order column.
-     * @private
-     * @returns {Promise<>} - All options for a question.
-     */
-    #getQuestionOptions() {
-        this.#app.get("/survey/options/:questionId", async (req, res) => {
-            try {
-                const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT questionoption.id         AS id,
-                                   questionoption.value      AS text,
-                                   questionoption.openOption AS open
-                            FROM questionoption
-                            WHERE questionId = ?
-                            ORDER BY questionoption.order;`,
-                    values: [req.params.questionId]
-                });
-
-                if (data.length === 0) {
-                    res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: "No options found for this question"});
-                } else {
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-                }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }

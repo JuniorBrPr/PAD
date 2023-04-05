@@ -77,13 +77,13 @@ export class SurveyController extends Controller {
             });
 
             nutritionSurveyBtn.addEventListener("click", () => {
-                this.#fetchNutritionSurvey();
+                this.#fetchSurvey(1);
                 this.#surveyView.querySelector(".survey-welcome").style.display = "none";
             });
 
             this.#surveyView.querySelector("#beweging-survey-btn")
                 .addEventListener("click", () => {
-                    this.#fetchFrequencyQuestions();
+                    this.#fetchSurvey(2);
                     this.#surveyView.querySelector(".survey-welcome").style.display = "none";
                 });
 
@@ -108,10 +108,6 @@ export class SurveyController extends Controller {
         }
     }
 
-    async #fetchFrequencyQuestions() {
-        return await this.#surveyRepository.getFrequencyQuestions();
-    }
-
     async #fetchUnansweredSurveys() {
         //TODO: Replace hardcoded id with actual id or remove id parameter.
         return await this.#surveyRepository.getUnansweredSurveys(1);
@@ -121,19 +117,10 @@ export class SurveyController extends Controller {
      * Fetches the nutrition survey from the database.
      * @returns {Promise<void>}
      */
-    async #fetchNutritionSurvey() {
+    async #fetchSurvey(surveyId) {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
         // TODO: Remove filter, just for testing purposes.
-        this.#data = await this.#surveyRepository.getNutritionSurvey(1)
-            // .then((data) => {
-            // let arr = [];
-            // for (let i = 0; i < data.length; i++) {
-            //     if (data[i].type === "weeklyPortions") {
-            //         arr.push(data[i]);
-            //     }
-            // }
-            // return arr;
-        // });
+        this.#data = await this.#surveyRepository.getQuestions(1, surveyId)
 
         this.#displayQuestions();
         this.#surveyView.querySelector(".survey-form").style.display = "block";
@@ -154,7 +141,7 @@ export class SurveyController extends Controller {
             questionTab.querySelector(".alert").style.display = "none";
             const optionsContainer = questionTab.querySelector(".options-container");
 
-            if (question.hasOwnProperty("options")) {
+            if (question.hasOwnProperty("options") && question.options.length > 0) {
                 for (let j = 0; j < question.options.length; j++) {
                     const option = question.options[j].open === 0 ?
                         this.#CHECKBOX_OPTION.content.querySelector(".option").cloneNode(true) :

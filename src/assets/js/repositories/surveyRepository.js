@@ -15,32 +15,13 @@ export class SurveyRepository {
     }
 
     async getAll() {
-        const data = await this.#networkManager
+        return await this.#networkManager
             .doRequest(`${this.#route}all`, "GET", {});
-
-        return await this.getOptions(data);
     }
 
-    //TODO: implement use of bearer token instead of userId
-    async getNutritionSurvey(userId) {
-        const data = await this.#networkManager
-            .doRequest(`${this.#route}nutrition/${userId}`, "GET", {});
-
-        return await this.getOptions(data);
-    }
-
-    async getOptions(data) {
-        for (let i = 0; i < data.length; i++) {
-            const question = data[i];
-            if (question.type === "multipleChoice" || question.type === "singleChoice") {
-                if (question.type === "multipleChoice" || question.type === "singleChoice") {
-                    question.options = await this.#networkManager
-                        .doRequest(`${this.#route}options/${question.id}`, "GET", {});
-                }
-            }
-        }
-
-        return data;
+    async getQuestions(userId, surveyId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId, userId: userId});
     }
 
     //TODO: implement use of bearer token instead of userId
@@ -49,5 +30,4 @@ export class SurveyRepository {
         return await this.#networkManager
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
-
 }
