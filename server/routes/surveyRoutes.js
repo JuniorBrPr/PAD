@@ -29,10 +29,10 @@ class surveyRoutes {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT survey.id AS id
                             FROM survey
-                                     INNER JOIN question on survey.id = question.surveyId
+                                     INNER JOIN question ON survey.id = question.surveyId
                             WHERE question.id NOT IN (SELECT questionId
                                                       FROM answer
-                                                               JOIN response on response.id = answer.responseId
+                                                               INNER JOIN response ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             GROUP BY survey.id;`,
                     values: [req.params.userId]
