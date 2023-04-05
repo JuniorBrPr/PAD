@@ -72,10 +72,10 @@ class profileRoutes {
                                      INNER JOIN goal
                                                 ON goal.usergoalID = usergoal.id
                             WHERE usergoal.userId = ?
-                              AND dayOfTheWeek = 1
+                              AND dayOfTheWeek = ?
                               AND goal.completed = 0
                     `,
-                    values: [req.params.userId]
+                    values: [req.params.userId, new Date().getDay()]
                 });
                 //if we founnd one record we know the user exists in users table
                 if (data.length >= 1) {
