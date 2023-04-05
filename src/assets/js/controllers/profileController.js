@@ -32,7 +32,8 @@ export class profileController extends Controller {
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
-        await this.#setupActivities()
+
+        await this.#setupActivities(1)
     }
 
     /**
@@ -78,17 +79,21 @@ export class profileController extends Controller {
         img.src = url;
     }
 
-    async #setupActivities() {
-        // Constant we are gonna use
+    async #setupActivities(userId) {
         const cardContainer = document.getElementById('card-container');
-        const activityTitle = 'Activiteit';
-        const activityAmount = 'Hoeveelheid / hoelang';
-        const usergoalID = 4;
+        try {
+            let goals = await this.#profileRepository.getGoals(userId);
+            for (let i = 0; i < goals.data.length; i++) {
+                let goals = await this.#profileRepository.getGoals(userId);
+                // Constant we are gonna use
+                let activityTitle = goals.data[i].name;
+                let activityAmount = goals.data[i].value;
+                let usergoalID = goals.data[i].usergoalID;
 
-        // This is the layout of every card, it will be filled with the constants of the parameters
-        const card = document.createElement('div');
-        card.classList.add('card');
-        card.innerHTML = `
+                // This is the layout of every card, it will be filled with the constants of the parameters
+                let card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `
     <div class="card w-50 mx-auto my-5">
       <div class="card-body justify-content-center text-center">
         <h5 id="activity-title" class="card-title">${activityTitle}</h5>
@@ -99,11 +104,17 @@ export class profileController extends Controller {
         </div>
       </div>
     </div>`;
-        // When button is pressed it will now only log the usergoalID but it will in the future run a function and use usergoalID as a parameter
-        card.querySelector('#activity-btn-completed').addEventListener('click', () => {
-            console.log(usergoalID);
-        });
-        cardContainer.appendChild(card);
+                // When button is pressed it will now only log the usergoalID but it will in the future run a function and use usergoalID as a parameter
+                card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
+                    console.log(usergoalID);
+                    await this.#profileRepository.updateGoalCompletion(usergoalID);
+                });
+                cardContainer.appendChild(card);
+            }
+        } catch(e){
+            console.log(e)
+        }
     }
+
 }
 

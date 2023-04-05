@@ -23,6 +23,8 @@ class profileRoutes {
         this.#app = app;
         //call method per route for the users entity
         this.#getData()
+        this.#getGoals()
+        this.#updateGoalCompletion()
     }
     /**
      * Private method that sets up the route handler for getting user data.
@@ -51,6 +53,56 @@ class profileRoutes {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
+    }
+
+    #getGoals() {
+        this.#app.get("/profile/goals/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT usergoal.userId,
+                                   usergoal.dayOfTheWeek,
+                                   usergoal.value,
+                                   activity.name,
+                                   goal.completed,
+                                   usergoal.id AS usergoalID
+                            FROM usergoal
+                                     INNER JOIN activity
+                                                ON usergoal.activityId = activity.id
+                                     INNER JOIN goal
+                                                ON goal.usergoalID = usergoal.id
+                            WHERE usergoal.userId = ?
+                              AND dayOfTheWeek = 1
+                              AND goal.completed = 0
+                    `,
+                    values: [req.params.userId]
+                });
+                //if we founnd one record we know the user exists in users table
+                if (data.length >= 1) {
+                    // Values individually saved
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+                } else {
+                    //wrong username
+                    res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Er zijn geen doelen gevonden"});
+                }
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    #updateGoalCompletion() {
+        this.#app.put("/editProfile/goalcompletion/:usergoalID", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `UPDATE goal SET completed = 1 WHERE usergoalID = ?`,
+                    values: [req.params.usergoalID]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            }
+            catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
     }
 }
 /**

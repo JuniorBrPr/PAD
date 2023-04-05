@@ -29,4 +29,15 @@ export class profileRepository {
     async getData(userId) {
         return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "GET", userId);
     }
+
+    async getGoals(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/goals/${userId}`, "GET", userId);
+    }
+
+    async updateGoalCompletion(userGoalID) {
+        return await this.#networkManager.doRequest(`${this.#route}/${userGoalID}`, "PUT",
+            {
+                userGoalID: userGoalID,
+            });
+    }
 }
