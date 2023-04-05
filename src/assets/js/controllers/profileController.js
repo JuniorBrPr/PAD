@@ -32,6 +32,7 @@ export class profileController extends Controller {
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
+        await this.#setupActivities()
     }
 
     /**
@@ -75,6 +76,34 @@ export class profileController extends Controller {
         const url = localStorage.getItem("profile-image")
         const img = document.getElementById("profileImage")
         img.src = url;
+    }
+
+    async #setupActivities() {
+        // Constant we are gonna use
+        const cardContainer = document.getElementById('card-container');
+        const activityTitle = 'Activiteit';
+        const activityAmount = 'Hoeveelheid / hoelang';
+        const usergoalID = 4;
+
+        // This is the layout of every card, it will be filled with the constants of the parameters
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `
+    <div class="card w-50 mx-auto my-5">
+      <div class="card-body justify-content-center text-center">
+        <h5 id="activity-title" class="card-title">${activityTitle}</h5>
+        <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${activityAmount}</h6>
+        <div class="btn-group-sm" data-toggle="buttons">
+          <button id="activity-btn-completed" class="btn-primary mx-lg-2 w-25">Gehaald</button>
+          <button id="activity-btm-notCompleted" class="btn-secondary  w-25">Niet gehaald</button>
+        </div>
+      </div>
+    </div>`;
+        // When button is pressed it will now only log the usergoalID but it will in the future run a function and use usergoalID as a parameter
+        card.querySelector('#activity-btn-completed').addEventListener('click', () => {
+            console.log(usergoalID);
+        });
+        cardContainer.appendChild(card);
     }
 }
 
