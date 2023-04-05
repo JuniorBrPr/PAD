@@ -37,7 +37,7 @@ export class WeekPlanningController extends Controller{
         let mm = String(dateToday.getMonth() + 1).padStart(2, '0'); //jan is 0
         let yyyy = dateToday.getFullYear();
 
-        dateToday = mm + '/' + dd + '/' + yyyy;
+        dateToday = dd + '/' + mm + '/' + yyyy;
         document.querySelector("#todayDate").innerHTML = dateToday;
       //  document.write(dateToday);
 
