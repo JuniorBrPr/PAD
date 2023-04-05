@@ -17,6 +17,7 @@ class surveyRoutes {
         this.#getQuestionOptions();
         this.#putSurveyResult();
         this.#getUnansweredSurveys();
+        this.#getSurvey();
     }
 
     /**
@@ -99,6 +100,51 @@ class surveyRoutes {
                     values: [req.params.userId]
                 });
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    #getSurvey() {
+        //TODO: Implement bearer token authentication instead of using the userId in the url.
+        this.#app.get("/survey/questions", async (req, res) => {
+            try {
+                const data = await req.body;
+                const response = await this.#databaseHelper.handleQuery({
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   questionType.type     AS type,
+                                   question.surveyId     AS surveyId
+                            FROM question
+                                     INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            WHERE question.surveyId = ?
+                              AND question.id NOT IN (SELECT questionId
+                                                      FROM answer
+                                                               INNER JOIN response ON response.id = answer.responseId
+                                                      WHERE response.userId = ?)
+                            ORDER BY question.order;`,
+                    values: [data.surveyId, data.userId]
+                });
+
+                const questionIds = response.map(question => question.id);
+
+                const options = await this.#databaseHelper.handleQuery({
+                   query: `SELECT questionoption.id         AS id,
+                                  questionoption.questionId as questionId,
+                                  questionoption.value      AS text,
+                                  questionoption.openOption AS open
+                           FROM questionoption
+                           WHERE questionId IN (?)
+                           ORDER BY questionoption.order;`,
+                     values: [questionIds]
+                });
+
+                for (let i = 0; i < response.length; i++) {
+                    response[i].options = options.filter(option => option.questionId === response[i].id);
+                }
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(response);
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }

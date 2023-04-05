@@ -370,8 +370,9 @@ export class SurveyController extends Controller {
      * @returns {boolean} true if the form is valid.
      */
     #validateForm() {
+        if (this.#currentQuestion >= this.#data.length) return true;
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
-        const alert = questionTabs[this.#currentQuestion].querySelector(".alert");
+        const alert = this.#currentQuestion < questionTabs.length ? questionTabs[this.#currentQuestion].querySelector(".alert") : null;
         let optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
         let optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll(".formRadioBtn");
         const currentQuestionObj = this.#data[this.#currentQuestion];
