@@ -32,8 +32,8 @@ export class profileController extends Controller {
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
-
-        await this.#setupActivities(1)
+        await this.#setupGoals(1)
+        await this.#displayGoalCompletionPercentage(1)
     }
 
     /**
@@ -79,15 +79,15 @@ export class profileController extends Controller {
         img.src = url;
     }
 
-    async #setupActivities(userId) {
+    async #setupGoals(userId) {
         const cardContainer = document.getElementById('card-container');
         try {
             let goals = await this.#profileRepository.getGoals(userId);
             for (let i = 0; i < goals.data.length; i++) {
                 let goals = await this.#profileRepository.getGoals(userId);
                 // Constant we are gonna use
-                let activityTitle = goals.data[i].name;
-                let activityAmount = goals.data[i].value;
+                let goalTitle = goals.data[i].name;
+                let goalAmount = goals.data[i].value;
                 let valueType = goals.data[i].valueType
                 let usergoalID = goals.data[i].usergoalID;
 
@@ -97,8 +97,8 @@ export class profileController extends Controller {
                 card.innerHTML = `
     <div class="card w-50 mx-auto my-5">
       <div class="card-body justify-content-center text-center">
-        <h5 id="activity-title" class="card-title">${activityTitle}</h5>
-        <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${activityAmount} ${valueType}</h6>
+        <h5 id="activity-title" class="card-title">${goalTitle}</h5>
+        <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${goalAmount} ${valueType}</h6>
         <div class="btn-group-sm" data-toggle="buttons">
           <button id="activity-btn-completed" class="btn-primary mx-lg-2 w-25">Gehaald</button>
           <button id="activity-btm-notCompleted" class="btn-secondary  w-25">Niet gehaald</button>
@@ -107,8 +107,13 @@ export class profileController extends Controller {
     </div>`;
                 // When button is pressed it will now only log the usergoalID but it will in the future run a function and use usergoalID as a parameter
                 card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
-                    console.log(usergoalID);
                     await this.#profileRepository.updateGoalCompletion(usergoalID);
+                    card.style.opacity = '0'; // Set opacity to 0 to start the transition
+                    card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+                    setTimeout(() => {
+                        cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
+                    }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
+                    await this.#displayGoalCompletionPercentage(userId) // Update goalcompletionpercentage
                 });
                 cardContainer.appendChild(card);
             }
@@ -116,6 +121,29 @@ export class profileController extends Controller {
             console.log(e)
         }
     }
+
+
+    async #displayGoalCompletionPercentage(userId) {
+        let calculateGoalCompletionPercentage = await this.#profileRepository.calculateGoalCompletionPercentage(userId);
+        const percentageText = document.getElementById('percentage');
+        let percentageGoalCompletion = calculateGoalCompletionPercentage.data[0].percentage;
+
+        // Text percentage
+        percentageText.innerHTML = percentageGoalCompletion + "%";
+
+        // Get the percentage bar element
+        const percentageBar = document.getElementById("percentageBar");
+
+        // Update the width of the percentage bar based on the percentage value
+        function updatePercentageBar() {
+            percentageBar.style.width = `${percentageGoalCompletion}%`;
+            percentageBar.style.transition = '2s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+        }
+
+        // Call the updatePercentageBar function initially to set the initial percentage value
+        updatePercentageBar();
+    }
+
 
 }
 

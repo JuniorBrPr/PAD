@@ -25,6 +25,7 @@ class profileRoutes {
         this.#getData()
         this.#getGoals()
         this.#updateGoalCompletion()
+        this.#calculateGoalCompletionPercentage()
     }
     /**
      * Private method that sets up the route handler for getting user data.
@@ -92,7 +93,7 @@ class profileRoutes {
     }
 
     #updateGoalCompletion() {
-        this.#app.put("/editProfile/goalcompletion/:usergoalID", async (req, res) => {
+        this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `UPDATE goal SET completed = 1 WHERE usergoalID = ?`,
@@ -105,6 +106,27 @@ class profileRoutes {
             }
         })
     }
+
+    #calculateGoalCompletionPercentage() {
+        this.#app.put("/profile/goalCompletionPercentage/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage
+                                FROM goal
+                                         INNER JOIN usergoal
+                                                    ON goal.usergoalID = usergoal.id
+                                WHERE usergoal.userId = ?
+                                  AND dayOfTheWeek = ?`,
+                    values: [req.params.userId, new Date().getDay()]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            }
+            catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
 }
 /**
  * Exports the profileRoutes class.
