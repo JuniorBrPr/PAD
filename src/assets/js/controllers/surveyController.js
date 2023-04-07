@@ -132,6 +132,81 @@ export class SurveyController extends Controller {
      * @private
      */
     #displayQuestions() {
+        if (this.#data.length > 0 && this.#data[0].surveyId === 1) {
+            this.#displayNutritionSurvey();
+        } else if (this.#data.length > 0 && this.#data[0].surveyId === 2) {
+            this.#displayExerciseSurvey();
+        }
+        this.#showTab();
+    }
+
+    #displayExerciseSurvey() {
+        const weeklyRecurringActivityQuestions =
+            this.#data.filter(question => question.type === "weeklyRecurringActivity");
+        const recurringPhysicalActivityQuestions =
+            this.#data.filter(question => question.type === "recurringPhysicalActivity");
+        const householdActivityQuestions = this.#data.filter(question => question.type === "householdActivity");
+        const leisureActivityQuestions = this.#data.filter(question => question.type === "leisureActivity");
+        const sportActivityQuestions = this.#data.filter(question => question.type === "sportActivity");
+
+        this.#createExerciseQuestionTab(
+            "backAndForthActivityTable",
+            weeklyRecurringActivityQuestions,
+            "Vervoer ten behoeve van terugkerende, geplande activiteiten (heen en terug).",
+            "Geef aan hoe vaak je per week naar een activiteit gaat en hoe lang je er over doet om er te " +
+            "komen en weer terug te gaan.Bijvoorbeeld mantel-zorg, oppassen, vrijwilligerswerk, cursus volgen etc."
+        );
+
+        this.#createExerciseQuestionTab(
+            "recurringPhysicalActivityTable",
+            recurringPhysicalActivityQuestions,
+            "Lichamelijke activiteit op de vorige terugkerende bezigheden of vrijwilligerswerk, indien van" +
+            " toepassing (niet zijnde huishoudelijk werk en vrijetijdsbestedingen)",
+            ""
+        );
+
+        this.#createExerciseQuestionTab(
+            "householdActivityTable",
+            householdActivityQuestions,
+            "Huishoudelijke activiteiten",
+            "Geef aan hoe vaak je per week huishoudelijke activiteiten doet en hoe lang je er over doet. "
+        );
+
+        this.#createExerciseQuestionTab(
+            "backAndForthActivityTable",
+            leisureActivityQuestions,
+            "Vrijetijdsbesteding",
+            "Activiteiten voor eigen plezier."
+        );
+
+        this.#createExerciseQuestionTab(
+            "backAndForthActivityTable",
+            sportActivityQuestions,
+            "Sporten",
+            "Sporten voor eigen plezier."
+        );
+    }
+
+    #createExerciseQuestionTab(templateId, questions, title, subtitle) {
+        const questionTab = this.#surveyView.querySelector(`#${templateId}`).content
+            .querySelector(".questionTab").cloneNode(true);
+        questionTab.style.display = "none";
+
+        questionTab.querySelector(".title").innerText = title;
+        questionTab.querySelector(".subtitle").innerText = subtitle;
+
+        for (const question of questions) {
+            const row = questionTab.querySelector(".rowTemplate").content
+                .querySelector(".questionRow").cloneNode(true);
+            row.querySelector(".questionText").innerText = question.text;
+            row.querySelector(".questionText").id = question.id;
+            questionTab.querySelector("tbody").prepend(row);
+        }
+
+        this.#CONTAINER.appendChild(questionTab);
+    }
+
+    #displayNutritionSurvey() {
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
             const questionTab = this.#QUESTION_TEMPLATE.content.querySelector(".questionTab").cloneNode(true);
@@ -153,17 +228,12 @@ export class SurveyController extends Controller {
                 switch (question.type) {
                     case "numberScale":
                     case "portion":
-                    case "frequency":
-                    case "yesNo":
-                    case "time":
-                    case "effort":
                     case "weeklyPortions":
                         const option = this.#RADIO_OPTION.content.querySelector(".option")
                             .cloneNode(true);
                         const radioBtnContainer = option.querySelector(".radio-button-container");
 
                         switch (question.type) {
-                            case "frequency":
                             case "numberScale":
                                 for (let j = 0; j < 8; j++) {
                                     const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
@@ -216,7 +286,7 @@ export class SurveyController extends Controller {
                                         "Meer dan 7" : String(j);
                                     portionBtnContainer.appendChild(radioBtn);
                                 }
-                                
+
                                 portionOption.style.display = "none";
                                 portionsLbl.style.display = "none";
                                 optionsContainer.appendChild(daysLbl);
@@ -233,50 +303,12 @@ export class SurveyController extends Controller {
                                 }
                                 optionsContainer.appendChild(option);
                                 break;
-                            case "yesNo":
-                                for (let j = 0; j < 2; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
-                                        .cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
-                                        "Ja" : j === 1 ?
-                                            "Niet van toepassing" : String(j);
-                                    radioBtnContainer.appendChild(radioBtn);
-                                }
-                                optionsContainer.appendChild(option);
-                                break;
-                            case "time":
-                                for (let j = 0; j < 5; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
-                                        .cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
-                                        "0 minuten" : j === 1 ?
-                                            "15 minuten" : j === 2 ?
-                                                "30 minuten" : j === 3 ?
-                                                    "45 minuten" : j === 4 ?
-                                                        "60+ minuten" : String(j);
-                                    radioBtnContainer.appendChild(radioBtn);
-                                }
-                                optionsContainer.appendChild(option);
-                                break;
-                            case "effort":
-                                for (let j = 0; j < 3; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
-                                        .cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
-                                        "licht inspannend" : j === 1 ?
-                                            "matig inspannend" : j === 2 ?
-                                                "zwaar inspannend" : String(j);
-                                    radioBtnContainer.appendChild(radioBtn);
-                                }
-                                optionsContainer.appendChild(option);
-                                break;
                         }
                         break;
                 }
             }
             this.#CONTAINER.appendChild(questionTab);
         }
-        this.#showTab();
     }
 
     /**
@@ -358,6 +390,10 @@ export class SurveyController extends Controller {
      */
     #validateForm() {
         if (this.#currentQuestion >= this.#data.length) return true;
+
+        //TODO: remove this line
+        if (this.#data[this.#currentQuestion].surveyId === 2) return true;
+
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
         const alert = this.#currentQuestion < questionTabs.length ? questionTabs[this.#currentQuestion].querySelector(".alert") : null;
         let optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");

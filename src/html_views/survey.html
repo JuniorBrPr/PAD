@@ -119,95 +119,125 @@
 </template>
 
 <template id="backAndForthActivityTable">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Aantal dagen per week</th>
-                <th>Gemiddelde tijd per dag</th>
-                <th>Inspanning</th>
-            </tr>
-            </thead>
-            <tbody>
-            <template id="rowTemplate">
+    <div class="questionTab">
+        <div class="row d-flex justify-content-center">
+            <h2 class="text-center title"></h2>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <p class="text-center h6 subtitle"></p>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                 <tr>
-                    <td>qTxt</td>
-                    <td><input class="form-control-sm" type="number" min="1" max="7"/> dagen</td>
-                    <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
-                            class="form-control-sm" type="number" min="0" max="59"/> minuten
-                    </td>
-                    <td>
-                        <div class="form-check"><input id="formCheck-4" class="form-check-input" type="radio"
-                                                       name="intensity"/><label class="form-check-label"
-                                                                                for="formCheck-4">Langzaam</label></div>
-                        <div class="form-check"><input id="formCheck-5" class="form-check-input" type="radio"
-                                                       name="intensity"/><label class="form-check-label"
-                                                                                for="formCheck-5">Gemiddeld</label>
-                        </div>
-                        <div class="form-check"><input id="formCheck-6" class="form-check-input" type="radio"
-                                                       name="intensity"/><label class="form-check-label"
-                                                                                for="formCheck-6">Snel</label></div>
-                    </td>
+                    <th></th>
+                    <th>Aantal dagen per week</th>
+                    <th>Gemiddelde tijd per dag</th>
+                    <th>Inspanning</th>
                 </tr>
-            </template>
-            <tr>
-                <td>Niet van toepassing</td>
-                <td class="flex-grow-1 align-content-center"><input type="checkbox"/></td>
-            </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <template class="rowTemplate">
+                    <tr class="questionRow">
+                        <td class="questionText">qTxt</td>
+                        <td><input class="form-control-sm" type="number" min="0" max="7"/> dagen</td>
+                        <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
+                                class="form-control-sm" type="number" min="0" max="59"/> minuten
+                        </td>
+                        <td>
+                            <div class="form-check"><input id="formCheck-4" class="form-check-input" type="radio"
+                                                           name="intensity"/><label class="form-check-label"
+                                                                                    for="formCheck-4">Langzaam</label>
+                            </div>
+                            <div class="form-check"><input id="formCheck-5" class="form-check-input" type="radio"
+                                                           name="intensity"/><label class="form-check-label"
+                                                                                    for="formCheck-5">Gemiddeld</label>
+                            </div>
+                            <div class="form-check"><input id="formCheck-6" class="form-check-input" type="radio"
+                                                           name="intensity"/><label class="form-check-label"
+                                                                                    for="formCheck-6">Snel</label></div>
+                        </td>
+                    </tr>
+                </template>
+                <tr>
+                    <td>Niet van toepassing</td>
+                    <td class="flex-grow-1 align-content-center"><input type="checkbox"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
-<template id="timePerWeekTable">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Gemiddelde tijd per week</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>Txt</td>
-                <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
-                        class="form-control-sm" type="number" min="0" max="59"/> minuten
-                </td>
-            </tr>
-            <tr>
-                <td>Niet van toepassing</td>
-                <td><input class="flex-grow-1" type="checkbox"/></td>
-            </tr>
-            </tbody>
-        </table>
+
+<template id="recurringPhysicalActivityTable">
+    <div class="questionTab">
+        <div class="row d-flex justify-content-center">
+            <h2 class="text-center title"></h2>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <p class="text-center h6 subtitle"></p>
+        </div>
+        <div class="table-responsive ">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Gemiddelde tijd per week</th>
+                </tr>
+                </thead>
+                <tbody>
+                <template class="rowTemplate">
+                    <tr class="questionRow">
+                        <td class="questionText"></td>
+                        <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
+                                class="form-control-sm" type="number" min="0" max="59"/> minuten
+                        </td>
+                    </tr>
+                </template>
+                <tr>
+                    <td>Niet van toepassing</td>
+                    <td><input class="flex-grow-1" type="checkbox"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
-<template id="householdActivitiesTable">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Aantal dagen per week</th>
-                <th>Gemiddelde tijd per dag</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>txt</td>
-                <td><input class="form-control-sm" type="number" min="1" max="7"/> dagen</td>
-                <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
-                        class="form-control-sm" type="number" min="0" max="59"/> minuten
-                </td>
-            </tr>
-            <tr>
-                <td>Niet van toepassing</td>
-                <td><input class="flex-grow-1" type="checkbox"/></td>
-            </tr>
-            </tbody>
-        </table>
+<template id="householdActivityTable">
+    <div class="questionTab">
+        <div class="row d-flex justify-content-center">
+            <h2 class="text-center title"></h2>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <p class="text-center h6 subtitle"></p>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Aantal dagen per week</th>
+                    <th>Gemiddelde tijd per dag</th>
+                </tr>
+                </thead>
+                <tbody>
+                <template class="rowTemplate">
+                    <tr class="questionRow">
+                        <td class="questionText"></td>
+                        <td><input class="form-control-sm" type="number" min="1" max="7"/> dagen</td>
+                        <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
+                                class="form-control-sm" type="number" min="0" max="59"/> minuten
+                        </td>
+                    </tr>
+                </template>
+                <tr>
+                    <td>Niet van toepassing</td>
+                    <td><input class="flex-grow-1" type="checkbox"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
