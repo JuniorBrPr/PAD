@@ -28,6 +28,12 @@ export class editProfileController extends Controller {
         this.#createProfileEditView = await super.loadHtmlIntoContent("html_views/editProfile.html")
         document.getElementById("saveProfileBtn").addEventListener("click", (event) => this.#validateForm());
         document.getElementById("InputProfileImage").addEventListener("change", () => this.#setProfileImage())
+        let data = await this.#editProfileRepository.getData(1);
+        document.getElementById("InputFirstname").placeholder = data.data[0].firstname
+        document.getElementById("InputSurname").placeholder = data.data[0].surname
+        document.getElementById("InputEmail").placeholder = data.data[0].emailAdress
+        document.getElementById("InputHeight").placeholder = data.data[0].height + " CM"
+        document.getElementById("InputWeight").placeholder = data.data[0].weight + " Kilo"
     }
 
     /**

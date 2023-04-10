@@ -1,16 +1,20 @@
 <section class="profilesection text-light p-5">
   <div class="container justify-content-center text-center">
     <img src="../src/images/standardProfileIMG.png" id="profileImage" class="profielFoto rounded-circle">
-    <h1 id="profileFullName" class="text-light">Fout bij het laden</h1>
-    <p id="profileEmail" class="text-light">Fout bij het laden</p>
+    <h1 id="profileFullName" class="text-light"></h1>
+    <p id="profileEmail" class="text-light"></p>
   </div>
   <button id="buttonWijzig" class="buttonWijzig btn-dark rounded-5 bg-dark text-white float-end mx-md-5 mx-sm-0">Wijzig</button>
 </section>
-<div class="percentageBar bg-light" id="percentageBarContainer">
-  <div class="percentageBar h-100 bg-primary" id="percentageBar">
-    <p id="percentage"></p>
-  </div>
+<h1 class="d-flex justify-content-center my-3">Dag overzicht</h1>
+<div class="d-flex justify-content-center">
+  <svg class="progress-ring" width="120" height="120">
+    <circle class="progress-ring__circle" stroke="#008C93" stroke-width="10" fill="transparent" r="52" cx="60" cy="60"/>
+    <text id="percentage" class="progress-ring__text" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="30"></text>
+  </svg>
 </div>
-<div id="card-container">
+<h2 class="d-flex justify-content-center my-3">Uw doelen van vandaag</h2>
+<h3 class="d-flex justify-content-center" id="date"></h3>
+<h5 class="d-flex justify-content-center" id="noActivitysMessage"></h5>
+<div id="card-container"></div>
 
-</div>

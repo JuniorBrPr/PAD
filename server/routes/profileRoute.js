@@ -62,8 +62,9 @@ class profileRoutes {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.userId,
                                    usergoal.dayOfTheWeek,
-                                   usergoal.valueType,
                                    goal.value,
+                                   goal.date,
+                                   activity.unit,
                                    activity.name,
                                    goal.completed,
                                    usergoal.id AS usergoalID

@@ -81,6 +81,9 @@ export class profileController extends Controller {
 
     async #setupGoals(userId) {
         const cardContainer = document.getElementById('card-container');
+        let date = new Date().toISOString().split('T')[0];
+        document.getElementById('date').innerHTML = date;
+        
         try {
             let goals = await this.#profileRepository.getGoals(userId);
             for (let i = 0; i < goals.data.length; i++) {
@@ -88,24 +91,25 @@ export class profileController extends Controller {
                 // Constant we are gonna use
                 let goalTitle = goals.data[i].name;
                 let goalAmount = goals.data[i].value;
-                let valueType = goals.data[i].valueType
+                let valueType = goals.data[i].unit;
                 let usergoalID = goals.data[i].usergoalID;
 
                 // This is the layout of every card, it will be filled with the constants of the parameters
                 let card = document.createElement('div');
                 card.classList.add('card');
                 card.innerHTML = `
-    <div class="card w-50 mx-auto my-5">
-      <div class="card-body justify-content-center text-center">
-        <h5 id="activity-title" class="card-title">${goalTitle}</h5>
-        <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${goalAmount} ${valueType}</h6>
-        <div class="btn-group-sm" data-toggle="buttons">
-          <button id="activity-btn-completed" class="btn-primary mx-lg-2 w-25">Gehaald</button>
-          <button id="activity-btm-notCompleted" class="btn-secondary  w-25">Niet gehaald</button>
-        </div>
-      </div>
-    </div>`;
-                // When button is pressed it will now only log the usergoalID but it will in the future run a function and use usergoalID as a parameter
+                <div class="card w-50 mx-auto my-4">
+                  <div class="card-body justify-content-center text-center">
+                    <h5 id="activity-title" class="card-title">${goalTitle}</h5>
+                    <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${goalAmount} ${valueType}</h6>
+                      <button id="activity-btn-completed" class="btn-primary mx-lg-2 w-25">Gehaald</button>
+                  </div>
+                </div>`;
+
+                // Styling
+                card.style.border = "0"
+
+                // When button is pressed this function will run
                 card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
                     await this.#profileRepository.updateGoalCompletion(usergoalID);
                     card.style.opacity = '0'; // Set opacity to 0 to start the transition
@@ -119,6 +123,7 @@ export class profileController extends Controller {
             }
         } catch(e){
             console.log(e)
+            document.getElementById('noActivitysMessage').innerHTML = "U heeft geen doelen vandaag"
         }
     }
 
@@ -135,9 +140,21 @@ export class profileController extends Controller {
         const percentageBar = document.getElementById("percentageBar");
 
         // Update the width of the percentage bar based on the percentage value
-        function updatePercentageBar() {
-            percentageBar.style.width = `${percentageGoalCompletion}%`;
-            percentageBar.style.transition = '2s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+        // function updatePercentageBar() {
+        //     percentageBar.style.width = `${percentageGoalCompletion}%`;
+        //     percentageBar.style.transition = '2s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+        // }
+
+        function updatePercentageBar(){
+            let circle = document.querySelector('circle');
+            let radius = circle.r.baseVal.value;
+            let circumference = radius * 2 * Math.PI;
+
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = `${circumference}`;
+
+                const offset = circumference - percentageGoalCompletion / 100 * circumference;
+                circle.style.strokeDashoffset = offset;
         }
 
         // Call the updatePercentageBar function initially to set the initial percentage value
