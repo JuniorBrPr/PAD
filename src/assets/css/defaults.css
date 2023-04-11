@@ -35,6 +35,13 @@ footer {
     border: white 3px solid;
 }
 
+.buttonWijzig{
+    background-color: rgba(0, 64, 67, 1);
+    border: 1px solid white;
+    border-radius: 20px;
+    color: white;
+}
+
 .container-editProfile{
     min-height: 100vh;
     background-color: #eeeeee;
@@ -102,3 +109,4 @@ footer {
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
 }
+

@@ -79,12 +79,9 @@ class profileRoutes {
                     `,
                     values: [req.params.userId, new Date().getDay()]
                 });
-                //if we founnd one record we know the user exists in users table
                 if (data.length >= 1) {
-                    // Values individually saved
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
                 } else {
-                    //wrong username
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Er zijn geen doelen gevonden"});
                 }
             } catch (e) {

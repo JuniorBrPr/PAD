@@ -98,16 +98,26 @@ export class profileController extends Controller {
                 let card = document.createElement('div');
                 card.classList.add('card');
                 card.innerHTML = `
-                <div class="card w-50 mx-auto my-4">
+                <div class="mx-auto my-4">
                   <div class="card-body justify-content-center text-center">
                     <h5 id="activity-title" class="card-title">${goalTitle}</h5>
-                    <h6 id="activity-amount" class="card-subtitle mb-2 text-muted">${goalAmount} ${valueType}</h6>
-                      <button id="activity-btn-completed" class="btn-primary mx-lg-2 w-25">Gehaald</button>
+                    <h6 id="activity-amount" class="card-subtitle mb-2">${goalAmount} ${valueType}</h6>
+                      <button id="activity-btn-completed" class="=w-50">Gehaald</button>
                   </div>
                 </div>`;
 
                 // Styling
+                const cardBody = card.querySelector('.card-body');
                 card.style.border = "0"
+                cardBody.style.backgroundColor = '#008C93';
+                cardBody.style.borderRadius = '20px';
+                cardBody.style.color = 'white';
+                cardBody.style.width = '500px';
+                const buttonElement = card.querySelector('#activity-btn-completed');
+                buttonElement.style.backgroundColor = 'rgba(0, 64, 67, 1)';
+                buttonElement.style.border = '1px solid white'
+                buttonElement.style.borderRadius = '20px'
+                buttonElement.style.color = 'white'
 
                 // When button is pressed this function will run
                 card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
@@ -131,7 +141,7 @@ export class profileController extends Controller {
     async #displayGoalCompletionPercentage(userId) {
         let calculateGoalCompletionPercentage = await this.#profileRepository.calculateGoalCompletionPercentage(userId);
         const percentageText = document.getElementById('percentage');
-        let percentageGoalCompletion = calculateGoalCompletionPercentage.data[0].percentage;
+        let percentageGoalCompletion = parseInt(calculateGoalCompletionPercentage.data[0].percentage);
 
         // Text percentage
         percentageText.innerHTML = percentageGoalCompletion + "%";
