@@ -16,22 +16,26 @@
             </div>
             <div class="inputFieldEditProfileWithLabel">
                 <label>Email</label>
+                <label class="labelInvalid" id="invalidEmail"></label>
                 <input class="inputFieldEditProfile" id="InputEmail"  type="text" placeholder="Email">
             </div>
             <div class="inputFieldEditProfileWithLabel">
-                <label>Gewicht</label>
+                <label id="labelWeight">Gewicht in kilo</label>
+                <label class="labelInvalid" id="invalidWeight"></label>
                 <input class="inputFieldEditProfile" id="InputWeight"  type="text" placeholder="Gewicht in kilo">
             </div>
             <div class="inputFieldEditProfileWithLabel">
-                <label>Lengte</label>
+                <label>Lengte in cm</label>
+                <label class="labelInvalid" id="invalidHeight"></label>
                 <input class="inputFieldEditProfile"  id="InputHeight" type="text" placeholder="Lengte in cm">
             </div>
             <div class="inputFieldEditProfileWithLabel">
                 <label>Geboorte datum</label>
+                <label class="labelInvalid" id="invalidAge"></label>
                 <input class="inputFieldEditProfile" id="InputAge"  type="date">
             </div>
         </form>
-        <button type="submit" id="saveProfileBtn" class="saveProfileBtn bg-dark text-white border-5 ">Gegevens opslaan</button>
+        <button type="submit" id="saveProfileBtn" class="saveProfileBtn">Gegevens opslaan</button>
     </div>
 </div>
 

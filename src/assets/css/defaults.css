@@ -5,6 +5,10 @@ footer {
     width: 100%;
 }
 
+body{
+    overflow-x: hidden;
+}
+
 .navbar {
     background-color: #2F72B9;
 }
@@ -20,6 +24,7 @@ footer {
     height: 70vh;
 }
 
+/* Profile */
 .profilesection{
     background-color: #008C93;
 }
@@ -48,9 +53,11 @@ footer {
     color: white;
 }
 
+/* Edit profile*/
 .container-editProfile{
     margin: 0 auto;
     padding: 15px;
+    min-height: 100vh;
 }
 
 .divForm{
@@ -115,6 +122,23 @@ footer {
     display: none;
 }
 
+.labelInvalid{
+    color: red;
+    display: none;
+}
+
+.saveProfileBtn{
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 30px;
+    background: #008C93;
+    color: white;
+    text-align: center;
+    border: none;
+    width: 100%;
+}
+
+/* Dashboard */
 .progress-ring__circle {
     transition: 0.35s stroke-dashoffset;
     transform: rotate(-90deg);
