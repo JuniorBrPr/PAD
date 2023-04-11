@@ -26,14 +26,18 @@ export class editProfileController extends Controller {
      */
     async #setupView() {
         this.#createProfileEditView = await super.loadHtmlIntoContent("html_views/editProfile.html")
+        await this.#setStandardProfileImage();
         document.getElementById("saveProfileBtn").addEventListener("click", (event) => this.#validateForm());
         document.getElementById("InputProfileImage").addEventListener("change", () => this.#setProfileImage())
+
+        // Load all existing data of the user as standard values
         let data = await this.#editProfileRepository.getData(1);
-        document.getElementById("InputFirstname").placeholder = data.data[0].firstname
-        document.getElementById("InputSurname").placeholder = data.data[0].surname
-        document.getElementById("InputEmail").placeholder = data.data[0].emailAdress
-        document.getElementById("InputHeight").placeholder = data.data[0].height + " CM"
-        document.getElementById("InputWeight").placeholder = data.data[0].weight + " Kilo"
+        document.getElementById("InputFirstname").value = data.data[0].firstname
+        document.getElementById("InputSurname").value = data.data[0].surname
+        document.getElementById("InputEmail").value = data.data[0].emailAdress
+        document.getElementById("InputAge").value = new Date(data.data[0].date_of_birth ).toISOString().split('T')[0]
+        document.getElementById("InputHeight").value = data.data[0].height
+        document.getElementById("InputWeight").value = data.data[0].weight
     }
 
     /**
@@ -47,19 +51,29 @@ export class editProfileController extends Controller {
         let height = this.#correctWeightOrHeight(document.getElementById("InputHeight").value)
         let weight = this.#correctWeightOrHeight(document.getElementById("InputWeight").value)
         let age = document.getElementById("InputAge").value
-        if (
-            await this.#checkWeightOrHeightSyntax(height) &&
-            await this.#checkWeightOrHeightSyntax(weight) &&
-            await this.#calculateMinBirthDay(age) &&
-            await this.#checkWeightValue(weight) &&
-            await this.#checkHeightValue(height) &&
-            await this.#checkEmailValue(email)
-        ) {
-            await this.#saveProfileImage()
-            await this.#sendData(firstname, surname, email, height, weight, age, 1)
-            App.loadController(App.CONTROLLER_PROFILE)
-        } else {
-            console.log("Input values are not all correct")
+        try {
+            const calculateMinBirthDayResult = await this.#calculateMinBirthDay(age);
+
+            const checkWeightValueResult = await this.#checkWeightValue(weight);
+
+            const checkHeightValueResult = await this.#checkHeightValue(height);
+
+            const checkEmailValueResult = await this.#checkEmailValue(email);
+
+            if (
+                calculateMinBirthDayResult === true &&
+                checkWeightValueResult === true &&
+                checkHeightValueResult === true &&
+                checkEmailValueResult === true
+            ) {
+                await this.#saveProfileImage();
+                await this.#sendData(firstname, surname, email, height, weight, age, 1);
+                App.loadController(App.CONTROLLER_PROFILE);
+            } else {
+                console.log("Input values are not all correct");
+            }
+        } catch (error) {
+            console.error("An error occurred: ", error);
         }
     }
 
@@ -70,33 +84,25 @@ export class editProfileController extends Controller {
      * @returns {Promise<boolean>} - A that resolves to true if the age is valid, false otherwise.
      */
     async #calculateMinBirthDay(inputDate) {
+        let minAge = 18
+        let maxAge = 100
+        let InputAge = document.getElementById('InputAge')
+        let invalidAge = document.getElementById('invalidAge')
+        invalidAge.innerHTML = `Leeftijd moet tussen ${minAge} en ${maxAge} liggen`
         let today = new Date();
         let dob = new Date(inputDate)
         let ageDiff = today.getTime() - dob.getTime();
         let ageDate = new Date(ageDiff);
         let age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
-        if (age < 18 || age > 100) {
-            alert("Om deze website te gebruiken moet uw leeftijd moet tussen 18 en 100 liggen.");
+        if (age < minAge || age > maxAge) {
+            InputAge.style.borderColor = 'red'
+            invalidAge.style.display = 'block'
             return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks if the input value is floating-point number with a dot separator.
-     * @private
-     * @param {string} inputValue - The input value as a string.
-     * @returns {Promise<boolean>} - A promise that resolves to true if the input is valid, false otherwise.
-     */
-    async #checkWeightOrHeightSyntax(inputValue) {
-        // Check if the input is a valid floating-point number with a dot separator
-        let regex = /^-?\d+(\.\d)?$/;
-        if (regex.test(inputValue)) {
-            return true;
         } else {
-            alert("Gewicht en lengte moeten op 1 decimaal afgerond worden");
-            return false;
+            InputAge.style.border = '1px solid #ced4da'
+            invalidAge.style.display = 'none'
+            return true;
         }
     }
 
@@ -107,10 +113,19 @@ export class editProfileController extends Controller {
      * @returns {Promise<boolean>} - that resolves to true if the weight is valid, false otherwise.
      */
     async #checkWeightValue(weight) {
-        if (weight < 635 && weight > 25) {
+        let minWeight = 50
+        let maxWeight = 200
+        let InputWeight = document.getElementById('InputWeight')
+        let invalidWeight = document.getElementById('invalidWeight')
+        invalidWeight.innerHTML = `Gewicht moet tussen ${minWeight} en ${maxWeight} kilo liggen`
+
+        if (weight < maxWeight && weight > minWeight) {
+            InputWeight.style.border = '1px solid #ced4da'
+            invalidWeight.style.display = 'none'
             return true;
         } else {
-            alert("Gewicht moet tussen 25 en 635 kilo zijn");
+            InputWeight.style.borderColor = 'red'
+            invalidWeight.style.display = 'block'
             return false;
         }
     }
@@ -122,10 +137,19 @@ export class editProfileController extends Controller {
      * @returns {Promise<boolean>} - A promise that resolves to true if the height is valid, false otherwise.
      */
     async #checkHeightValue(height) {
-        if (height < 246 && height > 54) {
+        let minHeight = 100
+        let maxHeight = 250
+        let InputHeight = document.getElementById('InputHeight')
+        let invalidHeight = document.getElementById('invalidHeight')
+        invalidHeight.innerHTML = `Lengte moet tussen ${minHeight} en ${maxHeight} cm liggen`;
+
+        if (height < maxHeight && height > minHeight) {
+            InputHeight.style.border = '1px solid #ced4da'
+            invalidHeight.style.display = 'none'
             return true;
         } else {
-            alert("Lengte moet tussen 54 en 246 cm zijn");
+            InputHeight.style.borderColor = 'red'
+            invalidHeight.style.display = 'block'
             return false;
         }
     }
@@ -138,10 +162,17 @@ export class editProfileController extends Controller {
      */
     async #checkEmailValue(email) {
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+        let InputEmail = document.getElementById('InputEmail')
+        let invalidEmail = document.getElementById('invalidEmail')
+        invalidEmail.innerHTML = `Email adres is ongeldig`
+
         if (emailRegex.test(email)) {
+            InputEmail.style.border = '1px solid #ced4da'
+            invalidEmail.style.display = 'none'
             return true;
         } else {
-            alert("Email is incorrect, juiste manier: Voorbeeld@domein.com");
+            InputEmail.style.borderColor = 'red'
+            invalidEmail.style.display = 'block'
             return false;
         }
     }
@@ -153,8 +184,10 @@ export class editProfileController extends Controller {
      */
     #correctWeightOrHeight(inputValue) {
         let inputValueWithDot = inputValue.replace(',', '.');
-        return inputValueWithDot
+        let parsedValue = parseFloat(inputValueWithDot);
+        return parsedValue.toFixed(1); // Limit to one decimal place
     }
+
     /**
      * Sets the profile image based on the input.
      * @private
@@ -174,13 +207,16 @@ export class editProfileController extends Controller {
     async #saveProfileImage() {
         let profileImage = document.getElementById("InputProfileImage")
         const reader = new FileReader();
-        reader.addEventListener("load", () => {
-            localStorage.setItem("profile-image", reader.result);
-            console.log(localStorage.getItem("profile-image"))
-            document.getElementById("imagePreview").setAttribute("src", localStorage.getItem("profile-image"));
-        })
-        reader.readAsDataURL(profileImage.files[0]);
+        if(profileImage.files[0] != null) {
+            reader.addEventListener("load", () => {
+                localStorage.setItem("profile-image", reader.result);
+                console.log(localStorage.getItem("profile-image"))
+                document.getElementById("imagePreview").setAttribute("src", localStorage.getItem("profile-image"));
+            })
+            reader.readAsDataURL(profileImage.files[0]);
+        }
     }
+
     /**
      * Sends the updated profile data to the repository.
      * @private
@@ -198,5 +234,11 @@ export class editProfileController extends Controller {
         } catch (e) {
             console.log("Er is iets fout gegaan", e)
         }
+    }
+
+    async #setStandardProfileImage() {
+        const url = localStorage.getItem("profile-image")
+        const img = document.getElementById("imagePreview")
+        img.src = url;
     }
 }
