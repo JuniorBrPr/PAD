@@ -100,7 +100,7 @@ export class editProfileController extends Controller {
             invalidAge.style.display = 'block'
             return false;
         } else {
-            InputAge.style.border = '1px solid #ced4da'
+            InputAge.style.borderColor = '#ccc'
             invalidAge.style.display = 'none'
             return true;
         }
@@ -120,7 +120,7 @@ export class editProfileController extends Controller {
         invalidWeight.innerHTML = `Gewicht moet tussen ${minWeight} en ${maxWeight} kilo liggen`
 
         if (weight < maxWeight && weight > minWeight) {
-            InputWeight.style.border = '1px solid #ced4da'
+            InputWeight.style.borderColor = '#ccc'
             invalidWeight.style.display = 'none'
             return true;
         } else {
@@ -144,7 +144,7 @@ export class editProfileController extends Controller {
         invalidHeight.innerHTML = `Lengte moet tussen ${minHeight} en ${maxHeight} cm liggen`;
 
         if (height < maxHeight && height > minHeight) {
-            InputHeight.style.border = '1px solid #ced4da'
+            InputHeight.style.borderColor = '#ccc'
             invalidHeight.style.display = 'none'
             return true;
         } else {
@@ -167,7 +167,7 @@ export class editProfileController extends Controller {
         invalidEmail.innerHTML = `Email adres is ongeldig`
 
         if (emailRegex.test(email)) {
-            InputEmail.style.border = '1px solid #ced4da'
+            InputEmail.style.borderColor = '#ccc'
             invalidEmail.style.display = 'none'
             return true;
         } else {

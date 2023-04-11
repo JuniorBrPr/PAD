@@ -83,17 +83,15 @@ body{
     font-weight: 400;
     line-height: 1.5;
     color: #212529;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
     border-radius: 0.25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    outline: none;
+    border: 2px solid #ccc;
+    border-bottom-width: 3px;
+    transition: all 0.3s ease;
 }
 
 .inputFieldEditProfile:focus{
-    border: 2px solid #008C93;
+    border: 2px solid #008C93 !important;
     border-bottom-width: 3px;
 }
 
