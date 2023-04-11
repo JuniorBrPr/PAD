@@ -55,11 +55,9 @@ export class editProfileController extends Controller {
             await this.#checkHeightValue(height) &&
             await this.#checkEmailValue(email)
         ) {
-            if (confirm("Weet je zeker dat je je wijzigingen wilt opslaan?")) {
-                await this.#saveProfileImage()
-                await this.#sendData(firstname, surname, email, height, weight, age, 1)
-                App.loadController(App.CONTROLLER_PROFILE)
-            }
+            await this.#saveProfileImage()
+            await this.#sendData(firstname, surname, email, height, weight, age, 1)
+            App.loadController(App.CONTROLLER_PROFILE)
         } else {
             console.log("Input values are not all correct")
         }
