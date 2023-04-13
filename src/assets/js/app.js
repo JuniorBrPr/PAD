@@ -14,6 +14,7 @@ import { UploadController }  from "./controllers/uploadController.js"
 import { WelcomeController }  from "./controllers/welcomeController.js"
 import { WeekPlanningController }  from "./controllers/weekPlanningController.js"
 
+
 export class App {
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
@@ -34,6 +35,8 @@ export class App {
         //Attempt to load the controller from the URL, if it fails, fall back to the welcome controller.
         App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
     }
+
+
 
     /**
      * Loads a controller

@@ -1,12 +1,29 @@
 
 .planningSection{
-    background-color: #dadada;
+    /*background-color: #dadada;*/
 }
 
-.dayBox{
-    border-radius: 40px;
-    margin: 20px;
+.containerDiv{
+    border-radius: 10px;
+    margin: 10px;
+    /*display: block;*/
+    /*flex-wrap: wrap;*/
+    justify-content: center;
+    align-items: center;
+
+    width: 400px;
+    height: 200px;
+    border: 1px solid #919090;
+    background-color: #ccc;
+    /*margin: 10px 0;*/
 }
+
+/* .dayBox{*/
+/*    width: 500px;*/
+/*    height: 100px;*/
+/*    margin: 10px;*/
+
+/*}*/
 
 .deleteButtonPlanning{
     border-radius: 50px;
