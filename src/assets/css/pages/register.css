@@ -1,19 +1,16 @@
 
 
-.form-signup {
+.register-form-signup {
     margin: 0 auto;
     max-width: 400px;
     padding: 15px;
 }
 
-.form-signup h2 {
+.register-form-signup h2 {
     text-align: center;
 }
-.form-control{
-    margin: 15px;
-}
 
-.btn{
+.register-btn{
     min-width: 380px;
 }
 
