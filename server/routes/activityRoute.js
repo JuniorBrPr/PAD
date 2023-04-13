@@ -37,7 +37,7 @@ class ActivityRoute {
 
             try {
                 await this.#databaseHelper.handleQuery({
-                    query: `INSERT INTO usergoal(id, userId, activityId, dateMade, dayOfTheWeek, value)
+                    query: `INSERT INTO usergoal(id, userId, activityId, dateMade, dayOfTheWeek, valueChosenByUser)
                             values ?;`,
                     values: [data[0]]
                 });
