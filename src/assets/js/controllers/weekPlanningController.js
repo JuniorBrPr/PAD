@@ -37,7 +37,6 @@ export class WeekPlanningController extends Controller{
         let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
 
 
-
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
