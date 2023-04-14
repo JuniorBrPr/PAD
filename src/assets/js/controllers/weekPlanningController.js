@@ -36,18 +36,35 @@ export class WeekPlanningController extends Controller{
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth() , today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
 
-
-
-
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
+        //Voor nu hardcoded, ga het later aanpassen
+        let dataToDoDay = [{
+            id: 1,
+            name: 'Sport',
+            type: 'hardlopen',
+            tijd: '10min',
+            kcal: '100 - 200kcal',
+        }]
+
+        /**Loopt door alle dagen van de week*/
         for (let i = 0; i < 7; i++) {
-            /**Boxen*/
+            /**Boxen aangemaakt*/
             let newContainerTest = document.createElement('div');
             newContainerTest.classList.add('containerDiv');
             newContainerTest.id = `${i}`;
+
+            /**Data in boxen testen met hardcoded*/
+            let dayActivity = document.createElement('div');
+            dayActivity.classList.add('dayActivity');
+
+            dayActivity.innerHTML = dataToDoDay[0].type + dataToDoDay[0].name;
+
+
+            /**Box toegevoegd*/
             containerDayBox.appendChild(newContainerTest);
+
 
             /**Datums*/
             let date = new Date(dateToday);
@@ -58,14 +75,23 @@ export class WeekPlanningController extends Controller{
             datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
 
             /**Buttons*/
-            // let buttonDiv = document.createElement('div');
-            // buttonDiv.classList.add('deleteButtonPlanning');
 
+
+
+            /**Datums aan box toegevoegd*/
             newContainerTest.appendChild(datePlanningDiv)//Voegt de datums in de boxen
-            // newContainerTest.appendChild(deleteButtonPlanning)
+            /**data aan box toegevoegd*/
+            newContainerTest.appendChild(dayActivity);
+
+            //newContainerTest.appendChild(deleteButtonPlanning)
+
+
+            /**Popup maken*/
+           dayActivity.addEventListener("click", function(){
+                window.alert("tes123");
+            });
 
                 }
-
 
 
 
