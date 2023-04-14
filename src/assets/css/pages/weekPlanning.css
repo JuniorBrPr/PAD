@@ -4,7 +4,7 @@
 }
 
 .containerDiv{
-    border-radius: 40px;
+    border-radius: 50px;
     margin: 20px;
     /*display: block;*/
     /*flex-wrap: wrap;*/
@@ -19,12 +19,9 @@
     /*margin: 10px 0;*/
 }
 
-/* .dayBox{*/
-/*    width: 500px;*/
-/*    height: 100px;*/
-/*    margin: 10px;*/
-
-/*}*/
+.dateplanningDiv{
+   text-align: center;
+}
 
 .deleteButtonPlanning{
     border-radius: 50px;

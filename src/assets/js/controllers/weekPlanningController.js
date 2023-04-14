@@ -34,7 +34,8 @@ export class WeekPlanningController extends Controller{
 
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
-        let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
+        let dateToday = new Date(today.getFullYear(), today.getMonth() , today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
+
 
 
 
@@ -51,14 +52,16 @@ export class WeekPlanningController extends Controller{
             /**Datums*/
             let date = new Date(dateToday);
             date.setDate(dateToday.getDate() + i);
-            let dayDiv = document.createElement("div");
-            dayDiv.innerHTML = date.toDateString(); //toont de dagen
+            let datePlanningDiv = document.createElement("div");
+            datePlanningDiv.classList.add('dateplanningDiv');
+            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
 
             /**Buttons*/
             // let buttonDiv = document.createElement('div');
             // buttonDiv.classList.add('deleteButtonPlanning');
 
-            newContainerTest.appendChild(dayDiv)//Voegt de datums in de boxen
+            newContainerTest.appendChild(datePlanningDiv)//Voegt de datums in de boxen
             // newContainerTest.appendChild(deleteButtonPlanning)
 
                 }
