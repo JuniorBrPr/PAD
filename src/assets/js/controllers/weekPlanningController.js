@@ -25,17 +25,18 @@ export class WeekPlanningController extends Controller{
         this.#handleWeekplanning();
     }
 
+    /**
+     * @author Hanan Ouardi
+     * @returns {Promise<void>}
+     */
     async #handleWeekplanning() {
        // event.preventDefault();
-        console.log("hoi")
-
-
 
         let containerDayBox = document.querySelector("#dayContainer");
-
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
-        //today.getFullYear();
+
+
 
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
@@ -44,7 +45,7 @@ export class WeekPlanningController extends Controller{
             /**Boxen*/
             let newContainerTest = document.createElement('div');
             newContainerTest.classList.add('containerDiv');
-            newContainerTest.id = `container-${i}`;
+            newContainerTest.id = `${i}`;
             containerDayBox.appendChild(newContainerTest);
 
             /**Datums*/
@@ -56,8 +57,6 @@ export class WeekPlanningController extends Controller{
             /**Buttons*/
             // let buttonDiv = document.createElement('div');
             // buttonDiv.classList.add('deleteButtonPlanning');
-
-
 
             newContainerTest.appendChild(dayDiv)//Voegt de datums in de boxen
             // newContainerTest.appendChild(deleteButtonPlanning)
