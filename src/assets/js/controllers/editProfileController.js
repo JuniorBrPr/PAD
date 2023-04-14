@@ -119,7 +119,7 @@ export class editProfileController extends Controller {
         let invalidWeight = document.getElementById('invalidWeight')
         invalidWeight.innerHTML = `Gewicht moet tussen ${minWeight} en ${maxWeight} kilo liggen`
 
-        if (weight < maxWeight && weight > minWeight) {
+        if (weight <= maxWeight && weight >= minWeight) {
             InputWeight.style.borderColor = '#ccc'
             invalidWeight.style.display = 'none'
             return true;
@@ -143,7 +143,7 @@ export class editProfileController extends Controller {
         let invalidHeight = document.getElementById('invalidHeight')
         invalidHeight.innerHTML = `Lengte moet tussen ${minHeight} en ${maxHeight} cm liggen`;
 
-        if (height < maxHeight && height > minHeight) {
+        if (height <= maxHeight && height >= minHeight) {
             InputHeight.style.borderColor = '#ccc'
             invalidHeight.style.display = 'none'
             return true;

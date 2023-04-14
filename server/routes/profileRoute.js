@@ -72,7 +72,7 @@ class profileRoutes {
                                      INNER JOIN activity
                                                 ON usergoal.activityId = activity.id
                                      INNER JOIN goal
-                                                ON goal.usergoalID = usergoal.id
+                                                ON goal.activityID = usergoal.id
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
                               AND goal.completed = 0
@@ -94,7 +94,7 @@ class profileRoutes {
         this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `UPDATE goal SET completed = 1 WHERE usergoalID = ?`,
+                    query: `UPDATE goal SET completed = 1 WHERE activityID = ?`,
                     values: [req.params.usergoalID]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
@@ -110,11 +110,12 @@ class profileRoutes {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage
-                                FROM goal
-                                         INNER JOIN usergoal
-                                                    ON goal.usergoalID = usergoal.id
-                                WHERE usergoal.userId = ?
-                                  AND dayOfTheWeek = ?`,
+                            FROM goal
+                                     INNER JOIN usergoal
+                                                ON goal.activityID = usergoal.id
+                            WHERE usergoal.userId = ?
+                              AND dayOfTheWeek = ?
+                    `,
                     values: [req.params.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
