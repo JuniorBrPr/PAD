@@ -34,7 +34,7 @@ class profileRoutes {
         this.#app.get("/profile/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT firstname, surname, date_of_birth, emailAdress, weight, height
+                    query: `SELECT firstname, surname, date_of_birth, emailAddress, weight, height
                             FROM user
                             WHERE id = ?`,
                     values: [req.params.userId]

@@ -43,7 +43,7 @@ export class profileController extends Controller {
         try {
             const data = await this.#profileRepository.getData(userId);
             document.getElementById("profileFullName").innerHTML = data.data[0].firstname + " " + data.data[0].surname
-            document.getElementById("profileEmail").innerHTML = data.data[0].emailAdress
+            document.getElementById("profileEmail").innerHTML = data.data[0].emailAddress
             document.getElementById("profileAge").innerHTML = this.#calculateAge(data.data[0].date_of_birth) + " Jaar"
             document.getElementById("profileHeight").innerHTML = data.data[0].height + " CM"
             document.getElementById("profileWeight").innerHTML = data.data[0].weight + " Kilo"

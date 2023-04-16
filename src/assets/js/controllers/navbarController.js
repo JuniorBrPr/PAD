@@ -39,7 +39,10 @@ export class NavbarController extends Controller{
      */
     #handleClickNavigationItem(event) {
         event.preventDefault();
-        
+
+        //handle the navbar visibility
+        App.handleNavElementVisibility();
+
         //Get the data-controller from the clicked element (this)
         const clickedAnchor = event.target;
         const controller = clickedAnchor.dataset.controller;
