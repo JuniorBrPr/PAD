@@ -26,18 +26,26 @@
 }
 
 .deleteButtonPlanning{
-    border-radius: 50px;
-    margin: 20px;
+    position: relative;
+    border-radius: 40px;
     width: 150px;
+    display: grid;
+    top: 67px;
+    left: 40px;
 }
 
 .completeButtonPlanning{
-    border-radius: 50px;
+    position: relative;
+    border-radius: 40px;
+    width: 150px;
+    display: grid;
+    top: 30px;
+    left: 200px;
 }
 
 .dayActivity{
     text-align: center;
     margin: 20px;
     font-size: 20px;
-    display: grid;
+    display: flow;
 }

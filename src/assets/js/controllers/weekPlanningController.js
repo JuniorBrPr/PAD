@@ -31,7 +31,6 @@ export class WeekPlanningController extends Controller{
      */
     async #handleWeekplanning() {
        // event.preventDefault();
-
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth() , today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
@@ -54,36 +53,33 @@ export class WeekPlanningController extends Controller{
             let newContainerTest = document.createElement('div');
             newContainerTest.classList.add('containerDiv');
             newContainerTest.id = `${i}`;
-
             /**Data in boxen testen met hardcoded*/
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
-
             dayActivity.innerHTML = dataToDoDay[0].type + dataToDoDay[0].name;
-
-
             /**Box toegevoegd*/
             containerDayBox.appendChild(newContainerTest);
-
-
-            /**Datums*/
+            /**Datums geformatteerd*/
             let date = new Date(dateToday);
             date.setDate(dateToday.getDate() + i);
             let datePlanningDiv = document.createElement("div");
             datePlanningDiv.classList.add('dateplanningDiv');
             const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
             datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
-
             /**Buttons*/
-
-
+            let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+            let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+            /**Verwijdert de orinal button*/
+            deleteButtonPlanning.remove();
+            completeButtonPlanning.remove();
 
             /**Datums aan box toegevoegd*/
             newContainerTest.appendChild(datePlanningDiv)//Voegt de datums in de boxen
             /**data aan box toegevoegd*/
             newContainerTest.appendChild(dayActivity);
-
-            //newContainerTest.appendChild(deleteButtonPlanning)
+            /**Buttons in box toegevoegd*/
+            newContainerTest.appendChild(cloneButtonDelete)
+            newContainerTest.appendChild(cloneButtonComplete)
 
 
             /**Popup maken*/
