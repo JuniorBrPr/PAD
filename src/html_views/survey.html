@@ -71,24 +71,25 @@
         </div>
         <div class="row mt-3 mb-4">
             <ul class="options-container list-group">
+
             </ul>
         </div>
     </div>
 </template>
 
 <template id="checkbox">
-    <div class="option row d-flex">
+    <li class="option mt-1 border rounded row d-flex">
         <div class="col d-flex">
             <div class="form-check d-flex align-items-center ">
                 <input id="formCheckBox" class="formCheckBox form-check-input m-3" type="checkbox"/>
                 <label class="optionText form-check-label fs-4" for="formCheckBox">Closed input</label>
             </div>
         </div>
-    </div>
+    </li>
 </template>
 
 <template id="checkboxWithField">
-    <div class="option row">
+    <li class="option mt-1 border rounded row">
         <div class="col d-flex">
             <div class="form-check align-items-center">
                 <input id="formCheckBox1" class="formCheckBox form-check-input d-md-flex m-3" type="checkbox"/>
@@ -99,27 +100,27 @@
         <div class="col d-flex justify-content-center">
             <input class="input-field form-control-plaintext border" type="text" placeholder="Vul hier je antwoord in"/>
         </div>
-    </div>
+    </li>
 </template>
 
 <template id="radio">
-    <div class="option col">
-        <div class="form-check row">
-            <div class="radio-button-container d-flex flex-fill">
+    <li class="option mt-1 border rounded row">
+        <div class="form-check">
+            <div class="radio-button-container d-flex flex-fill col">
             </div>
         </div>
-    </div>
+    </li>
 </template>
 
 <template id="radioButton">
-    <div class="formRadioBtn form-check d-flex flex-fill justify-content-center border mx-1 rounded mt-3 mb-1">
+    <li class="formRadioBtn form-check d-flex flex-fill justify-content-center border mx-1 rounded mt-3 mb-1">
         <input id="radioBtn" class="formRadioBtn form-check-input ms-0 me-auto" type="radio" name="portion"/>
         <label class="option-text form-check-label me-auto" for="radioBtn"></label>
-    </div>
+    </li>
 </template>
 
 <template id="backAndForthActivityTable">
-    <div class="questionTab">
+    <div class="questionTab border rounded p-4 mt-2">
         <div class="row d-flex justify-content-center">
             <h2 class="text-center title"></h2>
         </div>
@@ -171,7 +172,7 @@
 
 
 <template id="recurringPhysicalActivityTable">
-    <div class="questionTab">
+    <div class="questionTab border rounded p-4 mt-2">
         <div class="row d-flex justify-content-center">
             <h2 class="text-center title"></h2>
         </div>
@@ -206,7 +207,7 @@
 </template>
 
 <template id="householdActivityTable">
-    <div class="questionTab">
+    <div class="questionTab border rounded p-4 mt-2">
         <div class="row d-flex justify-content-center">
             <h2 class="text-center title"></h2>
         </div>

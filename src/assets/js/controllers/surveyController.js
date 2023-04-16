@@ -232,7 +232,7 @@ export class SurveyController extends Controller {
                         const option = this.#RADIO_OPTION.content.querySelector(".option")
                             .cloneNode(true);
                         const radioBtnContainer = option.querySelector(".radio-button-container");
-
+                        console.log(question);
                         switch (question.type) {
                             case "numberScale":
                                 for (let j = 0; j < 8; j++) {
@@ -299,9 +299,9 @@ export class SurveyController extends Controller {
                                     const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
                                         .cloneNode(true);
                                     radioBtn.querySelector(".form-check-label").innerText = String(j);
-                                    radioBtnContainer.appendChild(radioBtn);
+                                    optionsContainer.appendChild(radioBtn);
                                 }
-                                optionsContainer.appendChild(option);
+                                // optionsContainer.appendChild(option);
                                 break;
                         }
                         break;
@@ -366,7 +366,8 @@ export class SurveyController extends Controller {
 
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
-            const response = await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(true), 1);
+            const response = await this.#surveyRepository.putSurveyResult(
+                this.#getSurveyResponseData(this.#data[0].surveyId !== 2), 1);
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
             alert.style.display = "block";
