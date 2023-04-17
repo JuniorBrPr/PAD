@@ -34,7 +34,7 @@ export class editProfileController extends Controller {
         let data = await this.#editProfileRepository.getData(1);
         document.getElementById("InputFirstname").value = data.data[0].firstname
         document.getElementById("InputSurname").value = data.data[0].surname
-        document.getElementById("InputEmail").value = data.data[0].emailAdress
+        document.getElementById("InputEmail").value = data.data[0].emailAddress
         document.getElementById("InputAge").value = new Date(data.data[0].date_of_birth ).toISOString().split('T')[0]
         document.getElementById("InputHeight").value = data.data[0].height
         document.getElementById("InputWeight").value = data.data[0].weight

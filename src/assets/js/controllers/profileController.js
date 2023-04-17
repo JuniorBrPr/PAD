@@ -45,7 +45,7 @@ export class profileController extends Controller {
         try {
             const data = await this.#profileRepository.getData(userId);
             document.getElementById("profileFullName").innerHTML = data.data[0].firstname + " " + data.data[0].surname
-            document.getElementById("profileEmail").innerHTML = data.data[0].emailAdress
+            document.getElementById("profileEmail").innerHTML = data.data[0].emailAddress
             document.getElementById("profileAge").innerHTML = this.#calculateAge(data.data[0].date_of_birth) + " Jaar"
             document.getElementById("profileHeight").innerHTML = data.data[0].height + " CM"
             document.getElementById("profileWeight").innerHTML = data.data[0].weight + " Kilo"
@@ -143,17 +143,12 @@ export class profileController extends Controller {
         const percentageText = document.getElementById('percentage');
         let percentageGoalCompletion = parseInt(calculateGoalCompletionPercentage.data[0].percentage);
 
-        // Text percentage
-        percentageText.innerHTML = percentageGoalCompletion + "%";
-
-        // Get the percentage bar element
-        const percentageBar = document.getElementById("percentageBar");
-
-        // Update the width of the percentage bar based on the percentage value
-        // function updatePercentageBar() {
-        //     percentageBar.style.width = `${percentageGoalCompletion}%`;
-        //     percentageBar.style.transition = '2s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
-        // }
+        if (isNaN(percentageGoalCompletion)) {
+            document.getElementById('progressRingDiv').remove();
+        }else {
+            // Text percentage
+            percentageText.innerHTML = percentageGoalCompletion + "%";
+        }
 
         function updatePercentageBar(){
             let circle = document.querySelector('circle');
@@ -163,8 +158,8 @@ export class profileController extends Controller {
             circle.style.strokeDasharray = `${circumference} ${circumference}`;
             circle.style.strokeDashoffset = `${circumference}`;
 
-                const offset = circumference - percentageGoalCompletion / 100 * circumference;
-                circle.style.strokeDashoffset = offset;
+            const offset = circumference - percentageGoalCompletion / 100 * circumference;
+            circle.style.strokeDashoffset = offset;
         }
 
         // Call the updatePercentageBar function initially to set the initial percentage value
