@@ -24,6 +24,8 @@ export class NavbarController extends Controller{
         //await for when HTML is
         this.#navbarView = await super.loadHtmlIntoNavigation("html_views/navbar.html")
 
+        App.handleNavElementVisibility();
+
         //from here we can safely get elements from the view via the right getter
         const anchors = this.#navbarView.querySelectorAll("a.nav-link");
 
@@ -39,9 +41,6 @@ export class NavbarController extends Controller{
      */
     #handleClickNavigationItem(event) {
         event.preventDefault();
-
-        //handle the navbar visibility
-        App.handleNavElementVisibility();
 
         //Get the data-controller from the clicked element (this)
         const clickedAnchor = event.target;

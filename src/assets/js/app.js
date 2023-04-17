@@ -32,7 +32,6 @@ export class App {
     static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_LOGIN = "login";
     static CONTROLLER_LOGOUT = "logout";
-    static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_REGISTER = "register";
     static CONTROLLER_WEEKPLANNING = "weekPlanning";
 
@@ -47,8 +46,6 @@ export class App {
 
         //Attempt to load the controller from the URL, if it fails, fall back to the welcome controller.
         App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
-
-        App.handleNavElementVisibility();
     }
 
     /**
