@@ -54,4 +54,8 @@ export class editProfileRepository {
                 userId: userId
             });
     }
+
+    async getData(userId) {
+        return await this.#networkManager.doRequest(`/profile/${userId}`, "GET", userId);
+    }
 }
