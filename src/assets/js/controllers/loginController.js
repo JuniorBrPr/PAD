@@ -27,8 +27,6 @@ export class LoginController extends Controller{
         //await for when HTML is loaded, never skip this method call in a controller
         this.#loginView = await super.loadHtmlIntoContent("html_views/login.html")
 
-        console.log(App.sessionManager.getAll());
-
         //from here we can safely get elements from the view via the right getter
         this.#loginView.querySelector(".btn").addEventListener("click", event => this.#handleLogin(event));
 
@@ -54,8 +52,6 @@ export class LoginController extends Controller{
 
         try{
             const user = await this.#usersRepository.login(emailAddress, password);
-
-            console.log(user);
 
             //let the session manager know we are logged in by setting the username, never set the password in localstorage
             App.sessionManager.set("firstname", user.firstname);
