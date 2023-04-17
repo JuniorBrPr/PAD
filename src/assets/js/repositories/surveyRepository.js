@@ -99,4 +99,15 @@ export class SurveyRepository {
         return await this.#networkManager
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
+
+    /**
+     *  @author Jayden.G
+     *  Method to update the completion status surveys for a user
+     *
+     *  @param  userId The user ID of the user you want to update the complete the survey status of.
+     */
+    async updateSurveyCompletionStatus(userId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}completionStatus/${userId}`, "PUT");
+    }
 }

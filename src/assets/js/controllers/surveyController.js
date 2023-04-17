@@ -64,7 +64,8 @@ export class SurveyController extends Controller {
         const unansweredSurveys = await this.#fetchUnansweredSurveys();
 
         if (unansweredSurveys.length === 0) {
-            //TODO: Redirect to dashboard
+            await this.#surveyRepository.updateSurveyCompletionStatus();
+            App.loadController("welcome");
         } else {
             for (const survey of unansweredSurveys) {
                 switch (survey.id) {

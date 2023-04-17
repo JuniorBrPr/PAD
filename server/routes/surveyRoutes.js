@@ -249,6 +249,16 @@ class surveyRoutes {
             }
         });
     }
+
+    #updateSurveyCompletionStatus() {
+        this.#app.put("/survey/completionStatus/:userId", async (res, req) => {
+            try {
+                await this.#databaseHelper.handleQuery({
+                    
+                })
+            }
+        });
+    }
 }
 
 module.exports = surveyRoutes;
