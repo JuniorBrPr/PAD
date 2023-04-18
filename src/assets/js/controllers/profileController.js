@@ -91,13 +91,15 @@ export class profileController extends Controller {
                 let goal = await this.#profileRepository.getGoals(userId)
                 // Constants we are gonna use
                 let goalTitle = usergoal.data[i].name;
-                let valueType = usergoal.data[i].unit;
-                let usergoalID = goal.data[i].usergoalID;
+                let unit = usergoal.data[i].unit;
+                let usergoalID = usergoal.data[i].usergoalID;
+
                 // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
                 let completed = goal.data[i]?.completed || 0;
+
                 // When goal hasnt been made yet (goal undefined) the value will be set to the value
                 // which was chosen by user and is from usergoal
-                let goalAmount = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
+                let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
                 if (completed === 0) {
                     // This is the layout of every card, it will be filled with the constants of the parameters
                     let card = document.createElement('div');
@@ -106,7 +108,7 @@ export class profileController extends Controller {
                 <div class="mx-auto my-4">
                   <div class="card-body justify-content-center text-center">
                     <h5 id="activity-title" class="card-title">${goalTitle}</h5>
-                    <h6 id="activity-amount" class="card-subtitle mb-2">${goalAmount} ${valueType}</h6>
+                    <h6 id="activity-amount" class="card-subtitle mb-2">${value} ${unit}</h6>
                       <button id="activity-btn-completed" class="=w-50">Gehaald</button>
                   </div>
                 </div>`;
@@ -126,9 +128,13 @@ export class profileController extends Controller {
 
                     // When button is pressed this function will run
                     card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
+                        await  this.#profileRepository.insertGoal(usergoalID,userId,value)
+
                         await this.#profileRepository.updateGoalCompletion(usergoalID);
+
                         card.style.opacity = '0'; // Set opacity to 0 to start the transition
                         card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+
                         setTimeout(() => {
                             cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
                         }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout

@@ -37,9 +37,17 @@ export class profileRepository {
         return await this.#networkManager.doRequest(`${this.#route}/goals/${userId}`, "GET", userId);
     }
 
+    async insertGoal(userGoalID, userId, value) {
+        return await this.#networkManager.doRequest(`/profile/insertGoal/${userGoalID}?userId=${userId}&value=${value}`, "POST", {
+            "usergoalID": userGoalID,
+            "userId": userId,
+            "value": value
+        });
+    }
+
+
     async updateGoalCompletion(userGoalID) {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletion/${userGoalID}`, "PUT", userGoalID);
-
     }
 
     async calculateGoalCompletionPercentage(userId) {

@@ -25,6 +25,7 @@ class profileRoutes {
         this.#getData()
         this.#getUserGoals()
         this.#getGoals()
+        this.#insertGoal()
         this.#updateGoalCompletion()
         this.#calculateGoalCompletionPercentage()
     }
@@ -90,12 +91,16 @@ class profileRoutes {
         this.#app.get("/profile/goals/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT usergoal.dayOfTheWeek, goal.completed, goal.value, goal.userID, goal.activityID AS usergoalID
+                    query: `SELECT usergoal.dayOfTheWeek,
+                                   goal.completed,
+                                   goal.value,
+                                   goal.userID,
+                                   goal.activityID AS usergoalID
                             FROM goal
                                      INNER JOIN usergoal ON goal.activityID = usergoal.id
                             WHERE goal.userID = ?
                               AND usergoal.dayOfTheWeek = ?
-                            `,
+                    `,
                     values: [req.params.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
@@ -104,6 +109,22 @@ class profileRoutes {
             }
         })
     }
+
+    #insertGoal() {
+        this.#app.post("/profile/insertGoal/:usergoalID", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `INSERT INTO goal(activityID, userID, completed, value, date)
+                        VALUES (?, ?, 0, ?, ?)`,
+                    values: [req.params.usergoalID, req.query.userId, req.query.value, new Date()]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
 
     #updateGoalCompletion() {
         this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
