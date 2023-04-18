@@ -129,7 +129,9 @@ class profileRoutes {
                             FROM usergoal
                                      INNER JOIN goal ON usergoal.id = goal.activityId
                             WHERE id IN (SELECT activityId FROM goal)
-                              AND goal.completed = 1;
+                              AND goal.completed = 1
+                              AND goal.userID = ?
+                              AND usergoal.dayOfTheWeek = ?;
                     `,
                     values: [req.params.userId, new Date().getDay()]
                 })
