@@ -23,10 +23,12 @@ class profileRoutes {
         this.#app = app;
         //call method per route for the users entity
         this.#getData()
+        this.#getUserGoals()
         this.#getGoals()
         this.#updateGoalCompletion()
         this.#calculateGoalCompletionPercentage()
     }
+
     /**
      * Private method that sets up the route handler for getting user data.
      * Handles a GET request to the /profile/:userId endpoint.
@@ -56,26 +58,20 @@ class profileRoutes {
         });
     }
 
-    #getGoals() {
-        this.#app.get("/profile/goals/:userId", async (req, res) => {
+    #getUserGoals() {
+        this.#app.get("/profile/userGoals/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.userId,
                                    usergoal.dayOfTheWeek,
-                                   goal.value,
-                                   goal.date,
+                                   usergoal.valueChosenByUser,
                                    activity.unit,
                                    activity.name,
-                                   goal.completed,
                                    usergoal.id AS usergoalID
                             FROM usergoal
-                                     INNER JOIN activity
-                                                ON usergoal.activityId = activity.id
-                                     INNER JOIN goal
-                                                ON goal.activityID = usergoal.id
+                                     INNER JOIN activity ON usergoal.activityId = activity.id
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
-                              AND goal.completed = 0
                     `,
                     values: [req.params.userId, new Date().getDay()]
                 });
@@ -90,16 +86,36 @@ class profileRoutes {
         });
     }
 
+    #getGoals() {
+        this.#app.get("/profile/goals/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT usergoal.dayOfTheWeek, goal.completed, goal.value, goal.userID, goal.activityID AS usergoalID
+                            FROM goal
+                                     INNER JOIN usergoal ON goal.activityID = usergoal.id
+                            WHERE goal.userID = ?
+                              AND usergoal.dayOfTheWeek = ?
+                            `,
+                    values: [req.params.userId, new Date().getDay()]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
     #updateGoalCompletion() {
         this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `UPDATE goal SET completed = 1 WHERE activityID = ?`,
+                    query: `UPDATE goal
+                            SET completed = 1
+                            WHERE activityID = ?`,
                     values: [req.params.usergoalID]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-            }
-            catch (e) {
+            } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         })
@@ -109,24 +125,23 @@ class profileRoutes {
         this.#app.put("/profile/goalCompletionPercentage/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage
-                            FROM goal
-                                     INNER JOIN usergoal
-                                                ON goal.activityID = usergoal.id
-                            WHERE usergoal.userId = ?
-                              AND dayOfTheWeek = ?
+                    query: `SELECT (COUNT(*) * 100 / (SELECT COUNT(*) FROM goal)) AS percentage
+                            FROM usergoal
+                                     INNER JOIN goal ON usergoal.id = goal.activityId
+                            WHERE id IN (SELECT activityId FROM goal)
+                              AND goal.completed = 1;
                     `,
                     values: [req.params.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-            }
-            catch (e) {
+            } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         })
     }
 
 }
+
 /**
  * Exports the profileRoutes class.
  */

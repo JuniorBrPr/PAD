@@ -30,6 +30,9 @@ export class profileRepository {
         return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "GET", userId);
     }
 
+    async getUserGoals(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/userGoals/${userId}`, "GET", userId);
+    }
     async getGoals(userId) {
         return await this.#networkManager.doRequest(`${this.#route}/goals/${userId}`, "GET", userId);
     }
