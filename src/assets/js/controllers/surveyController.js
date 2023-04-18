@@ -1,6 +1,7 @@
 import {SurveyRepository} from "../repositories/surveyRepository.js";
 import {ActivityFrequencyRepository} from "../repositories/activityFrequencyRepository.js";
 import {Controller} from "./controller.js";
+import {App} from "../app.js";
 
 /**
  * Responsible for handling the actions happening on the survey view.
@@ -28,6 +29,7 @@ export class SurveyController extends Controller {
     #surveyView
     #currentQuestion
     #questionsAnswered
+    #surveyCompletedStatus
     #data
 
     #CONTAINER;
@@ -37,12 +39,14 @@ export class SurveyController extends Controller {
     #RADIO_OPTION;
     #RADIO_BUTTON;
 
+
     constructor() {
         super();
         this.#surveyRepository = new SurveyRepository();
         this.#frequencyRepository = new ActivityFrequencyRepository();
         this.#currentQuestion = 0;
         this.#questionsAnswered = 0;
+        this.#surveyCompletedStatus = 1;
         this.#data = [];
 
         this.#setupView();
@@ -64,7 +68,9 @@ export class SurveyController extends Controller {
         const unansweredSurveys = await this.#fetchUnansweredSurveys();
 
         if (unansweredSurveys.length === 0) {
-            await this.#surveyRepository.updateSurveyCompletionStatus();
+            await this.#surveyRepository.updateSurveyCompletionStatus(
+                this.#surveyCompletedStatus, App.sessionManager.get('user_id')
+            );
             App.loadController("welcome");
         } else {
             for (const survey of unansweredSurveys) {

@@ -250,12 +250,31 @@ class surveyRoutes {
         });
     }
 
+    /**
+     * @author Jayden.G
+     * Updates the completion status of the survey for a user.
+     *
+     * @param {number} userId The id of the user.
+     * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+     * @private
+     */
+
     #updateSurveyCompletionStatus() {
         this.#app.put("/survey/completionStatus/:userId", async (res, req) => {
             try {
+                const userId = req.params.userId
+                const surveyStatus = req.body.surveyStatus
+
+                console.log(surveyStatus)
+
                 await this.#databaseHelper.handleQuery({
-                    
+                    query: `UPDATE user
+                            SET completedSurvey = ?
+                            WHERE id = ?`,
+                    values: [surveyStatus, userId]
                 })
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
     }

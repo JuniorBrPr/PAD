@@ -5,6 +5,11 @@ footer {
     width: 100%;
 }
 
+.btn.btn-primary {
+    background-color: #008C93;
+    border-color: #008C93;
+}
+
 .navbar {
     background-color: #008C93;
 }
@@ -20,43 +25,43 @@ footer {
     height: 70vh;
 }
 
-.profilesection{
+.profilesection {
     background-color: #008C93;
 }
 
-.colProfile{
+.colProfile {
     position: relative;
     top: -30px;
 }
 
-.profielFoto{
+.profielFoto {
     width: 100px;
     height: 100px;
     border: white 3px solid;
 }
 
-.container-editProfile{
+.container-editProfile {
     min-height: 100vh;
     background-color: #eeeeee;
 }
 
-.divForm{
+.divForm {
     border-radius: 20px;
     margin-top: 10px;
 }
 
-.formEditProfile{
+.formEditProfile {
     margin-bottom: 50px;
 }
 
-.inputFieldEditProfileWithLabel{
+.inputFieldEditProfileWithLabel {
     width: 40%;
     margin: 5%;
     display: flex;
     flex-direction: column;
 }
 
-.inputFieldEditProfile{
+.inputFieldEditProfile {
     height: 45px;
     outline: none;
     font-size: 16px;
@@ -67,12 +72,12 @@ footer {
     transition: all 0.3s ease;
 }
 
-.inputFieldEditProfile:focus{
+.inputFieldEditProfile:focus {
     border: 2px solid #008C93;
     border-bottom-width: 3px;
 }
 
-#imagePreview{
+#imagePreview {
     min-height: 190px;
     max-height: 190px;
     min-width: 190px;
@@ -93,7 +98,7 @@ footer {
     text-align: center;
 }
 
-#InputProfileImage{
+#InputProfileImage {
     display: none;
 }
 
