@@ -35,7 +35,7 @@ class profileRoutes {
         this.#app.put("/editProfile/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `UPDATE user SET firstname = ?, surname = ?, emailAdress = ?, date_of_birth = ?, weight = ?, height = ? WHERE id = ?`,
+                    query: `UPDATE user SET firstname = ?, surname = ?, emailAddress = ?, date_of_birth = ?, weight = ?, height = ? WHERE id = ?`,
                     // values: ["TEST", "TEST", "2005-01-31", "TEST@GMAIL.COM", "100", "100"]
                     values: [req.body.firstname, req.body.surname, req.body.email, req.body.age, req.body.weight, req.body.height, req.params.userId]
                 })

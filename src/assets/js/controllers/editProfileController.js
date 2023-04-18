@@ -52,6 +52,8 @@ export class editProfileController extends Controller {
         let weight = this.#correctWeightOrHeight(document.getElementById("InputWeight").value)
         let age = document.getElementById("InputAge").value
         try {
+            const checkFirstname = await this.#checkFirstName(firstname);
+
             const calculateMinBirthDayResult = await this.#calculateMinBirthDay(age);
 
             const checkWeightValueResult = await this.#checkWeightValue(weight);
@@ -61,6 +63,7 @@ export class editProfileController extends Controller {
             const checkEmailValueResult = await this.#checkEmailValue(email);
 
             if (
+                checkFirstname === true &&
                 calculateMinBirthDayResult === true &&
                 checkWeightValueResult === true &&
                 checkHeightValueResult === true &&
@@ -174,6 +177,21 @@ export class editProfileController extends Controller {
             InputEmail.style.borderColor = 'red'
             invalidEmail.style.display = 'block'
             return false;
+        }
+    }
+
+    async #checkFirstName(firstname){
+        let inputFirstName = document.getElementById('InputFirstname')
+        let invalidFirstname = document.getElementById('invalidFirstname')
+        invalidFirstname.innerHTML = `Voornaam is verplicht`
+        if (firstname.trim().length === 0){
+            inputFirstName.style.borderColor = 'red'
+            invalidFirstname.style.display = 'block'
+            return false;
+        } else {
+            inputFirstName.style.borderColor = '#ccc'
+            invalidFirstname.style.display = 'none'
+            return true;
         }
     }
     /**
