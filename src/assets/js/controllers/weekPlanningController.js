@@ -35,6 +35,7 @@ export class WeekPlanningController extends Controller{
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth() , today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
 
+        let newContainerTest = document.querySelector(".newContainerTest");
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
@@ -46,13 +47,15 @@ export class WeekPlanningController extends Controller{
             tijd: '10min',
             kcal: '100 - 200kcal',
         }]
-
         /**Loopt door alle dagen van de week*/
         for (let i = 0; i < 7; i++) {
             /**Boxen aangemaakt*/
+            // let newContainerTest1 = newContainerTest.cloneNode(true);
+            // newContainerTest.remove();
             let newContainerTest = document.createElement('div');
             newContainerTest.classList.add('containerDiv');
-            newContainerTest.id = `${i}`;
+
+           // newContainerTest.id = `${i}`; <= weghalen
             /**Data in boxen testen met hardcoded*/
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
@@ -69,10 +72,9 @@ export class WeekPlanningController extends Controller{
             /**Buttons*/
             let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
             let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-            /**Verwijdert de orinal button*/
+            /**Verwijdert de orinal html button*/
             deleteButtonPlanning.remove();
             completeButtonPlanning.remove();
-
             /**Datums aan box toegevoegd*/
             newContainerTest.appendChild(datePlanningDiv)//Voegt de datums in de boxen
             /**data aan box toegevoegd*/
@@ -85,6 +87,7 @@ export class WeekPlanningController extends Controller{
             /**Popup maken*/
            dayActivity.addEventListener("click", function(){
                 window.alert("tes123");
+
             });
 
                 }
