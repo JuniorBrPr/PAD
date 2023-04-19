@@ -85,8 +85,8 @@ export class profileController extends Controller {
         document.getElementById('date').innerHTML = date;
         
         try {
-            let goals = await this.#profileRepository.getUserGoals(userId);
-            for (let i = 0; i < goals.data.length; i++) {
+            let userGoals = await this.#profileRepository.getUserGoals(userId);
+            for (let i = 0; i < userGoals.data.length; i++) {
                 let usergoal = await this.#profileRepository.getUserGoals(userId);
                 let goal = await this.#profileRepository.getGoals(userId)
                 // Constants we are gonna use
@@ -128,7 +128,9 @@ export class profileController extends Controller {
 
                     // When button is pressed this function will run
                     card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
-                        await  this.#profileRepository.insertGoal(usergoalID,userId,value)
+                        if(typeof goal.data[i] === 'undefined'){
+                            await this.#profileRepository.insertGoal(usergoalID,userId,value)
+                        }
 
                         await this.#profileRepository.updateGoalCompletion(usergoalID);
 
@@ -155,11 +157,18 @@ export class profileController extends Controller {
         const percentageText = document.getElementById('percentage');
         let percentageGoalCompletion = parseInt(calculateGoalCompletionPercentage.data[0].percentage);
 
-        if (isNaN(percentageGoalCompletion)) {
-            document.getElementById('progressRingDiv').remove();
+
+        if (isNaN(percentageGoalCompletion)) { // If no goals exist
+            let userGoals = await this.#profileRepository.getUserGoals(userId); // Get usergoals
+            if(userGoals.data.length > 0){ // If there are user goals
+                // Text percentage
+                percentageText.innerHTML = "0%"; // Set innertext to 0% of NaN%
+            }else{
+                document.getElementById('progressRingDiv').remove(); // Else remove the progress ring completely
+            }
         }else {
             // Text percentage
-            percentageText.innerHTML = percentageGoalCompletion + "%";
+            percentageText.innerHTML = percentageGoalCompletion + "%"; // If there already is a goal then present percentage
         }
 
         function updatePercentageBar(){
