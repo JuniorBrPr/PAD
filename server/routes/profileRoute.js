@@ -146,15 +146,22 @@ class profileRoutes {
         this.#app.put("/profile/goalCompletionPercentage/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT (COUNT(*) * 100 / (SELECT COUNT(*) FROM goal)) AS percentage
+                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
+                                   NULL                                  AS activityID
                             FROM usergoal
-                                     INNER JOIN goal ON usergoal.id = goal.activityId
-                            WHERE id IN (SELECT activityId FROM goal)
-                              AND goal.completed = 1
-                              AND goal.userID = ?
+                                     LEFT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.userId = ?
+                              AND usergoal.dayOfTheWeek = ?
+                            UNION
+                            SELECT usergoal.id,
+                                   goal.activityID
+                            FROM usergoal
+                                     RIGHT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.id IS NULL
+                              AND goal.userId = ?
                               AND usergoal.dayOfTheWeek = ?;
                     `,
-                    values: [req.params.userId, new Date().getDay()]
+                    values: [req.params.userId, new Date().getDay(), req.params.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
