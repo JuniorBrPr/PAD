@@ -50,7 +50,7 @@ export class profileRepository {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletion/${userGoalID}`, "PUT", userGoalID);
     }
 
-    async calculateGoalCompletionPercentage(userId) {
+    async calculateDailyGoalCompletionPercentage(userId) {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletionPercentage/${userId}`, "PUT", userId);
     }
 

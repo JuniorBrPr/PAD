@@ -153,9 +153,9 @@ export class profileController extends Controller {
 
 
     async #displayGoalCompletionPercentage(userId) {
-        let calculateGoalCompletionPercentage = await this.#profileRepository.calculateGoalCompletionPercentage(userId);
+        let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage(userId);
         const percentageText = document.getElementById('percentage');
-        let percentageGoalCompletion = parseInt(calculateGoalCompletionPercentage.data[0].percentage);
+        let percentageGoalCompletion = parseInt(calculateDailyGoalCompletionPercentage.data[0].percentage);
 
 
         if (isNaN(percentageGoalCompletion)) { // If no goals exist

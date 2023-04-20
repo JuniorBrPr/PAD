@@ -27,7 +27,7 @@ class profileRoutes {
         this.#getGoals()
         this.#insertGoal()
         this.#updateGoalCompletion()
-        this.#calculateGoalCompletionPercentage()
+        this.#calculateDailyGoalCompletionPercentage()
     }
 
     /**
@@ -142,7 +142,7 @@ class profileRoutes {
         })
     }
 
-    #calculateGoalCompletionPercentage() {
+    #calculateDailyGoalCompletionPercentage() {
         this.#app.put("/profile/goalCompletionPercentage/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
