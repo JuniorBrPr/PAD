@@ -7,6 +7,8 @@
  * @author Lennard Fonteijn & Pim Meijer
  */
 
+import {SurveyRepository} from "./repositories/surveyRepository.js";
+
 import {SessionManager} from "./framework/utils/sessionManager.js"
 import {LoginController} from "./controllers/loginController.js"
 import {NavbarController} from "./controllers/navbarController.js"
@@ -20,8 +22,8 @@ import {WelcomeController} from "./controllers/welcomeController.js";
 
 export class App {
 
-    //Temporary usage of #surveyRepository to check survey completion. :D
-    #surveyRepository;
+    //To check the survey completion
+    static #surveyRepository = new SurveyRepository();
 
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
@@ -226,7 +228,7 @@ export class App {
      * @param whenNo - function to execute when user is logged in
      */
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("firstname")) {
+        if (App.sessionManager.get("user_id")) {
             whenYes();
         } else {
             whenNo();
@@ -234,12 +236,15 @@ export class App {
     }
 
     /**
+     * @author Jayden.G
      * Convenience functions to handle Survey Completion states
+     *
      * @param whenYes - function to execute when user has completed survey
      * @param whenNo - function to execute when user has completed survey
      */
-    static hasCompletedSurvey(whenYes, whenNo) {
-        if (this.surveyCompletionChecker) {
+
+    static async hasCompletedSurvey(whenYes, whenNo) {
+        if (await this.surveyStatusChecker()) {
             whenYes();
         } else {
             whenNo();
@@ -247,20 +252,25 @@ export class App {
     }
 
     /**
-     * @author Jayden.G & Junior.B
-     * Checks for if the user has completed both surveys
+     * @author Jayden.G
+     * Checks for if the user has completed the surveys
      *
-     * @returns {Promise<boolean>} - true if both surveys are completed, false otherwise
+     * @returns {Promise<boolean>} - true if surveyStatus is complete (which would be if its 1), false otherwise
      */
 
-    async surveyCompletionChecker() {
-        const data = await this.#surveyRepository.getUnansweredSurveys(App.sessionManager.get("user_id"));
-        return data.length === 0;
+    static async surveyStatusChecker() {
+        const status = await this.#surveyRepository.getSurveyStatus(
+            App.sessionManager.get("user_id")
+        );
+
+        return status.survey_status === 1;
     }
 
     /**
+     * @author Jayden.G
      * Removes username via sessionManager and loads the login screen
      */
+
     static handleLogout() {
         App.sessionManager.clear();
 

@@ -31,7 +31,7 @@ export class profileController extends Controller {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
-        await this.#setProfileImage()
+        await this.#setProfileImage();
     }
 
     /**

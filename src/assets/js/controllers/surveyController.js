@@ -29,7 +29,6 @@ export class SurveyController extends Controller {
     #surveyView
     #currentQuestion
     #questionsAnswered
-    #surveyCompletedStatus
     #data
 
     #CONTAINER;
@@ -46,7 +45,6 @@ export class SurveyController extends Controller {
         this.#frequencyRepository = new ActivityFrequencyRepository();
         this.#currentQuestion = 0;
         this.#questionsAnswered = 0;
-        this.#surveyCompletedStatus = 1;
         this.#data = [];
 
         this.#setupView();
@@ -68,9 +66,7 @@ export class SurveyController extends Controller {
         const unansweredSurveys = await this.#fetchUnansweredSurveys();
 
         if (unansweredSurveys.length === 0) {
-            await this.#surveyRepository.updateSurveyCompletionStatus(
-                this.#surveyCompletedStatus, App.sessionManager.get('user_id')
-            );
+            await this.#surveyRepository.setSurveyComplete(App.sessionManager.get('user_id'));
             App.loadController("welcome");
         } else {
             for (const survey of unansweredSurveys) {

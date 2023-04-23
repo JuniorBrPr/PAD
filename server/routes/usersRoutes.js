@@ -34,16 +34,13 @@ class UsersRoutes {
 
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT firstname, id, isAdmin FROM user WHERE emailAddress = ? AND password = ?",
+                    query: "SELECT id, isAdmin FROM user WHERE emailAddress = ? AND password = ?",
                     values: [emailAddress, password]
-
                 });
 
-                //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
                     //return just the username for now, never send password back!
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({
-                        "firstname": data[0].firstname,
                         "user_id": data[0].id,
                         "role": data[0].isAdmin
                     });
