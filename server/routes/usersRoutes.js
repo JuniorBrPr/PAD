@@ -34,14 +34,14 @@ class UsersRoutes {
 
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT username, password FROM users WHERE username = ? AND password = ?",
+                    query: "SELECT id FROM user WHERE emailAddress = ? AND password = ?",
                     values: [username, password]
                 });
 
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
                     //return just the username for now, never send password back!
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json({"username": data[0].username});
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({"userId": data[0].id});
                 } else {
                     //wrong username
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Wrong username or password"});

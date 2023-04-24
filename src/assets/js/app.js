@@ -183,7 +183,7 @@ export class App {
      * @param whenNo - function to execute when user is logged in
      */
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("username")) {
+        if (App.sessionManager.get("user_id")) {
             whenYes();
         } else {
             whenNo();

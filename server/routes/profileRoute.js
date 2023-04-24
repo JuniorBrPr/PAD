@@ -28,6 +28,7 @@ class profileRoutes {
         this.#insertGoal()
         this.#updateGoalCompletion()
         this.#calculateDailyGoalCompletionPercentage()
+        this.#calculateWeeklyGoalCompletionPercentage()
     }
 
     /**
@@ -143,7 +144,7 @@ class profileRoutes {
     }
 
     #calculateDailyGoalCompletionPercentage() {
-        this.#app.put("/profile/goalCompletionPercentage/:userId", async (req, res) => {
+        this.#app.get("/profile/dailyGoalCompletionPercentage/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
@@ -170,6 +171,31 @@ class profileRoutes {
         })
     }
 
+    #calculateWeeklyGoalCompletionPercentage() {
+        this.#app.get("/profile/weeklyGoalCompletionPercentage/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
+                                   NULL                                  AS activityID
+                            FROM usergoal
+                                     LEFT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.userId = ?
+                            UNION
+                            SELECT usergoal.id,
+                                   goal.activityID
+                            FROM usergoal
+                                     RIGHT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.id IS NULL
+                              AND goal.userId = ?
+                    `,
+                    values: [req.params.userId, req.params.userId]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
 }
 
 /**

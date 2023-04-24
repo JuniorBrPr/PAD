@@ -33,7 +33,8 @@ export class profileController extends Controller {
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
         await this.#setupGoals(1)
-        await this.#displayGoalCompletionPercentage(1)
+        await this.#displayDailyGoalCompletionPercentage(1)
+        await this.#displayWeeklyGoalCompletion(1)
     }
 
     /**
@@ -140,7 +141,7 @@ export class profileController extends Controller {
                         setTimeout(() => {
                             cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
                         }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                        await this.#displayGoalCompletionPercentage(userId) // Update goal completion percentage
+                        await this.#displayDailyGoalCompletionPercentage(userId) // Update goal completion percentage
                     });
                     cardContainer.appendChild(card);
                 }
@@ -152,11 +153,10 @@ export class profileController extends Controller {
     }
 
 
-    async #displayGoalCompletionPercentage(userId) {
+    async #displayDailyGoalCompletionPercentage(userId) {
         let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage(userId);
         const percentageText = document.getElementById('percentage');
         let percentageGoalCompletion = parseInt(calculateDailyGoalCompletionPercentage.data[0].percentage);
-
 
         if (isNaN(percentageGoalCompletion)) { // If no goals exist
             let userGoals = await this.#profileRepository.getUserGoals(userId); // Get usergoals
@@ -185,6 +185,14 @@ export class profileController extends Controller {
 
         // Call the updatePercentageBar function initially to set the initial percentage value
         updatePercentageBar();
+    }
+
+    async #displayWeeklyGoalCompletion(userId){
+        let calculateWeeklyGoalCompletionPercentage = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage(userId)
+        let percentageGoalCompletion = parseInt(calculateWeeklyGoalCompletionPercentage.data[0].percentage);
+        document.getElementById("progress-bar").innerHTML = percentageGoalCompletion;
+        document.getElementById("progress-bar").style.height = percentageGoalCompletion;
+
     }
 
 

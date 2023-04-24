@@ -45,13 +45,15 @@ export class profileRepository {
         });
     }
 
-
     async updateGoalCompletion(userGoalID) {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletion/${userGoalID}`, "PUT", userGoalID);
     }
 
     async calculateDailyGoalCompletionPercentage(userId) {
-        return await this.#networkManager.doRequest(`${this.#route}/goalCompletionPercentage/${userId}`, "PUT", userId);
+        return await this.#networkManager.doRequest(`${this.#route}/dailyGoalCompletionPercentage/${userId}`, "GET", userId);
     }
 
+    async calculateWeeklyGoalCompletionPercentage(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/weeklyGoalCompletionPercentage/${userId}`, "GET", userId);
+    }
 }
