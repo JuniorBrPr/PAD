@@ -57,7 +57,7 @@ export class LoginController extends Controller{
             App.sessionManager.set("role", user.role)
             App.sessionManager.set("user_id", user.user_id);
 
-            App.loadController(App.CONTROLLER_PROFILE);
+            App.loadController(App.CONTROLLER_WELCOME);
         } catch(error) {
             //if unauthorized error code, show error message to the user
             if(error.code === 401) {
