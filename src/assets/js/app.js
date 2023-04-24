@@ -7,33 +7,37 @@
  * @author Lennard Fonteijn & Pim Meijer
  */
 
+import {SurveyRepository} from "./repositories/surveyRepository.js";
+
 import {SessionManager} from "./framework/utils/sessionManager.js"
 import {LoginController} from "./controllers/loginController.js"
 import {NavbarController} from "./controllers/navbarController.js"
-import {WelcomeController} from "./controllers/welcomeController.js"
 import {SurveyController} from "./controllers/surveyController.js";
 import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
+import {WelcomeController} from "./controllers/welcomeController.js";
 
 
 export class App {
+
+    //To check the survey completion
+    static #surveyRepository = new SurveyRepository();
+
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
     static sessionManager = new SessionManager();
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
+    static CONTROLLER_WELCOME = "welcome";
     static CONTROLLER_LOGIN = "login";
     static CONTROLLER_LOGOUT = "logout";
-    static CONTROLLER_WELCOME = "welcome";
-    static CONTROLLER_UPLOAD = "upload";
     static CONTROLLER_REGISTER = "register";
     static CONTROLLER_WEEKPLANNING = "weekPlanning";
 
     static CONTROLLER_SURVEY = "survey";
-    static CONTROLLER_FREQUENCY = "frequency";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
 
@@ -75,42 +79,58 @@ export class App {
         App.setCurrentController(name, controllerData);
 
         switch (name) {
+
+            case App.CONTROLLER_WELCOME:
+                App.isLoggedIn(
+                    () => new WelcomeController(),
+                    () => new WelcomeController());
+                break;
+
             case App.CONTROLLER_LOGIN:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
-                break;
-
-            // case App.CONTROLLER_WELCOME:
-            //     App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
-            //     break;
-            //
-            // case App.CONTROLLER_UPLOAD:
-            //     App.isLoggedIn(() => new UploadController(), () => new LoginController());
-            //     break;
-
-            case App.CONTROLLER_SURVEY:
-                App.isLoggedIn(() => new SurveyController(), () => new LoginController());
-                break;
-
-            case App.CONTROLLER_PROFILE:
-                App.isLoggedIn(() => new profileController(), () => new LoginController());
-                break;
-
-            case App.CONTROLLER_EDITPROFILE:
-                App.isLoggedIn(() => new editProfileController(), () => new LoginController());
+                App.isLoggedIn(
+                    () => console.log("Error: Already logged in"),
+                    () => new LoginController());
                 break;
 
             case App.CONTROLLER_REGISTER:
-                App.isLoggedIn(() => new RegisterController(),() => new RegisterController());
+                App.isLoggedIn(
+                    () => console.log("Error: Can't register when already logged in"),
+                    () => new RegisterController());
+                break;
+
+            case App.CONTROLLER_SURVEY:
+                App.isLoggedIn(
+                    () => new SurveyController(),
+                    () => new LoginController());
+                break;
+
+            case App.CONTROLLER_PROFILE:
+                App.isLoggedIn(
+                    () => new profileController(),
+                    () => new LoginController());
+                break;
+
+            case App.CONTROLLER_EDITPROFILE:
+                App.isLoggedIn(
+                    () => new editProfileController(),
+                    () => new LoginController());
                 break;
 
             case App.CONTROLLER_WEEKPLANNING:
-                App.isLoggedIn(() => new WeekPlanningController(),() => new LoginController());
+                App.isLoggedIn(
+                    () =>
+                        App.hasCompletedSurvey(
+                            () => new WeekPlanningController(),
+                            () => new SurveyController(),
+                        ),
+                    () => new LoginController());
                 break;
 
             default:
                 return false;
         }
 
+        App.handleNavElementVisibility();
         return true;
     }
 
@@ -177,13 +197,38 @@ export class App {
         }
     }
 
+    static handleNavElementVisibility() {
+        const navElements = document.querySelectorAll(".nav-item");
+
+        App.isLoggedIn(
+            () => {
+                for (const navElement of navElements) {
+                    if (navElement.classList.contains("logged-out-only")) {
+                        navElement.classList.add("d-none");
+                    } else {
+                        navElement.classList.remove("d-none");
+                    }
+                }
+            },
+            () => {
+                for (const navElement of navElements) {
+                    if (navElement.classList.contains("logged-in-only")) {
+                        navElement.classList.add("d-none");
+                    } else {
+                        navElement.classList.remove("d-none");
+                    }
+                }
+            }
+        );
+    }
+
     /**
      * Convenience functions to handle logged-in states
      * @param whenYes - function to execute when user is logged in
      * @param whenNo - function to execute when user is logged in
      */
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("username")) {
+        if (App.sessionManager.get("user_id")) {
             whenYes();
         } else {
             whenNo();
@@ -191,10 +236,46 @@ export class App {
     }
 
     /**
+     * @author Jayden.G
+     * Convenience functions to handle Survey Completion states
+     *
+     * @param whenYes - function to execute when user has completed survey
+     * @param whenNo - function to execute when user has completed survey
+     */
+
+    static async hasCompletedSurvey(whenYes, whenNo) {
+        if (await this.surveyStatusChecker()) {
+            whenYes();
+        } else {
+            whenNo();
+        }
+    }
+
+    /**
+     * @author Jayden.G
+     * Checks for if the user has completed the surveys
+     *
+     * @returns {Promise<boolean>} - true if surveyStatus is complete (which would be if its 1), false otherwise
+     */
+
+    static async surveyStatusChecker() {
+        const status = await this.#surveyRepository.getSurveyStatus(
+            App.sessionManager.get("user_id")
+        );
+
+        return status.survey_status === 1;
+    }
+
+    /**
+     * @author Jayden.G
      * Removes username via sessionManager and loads the login screen
      */
+
     static handleLogout() {
-        App.sessionManager.remove("username");
+        App.sessionManager.clear();
+
+        //handle the navbar visibility
+        App.handleNavElementVisibility();
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);
