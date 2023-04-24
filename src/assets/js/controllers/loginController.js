@@ -47,8 +47,8 @@ export class LoginController extends Controller{
         App.handleNavElementVisibility();
 
         //get the input field elements from the view and retrieve the value
-        const emailAddress = this.#loginView.querySelector("#exampleInputEmailAddress").value;
-        const password = this.#loginView.querySelector("#exampleInputPassword").value;
+        const emailAddress = this.#loginView.querySelector("#InputEmailAddress").value;
+        const password = this.#loginView.querySelector("#InputPassword").value;
 
         try{
             const user = await this.#usersRepository.login(emailAddress, password);

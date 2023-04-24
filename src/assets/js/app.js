@@ -8,7 +8,6 @@
  */
 
 import {SurveyRepository} from "./repositories/surveyRepository.js";
-
 import {SessionManager} from "./framework/utils/sessionManager.js"
 import {LoginController} from "./controllers/loginController.js"
 import {NavbarController} from "./controllers/navbarController.js"
@@ -28,7 +27,6 @@ export class App {
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
     static sessionManager = new SessionManager();
-    static ActivityHelper = new ActivityHelper();
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
