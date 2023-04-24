@@ -18,7 +18,7 @@ import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 import {WelcomeController} from "./controllers/welcomeController.js";
-
+import {ActivityController} from "./controllers/activityController.js";
 
 export class App {
 
@@ -28,6 +28,7 @@ export class App {
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
     static sessionManager = new SessionManager();
+    static ActivityHelper = new ActivityHelper();
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
@@ -36,7 +37,7 @@ export class App {
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_REGISTER = "register";
     static CONTROLLER_WEEKPLANNING = "weekPlanning";
-
+    static CONTROLLER_ACTIVITY = "activity";
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
@@ -91,7 +92,7 @@ export class App {
                     () => console.log("Error: Already logged in"),
                     () => new LoginController());
                 break;
-
+                
             case App.CONTROLLER_REGISTER:
                 App.isLoggedIn(
                     () => console.log("Error: Can't register when already logged in"),
@@ -125,7 +126,17 @@ export class App {
                         ),
                     () => new LoginController());
                 break;
-
+                
+            case App.CONTROLLER_ACTIVITY:
+                App.isLoggedIn(
+                    () =>
+                        App.hasCompletedSurvey(
+                            () => new ActivityController(),
+                            () => new SurveyController(),
+                        ),
+                    () => new LoginController());
+                break;    
+                
             default:
                 return false;
         }
