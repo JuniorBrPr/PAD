@@ -38,7 +38,7 @@ class UsersRoutes {
             //TODO: Do something with access tokens : )
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT firstname, id, isAdmin FROM user WHERE emailAdress = ? AND password = ?",
+                    query: "SELECT id FROM user WHERE emailAddress = ? AND password = ?",
                     values: [emailAdress, password]
                 });
 
@@ -46,9 +46,7 @@ class UsersRoutes {
                 if (data.length === 1) {
                     //return just the username for now, never send password back!
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({
-                        "firstname": data[0].firstname,
-                        "user_id": data[0].id,
-                        "role": data[0].isAdmin
+                        "user_id": data[0].id
                     });
                 } else {
                     //wrong username
