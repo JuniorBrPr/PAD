@@ -79,8 +79,6 @@ class profileRoutes {
                 });
                 if (data.length >= 1) {
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-                } else {
-                    res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Er zijn geen doelen gevonden"});
                 }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});

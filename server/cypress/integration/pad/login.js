@@ -5,7 +5,7 @@ describe("Login",  () => {
     //Run before each test in this context
     beforeEach(() => {
         //Go to the specified URL
-        cy.visit("http://localhost:8080");
+        cy.visit("http://localhost:8080/#login");
     });
 
     //Test: Validate login form
@@ -58,8 +58,8 @@ describe("Login",  () => {
             expect(body.password).equals("test");
         });
 
-        //After a successful login, the URL should now contain #welcome.
-        cy.url().should("contain", "#welcome");
+        //After a successful login, the URL should now contain #profile.
+        cy.url().should("contain", "#profile");
     });
 
     //Test: Failed login
