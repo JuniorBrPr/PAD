@@ -5,10 +5,10 @@
 
 import {Controller} from "./controller.js";
 
-import { App } from "../app.js";
+import {App} from "../app.js";
 
 
-export class WeekPlanningController extends Controller{
+export class WeekPlanningController extends Controller {
 
     #planningView
 
@@ -18,7 +18,7 @@ export class WeekPlanningController extends Controller{
         this.#setupViewPlanning()
     }
 
-    async #setupViewPlanning(){
+    async #setupViewPlanning() {
         this.#planningView = await super.loadHtmlIntoContent("html_views/weekPlanning.html")
 
         //this.#planningView.addEventListener("click", event => this.#handleWeekplanning(event));
@@ -30,12 +30,12 @@ export class WeekPlanningController extends Controller{
      * @returns {Promise<void>}
      */
     async #handleWeekplanning() {
-       // event.preventDefault();
+        // event.preventDefault();
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
-        let dateToday = new Date(today.getFullYear(), today.getMonth() , today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
+        let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
 
-        let newContainerTest = document.querySelector(".newContainerTest");
+        // let newContainerTest = document.querySelector(".newContainerTest");
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
@@ -47,58 +47,57 @@ export class WeekPlanningController extends Controller{
             tijd: '10min',
             kcal: '100 - 200kcal',
         }]
-        /**Loopt door alle dagen van de week*/
+
+
+        //Loopt door alle dagen van de week
         for (let i = 0; i < 7; i++) {
-            /**Boxen aangemaakt*/
+            //Boxen aangemaakt
             // let newContainerTest1 = newContainerTest.cloneNode(true);
             // newContainerTest.remove();
+
             let newContainerTest = document.createElement('div');
             newContainerTest.classList.add('containerDiv');
 
-           // newContainerTest.id = `${i}`; <= weghalen
-            /**Data in boxen testen met hardcoded*/
+            // newContainerTest.id = `${i}`; <= weghalen
+            //Data in boxen testen met hardcoded
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
             dayActivity.innerHTML = dataToDoDay[0].type + dataToDoDay[0].name;
-            /**Box toegevoegd*/
-            containerDayBox.appendChild(newContainerTest);
-            /**Datums geformatteerd*/
+
+            //Box toegevoegd
+             containerDayBox.appendChild(newContainerTest);
+
+            //Datums geformatteerd
             let date = new Date(dateToday);
             date.setDate(dateToday.getDate() + i);
             let datePlanningDiv = document.createElement("div");
             datePlanningDiv.classList.add('dateplanningDiv');
-            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
             datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
-            /**Buttons*/
+            //Buttons
             let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
             let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-            /**Verwijdert de orinal html button*/
+            //Verwijdert de orinal html button
             deleteButtonPlanning.remove();
             completeButtonPlanning.remove();
-            /**Datums aan box toegevoegd*/
+            //Datums aan box toegevoegd
             newContainerTest.appendChild(datePlanningDiv)//Voegt de datums in de boxen
-            /**data aan box toegevoegd*/
+            //data aan box toegevoegd
             newContainerTest.appendChild(dayActivity);
-            /**Buttons in box toegevoegd*/
-            newContainerTest.appendChild(cloneButtonDelete)
-            newContainerTest.appendChild(cloneButtonComplete)
-
+            //Buttons in box toegevoegd*/
+            newContainerTest.appendChild(cloneButtonDelete);
+            newContainerTest.appendChild(cloneButtonComplete);
 
             /**Popup maken*/
-           dayActivity.addEventListener("click", function(){
-                window.alert("tes123");
+            // dayActivity.addEventListener("click", function(){
+            //      window.alert("tes123");
+            //
+            //  });
 
-            });
-
-                }
-
-
-
-
-
-
-
+        }
 
 
     }
+
+
 }
