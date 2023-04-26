@@ -3,7 +3,14 @@
  *
  * @author Lennard Fonteijn & Pim Meijer
  */
+
+import {SessionManager} from "./sessionManager.js";
+import {App} from "../../app.js";
+
 export class NetworkManager {
+
+    sessionManager = new SessionManager();
+
     /**
      * Does an AJAX request to server(NodeJS)
      * @param route - for example /users/login
@@ -11,10 +18,12 @@ export class NetworkManager {
      * @param method - POST or GET are supported for now, feel free to expand with other http verbs
      * @returns {Promise<any>}
      */
+
     async doRequest(route, method, data = {},) {
         const url = baseUrl + route
 
         let response;
+
         try {
             const options = {
                 method: method,
@@ -22,6 +31,12 @@ export class NetworkManager {
                     'Content-Type': 'application/json; charset=UTF-8',
                 },
             };
+
+            const token = this.sessionManager.get("token");
+
+            if (token) {
+                options.headers.Authorization = "Bearer " + token;
+            }
 
             //if there is data passed add it do the fetch request's body(usually this is for a POST request)
             let json = "<none>";

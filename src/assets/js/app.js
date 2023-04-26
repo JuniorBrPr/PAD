@@ -236,8 +236,9 @@ export class App {
      * @param whenYes - function to execute when user is logged in
      * @param whenNo - function to execute when user is logged in
      */
+
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("user_id")) {
+        if (App.sessionManager.get("token")) {
             whenYes();
         } else {
             whenNo();
@@ -268,9 +269,7 @@ export class App {
      */
 
     static async surveyStatusChecker() {
-        const status = await this.#surveyRepository.getSurveyStatus(
-            App.sessionManager.get("user_id")
-        );
+        const status = await this.#surveyRepository.getSurveyStatus();
 
         return status.survey_status === 1;
     }
