@@ -165,9 +165,8 @@ body{
     margin-left: 43.75%;
     margin-right: 43.75%;
     transition: height 1s ease;
-    border-top-left-radius: 40%;
-    border-top-right-radius: 40%;
-
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
 }
 
 .belowBar{
