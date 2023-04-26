@@ -33,8 +33,8 @@ export class profileController extends Controller {
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
         await this.#setupGoals(1)
-        await this.#displayDailyGoalCompletionPercentage(1)
         await this.#displayWeeklyGoalCompletion(1)
+        await this.#displayDailyGoalCompletionPercentage(1)
     }
 
     /**
@@ -141,14 +141,14 @@ export class profileController extends Controller {
                         setTimeout(() => {
                             cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
                         }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                        await this.#displayDailyGoalCompletionPercentage(userId) // Update goal completion percentage
+                        await this.#displayDailyGoalCompletionPercentage(userId) // Update daily goal completion percentage
+                        await this.#displayWeeklyGoalCompletion(userId) // Update weekly goal completion percentage
                     });
                     cardContainer.appendChild(card);
                 }
             }
         } catch(e){
             console.log(e)
-            document.getElementById('noActivitysMessage').innerHTML = "U heeft geen doelen vandaag"
         }
     }
 
@@ -157,19 +157,8 @@ export class profileController extends Controller {
         let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage(userId);
         const percentageText = document.getElementById('percentage');
         let percentageGoalCompletion = parseInt(calculateDailyGoalCompletionPercentage.data[0].percentage);
-
-        if (isNaN(percentageGoalCompletion)) { // If no goals exist
-            let userGoals = await this.#profileRepository.getUserGoals(userId); // Get usergoals
-            if(userGoals.data.length > 0){ // If there are user goals
-                // Text percentage
-                percentageText.innerHTML = "0%"; // Set innertext to 0% of NaN%
-            }else{
-                document.getElementById('progressRingDiv').remove(); // Else remove the progress ring completely
-            }
-        }else {
-            // Text percentage
-            percentageText.innerHTML = percentageGoalCompletion + "%"; // If there already is a goal then present percentage
-        }
+        // Text percentage
+        percentageText.innerHTML = percentageGoalCompletion + "%"; // If there already is a goal then present percentage
 
         function updatePercentageBar(){
             let circle = document.querySelector('circle');
@@ -188,11 +177,19 @@ export class profileController extends Controller {
     }
 
     async #displayWeeklyGoalCompletion(userId){
-        let calculateWeeklyGoalCompletionPercentage = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage(userId)
-        let percentageGoalCompletion = parseInt(calculateWeeklyGoalCompletionPercentage.data[0].percentage);
-        document.getElementById("progress-bar").innerHTML = percentageGoalCompletion;
-        document.getElementById("progress-bar").style.height = percentageGoalCompletion;
+        let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage(userId);
+        let percentageGoalCompletion = parseInt(data.data[0].percentage);
+        let percentageBar = document.getElementById("progress-bar")
+        function updatePercentageBar(){
+            percentageBar.innerHTML = `${percentageGoalCompletion}%`;
+            percentageBar.style.height =  `${percentageGoalCompletion}%`;
 
+            if(isNaN(percentageGoalCompletion)){
+                percentageBar.style.height =  `0%`;
+            }
+        }
+        // Call the updatePercentageBar function initially to set the initial percentage value
+        updatePercentageBar();
     }
 
 
