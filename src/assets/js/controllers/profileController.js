@@ -32,8 +32,8 @@ export class profileController extends Controller {
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
-        await this.#setupGoals(1)
         await this.#displayWeeklyGoalCompletion(1)
+        await this.#setupGoals(1)
         await this.#displayDailyGoalCompletionPercentage(1)
     }
 
@@ -160,8 +160,13 @@ export class profileController extends Controller {
         // Text percentage
         percentageText.innerHTML = percentageGoalCompletion + "%"; // If there already is a goal then present percentage
 
+        if (isNaN(percentageGoalCompletion)) { // If no goals exist
+            percentageText.innerHTML = "0%"; // Set innertext to 0% of NaN%
+        }
+
         function updatePercentageBar(){
             let circle = document.querySelector('circle');
+            document.getElementById('progress-ring').style.display = 'block'
             let radius = circle.r.baseVal.value;
             let circumference = radius * 2 * Math.PI;
 
@@ -178,18 +183,18 @@ export class profileController extends Controller {
 
     async #displayWeeklyGoalCompletion(userId){
         let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage(userId);
-        let percentageGoalCompletion = parseInt(data.data[0].percentage);
+        let percentageWeeklyGoalCompletion = parseInt(data.data[0].percentage);
         let percentageBar = document.getElementById("progress-bar")
-        function updatePercentageBar(){
-            percentageBar.innerHTML = `${percentageGoalCompletion}%`;
-            percentageBar.style.height =  `${percentageGoalCompletion}%`;
+        function updateWeeklyPercentageBar(){
+            percentageBar.innerHTML = `${percentageWeeklyGoalCompletion}%`;
+            percentageBar.style.height =  `${percentageWeeklyGoalCompletion}%`;
 
-            if(isNaN(percentageGoalCompletion)){
+            if(isNaN(percentageWeeklyGoalCompletion)){
                 percentageBar.style.height =  `0%`;
             }
         }
         // Call the updatePercentageBar function initially to set the initial percentage value
-        updatePercentageBar();
+        updateWeeklyPercentageBar();
     }
 
 
