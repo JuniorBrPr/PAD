@@ -84,28 +84,30 @@ export class profileController extends Controller {
         const cardContainer = document.getElementById('card-container');
         let date = new Date().toISOString().split('T')[0];
         document.getElementById('date').innerHTML = date;
-        
+        document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
         try {
             let userGoals = await this.#profileRepository.getUserGoals(userId);
-            for (let i = 0; i < userGoals.data.length; i++) {
-                let usergoal = await this.#profileRepository.getUserGoals(userId);
-                let goal = await this.#profileRepository.getGoals(userId)
-                // Constants we are gonna use
-                let goalTitle = usergoal.data[i].name;
-                let unit = usergoal.data[i].unit;
-                let usergoalID = usergoal.data[i].usergoalID;
+            if (userGoals.data.length >= 1) {
+                document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag' // Update text if goals have been found
+                for (let i = 0; i < userGoals.data.length; i++) {
+                    let usergoal = await this.#profileRepository.getUserGoals(userId);
+                    let goal = await this.#profileRepository.getGoals(userId)
+                    // Constants we are gonna use
+                    let goalTitle = usergoal.data[i].name;
+                    let unit = usergoal.data[i].unit;
+                    let usergoalID = usergoal.data[i].usergoalID;
 
-                // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
-                let completed = goal.data[i]?.completed || 0;
+                    // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
+                    let completed = goal.data[i]?.completed || 0;
 
-                // When goal hasnt been made yet (goal undefined) the value will be set to the value
-                // which was chosen by user and is from usergoal
-                let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
-                if (completed === 0) {
-                    // This is the layout of every card, it will be filled with the constants of the parameters
-                    let card = document.createElement('div');
-                    card.classList.add('card');
-                    card.innerHTML = `
+                    // When goal hasnt been made yet (goal undefined) the value will be set to the value
+                    // which was chosen by user and is from usergoal
+                    let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
+                    if (completed === 0) {
+                        // This is the layout of every card, it will be filled with the constants of the parameters
+                        let card = document.createElement('div');
+                        card.classList.add('card');
+                        card.innerHTML = `
                 <div class="mx-auto my-4">
                   <div class="card-body justify-content-center text-center">
                     <h5 id="activity-title" class="card-title">${goalTitle}</h5>
@@ -114,37 +116,38 @@ export class profileController extends Controller {
                   </div>
                 </div>`;
 
-                    // Styling
-                    const cardBody = card.querySelector('.card-body');
-                    card.style.border = "0"
-                    cardBody.style.backgroundColor = '#008C93';
-                    cardBody.style.borderRadius = '20px';
-                    cardBody.style.color = 'white';
-                    cardBody.style.width = '500px';
-                    const buttonElement = card.querySelector('#activity-btn-completed');
-                    buttonElement.style.backgroundColor = 'rgba(0, 64, 67, 1)';
-                    buttonElement.style.border = '1px solid white'
-                    buttonElement.style.borderRadius = '20px'
-                    buttonElement.style.color = 'white'
+                        // Styling
+                        const cardBody = card.querySelector('.card-body');
+                        card.style.border = "0"
+                        cardBody.style.backgroundColor = '#008C93';
+                        cardBody.style.borderRadius = '20px';
+                        cardBody.style.color = 'white';
+                        cardBody.style.width = '500px';
+                        const buttonElement = card.querySelector('#activity-btn-completed');
+                        buttonElement.style.backgroundColor = 'rgba(0, 64, 67, 1)';
+                        buttonElement.style.border = '1px solid white'
+                        buttonElement.style.borderRadius = '20px'
+                        buttonElement.style.color = 'white'
 
-                    // When button is pressed this function will run
-                    card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
-                        if(typeof goal.data[i] === 'undefined'){
-                            await this.#profileRepository.insertGoal(usergoalID,userId,value)
-                        }
+                        // When button is pressed this function will run
+                        card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
+                            if (typeof goal.data[i] === 'undefined') {
+                                await this.#profileRepository.insertGoal(usergoalID, userId, value)
+                            }
 
-                        await this.#profileRepository.updateGoalCompletion(usergoalID);
+                            await this.#profileRepository.updateGoalCompletion(usergoalID);
 
-                        card.style.opacity = '0'; // Set opacity to 0 to start the transition
-                        card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+                            card.style.opacity = '0'; // Set opacity to 0 to start the transition
+                            card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
 
-                        setTimeout(() => {
-                            cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
-                        }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                        await this.#displayDailyGoalCompletionPercentage(userId) // Update daily goal completion percentage
-                        await this.#displayWeeklyGoalCompletion(userId) // Update weekly goal completion percentage
-                    });
-                    cardContainer.appendChild(card);
+                            setTimeout(() => {
+                                cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
+                            }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
+                            await this.#displayDailyGoalCompletionPercentage(userId) // Update daily goal completion percentage
+                            await this.#displayWeeklyGoalCompletion(userId) // Update weekly goal completion percentage
+                        });
+                        cardContainer.appendChild(card);
+                    }
                 }
             }
         } catch(e){
@@ -175,6 +178,10 @@ export class profileController extends Controller {
 
             const offset = circumference - percentageGoalCompletion / 100 * circumference;
             circle.style.strokeDashoffset = offset;
+
+            if(percentageGoalCompletion === 100){
+                document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
+            }
         }
 
         // Call the updatePercentageBar function initially to set the initial percentage value
