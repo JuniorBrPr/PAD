@@ -180,7 +180,7 @@ export class profileController extends Controller {
             circle.style.strokeDashoffset = offset;
 
             if(percentageGoalCompletion === 100){
-                document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
+                document.getElementById("titleDoelen").innerHTML = 'U heeft uw doel(en) behaald voor vandaag' // Standard text
             }
         }
 
@@ -198,6 +198,7 @@ export class profileController extends Controller {
 
             if(isNaN(percentageWeeklyGoalCompletion)){
                 percentageBar.style.height =  `0%`;
+                percentageBar.innerHTML = `0%`;
             }
         }
         // Call the updatePercentageBar function initially to set the initial percentage value
