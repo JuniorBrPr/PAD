@@ -58,14 +58,15 @@ export class WeekPlanningController extends Controller {
             let newContainerTest = document.createElement('div');
             newContainerTest.classList.add('containerDiv');
 
-            // newContainerTest.id = `${i}`; <= weghalen
+
             //Data in boxen testen met hardcoded
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
             dayActivity.innerHTML = dataToDoDay[0].type + dataToDoDay[0].name;
 
             //Box toegevoegd
-             containerDayBox.appendChild(newContainerTest);
+            containerDayBox.appendChild(newContainerTest);
+
 
             //Datums geformatteerd
             let date = new Date(dateToday);
@@ -74,6 +75,8 @@ export class WeekPlanningController extends Controller {
             datePlanningDiv.classList.add('dateplanningDiv');
             const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
             datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
+
+
             //Buttons
             let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
             let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
@@ -88,16 +91,77 @@ export class WeekPlanningController extends Controller {
             newContainerTest.appendChild(cloneButtonDelete);
             newContainerTest.appendChild(cloneButtonComplete);
 
-            /**Popup maken*/
-            // dayActivity.addEventListener("click", function(){
-            //      window.alert("tes123");
-            //
-            //  });
+
+
+            /**Next week Button*/
+            let nextWeek = document.querySelector("#nextWeekPlanning");
+            nextWeek.addEventListener("click", function () {
+                //Alle data elements
+                let dateElements = document.querySelectorAll(".dateplanningDiv");
+                i++;
+                // datum van volgende week
+                let today = new Date();
+                // numbers van de weken in de toekomst
+                let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1 + (7 * i) - 49);
+                dateToday.setDate(dateToday.getDate() + 7);
+                //loop door alle data elements en updates het met de data van volgende week.
+                dateElements.forEach(function (dateElement, index) {
+                    let date = new Date(dateToday);
+                    date.setDate(date.getDate() + index);
+                    const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
+                    dateElement.innerHTML = date.toLocaleDateString('nl', options);
+                });
+            });
+            /**Last week button*/
+            let lastWeek = document.querySelector("#lastWeekPlanning");
+            lastWeek.addEventListener("click", function(){
+                let dateElements = document.querySelectorAll(".dateplanningDiv");
+                i--;
+                let today = new Date();
+                let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1 + (7 * i) - 49);
+                dateToday.setDate(dateToday.getDate() + 7);
+
+                dateElements.forEach(function (dateElement, index) {
+                    let date = new Date(dateToday);
+                    date.setDate(date.getDate() + index);
+                    const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
+                    dateElement.innerHTML = date.toLocaleDateString('nl', options);
+                });
+            });
+
+
+
 
         }
-
-
     }
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**Popup maken*/
+// dayActivity.addEventListener("click", function(){
+//      window.alert("tes123");
+//
+//  });

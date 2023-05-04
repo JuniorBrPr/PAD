@@ -31,8 +31,7 @@ export class UsersRepository {
      * @returns {Promise<user>}
      */
     async login(username, password) {
-        return await this.#networkManager
-            .doRequest(`${this.#route}/login`, "POST", {"username": username, "password": password});
+        return await this.#networkManager.doRequest(`${this.#route}/login`, "POST", {"username": username, "password": password});
     }
 
     async delete() {

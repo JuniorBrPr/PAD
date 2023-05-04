@@ -3,7 +3,7 @@
     /*background-color: #dadada;*/
 }
 
-#titleWeekPlanning, #titleMonthPlanning{
+#lastWeekPlanning, #nextWeekPlanning{
     border-radius: 30px;
     background-color: #008E8A;
     color: white;
