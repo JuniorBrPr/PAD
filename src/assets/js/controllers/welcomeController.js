@@ -29,7 +29,16 @@ export class WelcomeController extends Controller{
         //from here we can safely get elements from the view via the right getter
         this.#welcomeView.querySelector("span.name").innerHTML = App.sessionManager.get("username");
 
+        this.#welcomeView.querySelector("span.name").innerHTML = this.#handleWelcomeName();
     }
 
 
+    // TODO: Waarom zou je de naam in local storage bewaren? -Junior
+    #handleWelcomeName() {
+        if(App.sessionManager.get("firstname") !== undefined) {
+            return App.sessionManager.get("firstname");
+        } else {
+            return "bezoeker";
+        }
+    }
 }

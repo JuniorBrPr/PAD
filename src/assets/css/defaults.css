@@ -5,8 +5,13 @@ footer {
     width: 100%;
 }
 
+.btn.btn-primary {
+    background-color: #008C93;
+    border-color: #008C93;
+}
+
 .navbar {
-    background-color: #2F72B9;
+    background-color: #008C93;
 }
 
 .bd-navbar .navbar-nav .nav-link {
@@ -20,59 +25,74 @@ footer {
     height: 70vh;
 }
 
+/* Profile */
 .profilesection{
     background-color: #008C93;
 }
+
+
 
 .colProfile{
     position: relative;
     top: -30px;
 }
 
-.profielFoto{
+.profielFoto {
     width: 100px;
     height: 100px;
     border: white 3px solid;
 }
 
-.container-editProfile{
-    min-height: 100vh;
-    background-color: #eeeeee;
+.buttonWijzig{
+    background-color: rgba(0, 64, 67, 1);
+    border: 1px solid white;
+    border-radius: 20px;
+    color: white;
 }
 
-.divForm{
+/* Edit profile*/
+.container-editProfile{
+    margin: 0 auto;
+    padding: 15px;
+    min-height: 100vh;
+}
+
+.divForm {
     border-radius: 20px;
     margin-top: 10px;
+    width: 400px;
 }
 
-.formEditProfile{
+.formEditProfile {
     margin-bottom: 50px;
 }
 
 .inputFieldEditProfileWithLabel{
-    width: 40%;
-    margin: 5%;
     display: flex;
     flex-direction: column;
 }
 
 .inputFieldEditProfile{
-    height: 45px;
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    border-radius: 0.25rem;
     outline: none;
-    font-size: 16px;
-    border-radius: 5px;
-    padding-left: 15px;
     border: 2px solid #ccc;
     border-bottom-width: 3px;
     transition: all 0.3s ease;
 }
 
 .inputFieldEditProfile:focus{
-    border: 2px solid #008C93;
+    border: 2px solid #008C93 !important;
     border-bottom-width: 3px;
 }
 
-#imagePreview{
+#imagePreview {
     min-height: 190px;
     max-height: 190px;
     min-width: 190px;
@@ -93,8 +113,30 @@ footer {
     text-align: center;
 }
 
-#fileUpload{
+#InputProfileImage {
     display: none;
 }
 
+.labelInvalid{
+    color: red;
+    display: none;
+}
+
+.saveProfileBtn{
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 30px;
+    background: #008C93;
+    color: white;
+    text-align: center;
+    border: none;
+    width: 100%;
+}
+
+/* Dashboard */
+.progress-ring__circle {
+    transition: 0.35s stroke-dashoffset;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
 

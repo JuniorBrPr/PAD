@@ -1,31 +1,43 @@
 <section class="profilesection text-light p-5">
   <div class="container justify-content-center text-center">
-    <img src="../src/images/standardProfileIMG.png" class="profielFoto rounded-circle">
-    <h1 id="profileFullName" class="text-light">FAILED TO LOAD</h1>
-    <p id="profileEmail" class="text-light">FAILED TO LOAD</p>
+    <img src="../src/images/standardProfileIMG.png" id="profileImage" class="profielFoto rounded-circle">
+    <h1 id="profileFullName" class="text-light"></h1>
+    <p id="profileEmail" class="text-light"></p>
   </div>
-  <button id="buttonWijzig" class="buttonWijzig btn-dark rounded-5 bg-dark text-white float-end mx-md-5 mx-sm-0">Wijzig</button>
+  <button id="buttonWijzig" class="buttonWijzig float-end mx-md-5 mx-sm-0">Wijzig</button>
 </section>
 <div class="row text-center row-cols-6 justify-content-center">
   <div class="colProfile">
     <div class="card bg-white border-3 text-black">
       <div class="card-body text-center">
-        <h4 id="profileAge">FAILED TO LOAD</h4>
+        <h4 id="profileAge"></h4>
       </div>
     </div>
   </div>
   <div class="colProfile">
     <div class="card bg-white border-3 text-black">
       <div class="card-body text-center">
-        <h4 id="profileWeight" >FAILED TO LOAD</h4>
+        <h4 id="profileWeight" ></h4>
       </div>
     </div>
   </div>
   <div class="colProfile">
-    <div class="card bg-white border-3 text-black border">
+    <div class="card bg-white border-3 text-black">
       <div class="card-body text-center">
-        <h4 id="profileHeight" >FAILED TO LOAD</h4>
+        <h4 id="profileHeight" ></h4>
       </div>
     </div>
   </div>
 </div>
+<h1 class="d-flex justify-content-center my-3">Dag overzicht</h1>
+<div id="progressRingDiv" class="d-flex justify-content-center">
+  <svg class="progress-ring" width="120" height="120">
+    <circle class="progress-ring__circle" stroke="#008C93" stroke-width="10" fill="transparent" r="52" cx="60" cy="60"/>
+    <text id="percentage" class="progress-ring__text" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="30"></text>
+  </svg>
+</div>
+<h2 class="d-flex justify-content-center my-3">Uw doelen van vandaag</h2>
+<h3 class="d-flex justify-content-center" id="date"></h3>
+<h5 class="d-flex justify-content-center" id="noActivitysMessage"></h5>
+<div id="card-container"></div>
+

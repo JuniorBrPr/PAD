@@ -1,4 +1,11 @@
-/.idea/workspace.xml
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+*.xml
+/.idea/
+
 node_modules
 package-lock.json
 .DS_Store
