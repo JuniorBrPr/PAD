@@ -4,7 +4,8 @@
  */
 
 class JWTHelper {
-    jwt = require("jsonwebtoken");
+    #jwt = require("jsonwebtoken");
+    #errorCodes = require("./httpErrorCodes");
 
     #ACCESS_TOKEN_SECRET = 'wokeupinanewbugatti39bb754cd1c959d42fcc8804aa42a9adaf3c779ff8d93219029bc3c9eb700dd691ccaf6a241cb580f87e558f1d83d33e4184f0c89b04d'
 
@@ -17,7 +18,7 @@ class JWTHelper {
      */
 
     createJWTToken(payload) {
-        return this.jwt.sign(payload, this.#ACCESS_TOKEN_SECRET, {expiresIn: '30d'});
+        return this.#jwt.sign(payload, this.#ACCESS_TOKEN_SECRET, {expiresIn: '30d'});
     }
 
     /**
@@ -35,12 +36,12 @@ class JWTHelper {
         const token = authHeader && authHeader.split(' ')[1];
 
         //unauthorized
-        if (token == null) return res.sendStatus(401);
+        if (token == null) return res.sendStatus(this.#errorCodes.AUTHORIZATION_ERROR_CODE);
 
-        this.jwt.verify(token, this.#ACCESS_TOKEN_SECRET, (e, user) => {
+        this.#jwt.verify(token, this.#ACCESS_TOKEN_SECRET, (e, user) => {
 
             //forbidden (invalid signature)
-            if (e) return res.sendStatus(403);
+            if (e) return res.sendStatus(this.#errorCodes.FORBIDDEN_CODE);
 
             req.user = user;
             next();
