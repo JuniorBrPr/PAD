@@ -39,6 +39,9 @@ export class WeekPlanningController extends Controller {
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
+        // let newContainerTest1 = dayBoxesOfTheWeek.cloneNode(true);
+        // dayBoxesOfTheWeek.remove();
+
         //Voor nu hardcoded, ga het later aanpassen
         let dataToDoDay = [{
             id: 1,
@@ -46,28 +49,50 @@ export class WeekPlanningController extends Controller {
             type: 'hardlopen',
             tijd: '10min',
             kcal: '100 - 200kcal',
-        }]
+        },
+            {
+                id: 2,
+                name: 'eten',
+                type: 'Fietsen',
+                tijd: '10min',
+                kcal: '100 - 200kcal',
+            }]
 
 
         //Loopt door alle dagen van de week
         for (let i = 0; i < 7; i++) {
             //Boxen aangemaakt
-            // let newContainerTest1 = newContainerTest.cloneNode(true);
-            // newContainerTest.remove();
+            let dayBoxesOfTheWeek = document.createElement('div');
+            dayBoxesOfTheWeek.classList.add('containerDiv');
 
-            let newContainerTest = document.createElement('div');
-            newContainerTest.classList.add('containerDiv');
-
-
+            /**Hardcode data**/
             //Data in boxen testen met hardcoded
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
-            dayActivity.innerHTML = dataToDoDay[0].type + dataToDoDay[0].name;
+
+            /**For each dataToDotoday another activity*/
+            // Set the innerHTML of the second dayActivity element to 'Sport'
+            if (i === 0) {
+                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Sport' data
+            }
+            // Set the innerHTML of the second dayActivity element to 'Eten'
+            else if (i === 1) {
+                dayActivity.innerHTML = dataToDoDay[1].type; // Set the 'Eten' data
+            } else if (i === 2) {
+                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Eten' data
+            } else if (i === 3) {
+                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Eten' data
+            } else if (i === 4) {
+                dayActivity.innerHTML = dataToDoDay[1].type; // Set the 'Eten' data
+            } else if (i === 5) {
+                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Eten' data
+            } else if (i === 6) {
+                dayActivity.innerHTML = dataToDoDay[1].type; // Set the 'Eten' data
+            }
+
 
             //Box toegevoegd
-            containerDayBox.appendChild(newContainerTest);
-
-
+            containerDayBox.appendChild(dayBoxesOfTheWeek);
             //Datums geformatteerd
             let date = new Date(dateToday);
             date.setDate(dateToday.getDate() + i);
@@ -84,16 +109,15 @@ export class WeekPlanningController extends Controller {
             deleteButtonPlanning.remove();
             completeButtonPlanning.remove();
             //Datums aan box toegevoegd
-            newContainerTest.appendChild(datePlanningDiv)//Voegt de datums in de boxen
-            //data aan box toegevoegd
-            newContainerTest.appendChild(dayActivity);
+            dayBoxesOfTheWeek.appendChild(datePlanningDiv)//Voegt de datums in de boxen
+            /**data aan box toegevoegd*/
+            dayBoxesOfTheWeek.appendChild(dayActivity);
             //Buttons in box toegevoegd*/
-            newContainerTest.appendChild(cloneButtonDelete);
-            newContainerTest.appendChild(cloneButtonComplete);
+            dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
+            dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
 
 
-
-            /**Next week Button*/
+            //Next week Button
             let nextWeek = document.querySelector("#nextWeekPlanning");
             nextWeek.addEventListener("click", function () {
                 //Alle data elements
@@ -112,9 +136,9 @@ export class WeekPlanningController extends Controller {
                     dateElement.innerHTML = date.toLocaleDateString('nl', options);
                 });
             });
-            /**Last week button*/
+            //Last week button
             let lastWeek = document.querySelector("#lastWeekPlanning");
-            lastWeek.addEventListener("click", function(){
+            lastWeek.addEventListener("click", function () {
                 let dateElements = document.querySelectorAll(".dateplanningDiv");
                 i--;
                 let today = new Date();
@@ -130,34 +154,11 @@ export class WeekPlanningController extends Controller {
             });
 
 
-
-
         }
+
+
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**Popup maken*/

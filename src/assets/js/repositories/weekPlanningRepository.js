@@ -11,12 +11,12 @@ export class PlanningRepository {
 
 
     constructor() {
-         this.#route = "/planning"
-         this.#networkManager = new NetworkManager();
+        this.#route = "/planning"
+        this.#networkManager = new NetworkManager();
     }
 
-   async createPlanning() {
-        return await this.#networkManager.doRequest(`${this.#route}`, "GET", {"dayActivity": activityId});
+    async createPlanning() {
+        return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
     }
 
 }

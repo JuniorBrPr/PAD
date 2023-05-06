@@ -17,22 +17,22 @@ class WeekPlanningRoutes {
 
     #dataWeekPlanning() {
         this.#app.get("/planning", async (req, res) => {
-
-
+            // res.json({"message": "Api werkt" });
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT activityId FROM usergoal WHERE activityId = ?",
-                    values: [req.body.activityId]
+                    query: `SELECT name
+                            FROM activity`,
+                    values: [req.body.name]
                 });
-                if(data.insertId){
-                    res.status(this.#errorCodes.HTTP_OK_CODE)
-                }
-            }
-            catch(e){
 
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
             }
 
         });
     }
 }
-    module.exports = weekPlanningRoutes
+
+module.exports = WeekPlanningRoutes;
