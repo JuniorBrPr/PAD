@@ -5,7 +5,7 @@
  */
 import {NetworkManager} from "../framework/utils/networkManager.js";
 
-export class PlanningRepository {
+export class WeekPlanningRepository {
     #networkManager;
     #route;
 
@@ -15,7 +15,7 @@ export class PlanningRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async createPlanning() {
+    async dataWeekPlanning(id) {
         return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
     }
 

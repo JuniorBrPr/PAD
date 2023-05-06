@@ -6,15 +6,20 @@
 import {Controller} from "./controller.js";
 
 import {App} from "../app.js";
+import {WeekPlanningRepository} from "../repositories/weekPlanningRepository.js";
 
 
 export class WeekPlanningController extends Controller {
 
     #planningView
+    #weekPlanningRepository
+    #data
+    #app
+
 
     constructor() {
         super();
-
+        this.#weekPlanningRepository = new WeekPlanningRepository();
         this.#setupViewPlanning()
     }
 
@@ -29,7 +34,7 @@ export class WeekPlanningController extends Controller {
      * @author Hanan Ouardi
      * @returns {Promise<void>}
      */
-    async #handleWeekplanning() {
+    async #handleWeekplanning(id) {
         // event.preventDefault();
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
@@ -43,20 +48,20 @@ export class WeekPlanningController extends Controller {
         // dayBoxesOfTheWeek.remove();
 
         //Voor nu hardcoded, ga het later aanpassen
-        let dataToDoDay = [{
-            id: 1,
-            name: 'Sport',
-            type: 'hardlopen',
-            tijd: '10min',
-            kcal: '100 - 200kcal',
-        },
-            {
-                id: 2,
-                name: 'eten',
-                type: 'Fietsen',
-                tijd: '10min',
-                kcal: '100 - 200kcal',
-            }]
+        // let dataToDoDay = [{
+        //     id: 1,
+        //     name: 'Sport',
+        //     type: 'hardlopen',
+        //     tijd: '10min',
+        //     kcal: '100 - 200kcal',
+        // },
+        //     {
+        //         id: 2,
+        //         name: 'eten',
+        //         type: 'Fietsen',
+        //         tijd: '10min',
+        //         kcal: '100 - 200kcal',
+        //     }]
 
 
         //Loopt door alle dagen van de week
@@ -65,29 +70,25 @@ export class WeekPlanningController extends Controller {
             let dayBoxesOfTheWeek = document.createElement('div');
             dayBoxesOfTheWeek.classList.add('containerDiv');
 
-            /**Hardcode data**/
-            //Data in boxen testen met hardcoded
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
 
-            /**For each dataToDotoday another activity*/
-            // Set the innerHTML of the second dayActivity element to 'Sport'
+            //For each dataToDotoday another activity
+            const data = await this.#weekPlanningRepository.dataWeekPlanning(id)
             if (i === 0) {
-                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Sport' data
-            }
-            // Set the innerHTML of the second dayActivity element to 'Eten'
-            else if (i === 1) {
-                dayActivity.innerHTML = dataToDoDay[1].type; // Set the 'Eten' data
+                dayActivity.innerHTML = data[0].name;
+            } else if (i === 1) {
+                dayActivity.innerHTML = data[1].name;
             } else if (i === 2) {
-                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Eten' data
+                dayActivity.innerHTML = data[2].name;
             } else if (i === 3) {
-                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Eten' data
+                dayActivity.innerHTML = data[3].name;
             } else if (i === 4) {
-                dayActivity.innerHTML = dataToDoDay[1].type; // Set the 'Eten' data
+                dayActivity.innerHTML = data[4].name;
             } else if (i === 5) {
-                dayActivity.innerHTML = dataToDoDay[0].type; // Set the 'Eten' data
+                dayActivity.innerHTML = data[5].name;
             } else if (i === 6) {
-                dayActivity.innerHTML = dataToDoDay[1].type; // Set the 'Eten' data
+                dayActivity.innerHTML = data[6].name;
             }
 
 
