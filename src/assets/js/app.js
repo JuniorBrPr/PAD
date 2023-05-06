@@ -18,6 +18,7 @@ import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 import {WelcomeController} from "./controllers/welcomeController.js";
 import {ActivityController} from "./controllers/activityController.js";
+import {ErrorController} from "./controllers/errorController.js";
 
 export class App {
 
@@ -39,6 +40,7 @@ export class App {
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
+    static CONTROLLER_ERROR = "error";
 
 
     constructor() {
@@ -78,6 +80,10 @@ export class App {
         App.setCurrentController(name, controllerData);
 
         switch (name) {
+
+            case App.CONTROLLER_ERROR:
+                new ErrorController(controllerData);
+                break;
 
             case App.CONTROLLER_WELCOME:
                 App.isLoggedIn(

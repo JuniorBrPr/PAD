@@ -49,6 +49,18 @@ export class NetworkManager {
 
             response = await fetch(url, options);
 
+            if (response.status === 403) {
+                //if we get a 403 the token is invalid or expired, so we log out the user
+                App.sessionManager.clear();
+
+                App.loadController(App.CONTROLLER_ERROR, {
+                    httpCode: response.status,
+                    message: "Your token has expired or is invalid. Please log in again."
+                });
+
+                return;
+            }
+
             if (!response.ok) {
                 const jsonErrResponse = await response.json();
                 let errorMsg = response.statusText;
