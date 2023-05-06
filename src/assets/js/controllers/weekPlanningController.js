@@ -26,6 +26,11 @@ export class WeekPlanningController extends Controller {
     async #setupViewPlanning() {
         this.#planningView = await super.loadHtmlIntoContent("html_views/weekPlanning.html")
 
+        this.#planningView.querySelector(".deleteButtonPlanning").addEventListener("click",
+            (event) => this.#handleWeekplanning(event));
+        this.#planningView.querySelector(".completeButtonPlanning").addEventListener("click",
+            (event) => this.#handleWeekplanning(event));
+
         //this.#planningView.addEventListener("click", event => this.#handleWeekplanning(event));
         this.#handleWeekplanning();
     }
@@ -34,7 +39,11 @@ export class WeekPlanningController extends Controller {
      * @author Hanan Ouardi
      * @returns {Promise<void>}
      */
-    async #handleWeekplanning(id) {
+    async #handleWeekplanning(id, event, datePlanningDiv) {
+
+        const validBox = this.#planningView.querySelector(".valid-feedback");
+        const invalidBox = this.#planningView.querySelector(".invalid-feedback");
+
         // event.preventDefault();
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
@@ -44,28 +53,10 @@ export class WeekPlanningController extends Controller {
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
-        // let newContainerTest1 = dayBoxesOfTheWeek.cloneNode(true);
-        // dayBoxesOfTheWeek.remove();
-
-        //Voor nu hardcoded, ga het later aanpassen
-        // let dataToDoDay = [{
-        //     id: 1,
-        //     name: 'Sport',
-        //     type: 'hardlopen',
-        //     tijd: '10min',
-        //     kcal: '100 - 200kcal',
-        // },
-        //     {
-        //         id: 2,
-        //         name: 'eten',
-        //         type: 'Fietsen',
-        //         tijd: '10min',
-        //         kcal: '100 - 200kcal',
-        //     }]
-
 
         //Loopt door alle dagen van de week
         for (let i = 0; i < 7; i++) {
+            //  const validBox = this.#planningView.querySelector(".valid-feedback");
             //Boxen aangemaakt
             let dayBoxesOfTheWeek = document.createElement('div');
             dayBoxesOfTheWeek.classList.add('containerDiv');
@@ -153,17 +144,35 @@ export class WeekPlanningController extends Controller {
                     dateElement.innerHTML = date.toLocaleDateString('nl', options);
                 });
             });
+            //Put the data if the user completed it with the date
+            let selectedDate = date.toLocaleDateString();
+            cloneButtonComplete.addEventListener("click", async function () {
+                try {
+                    const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, true, false);
+                    console.log(data);
+                    // validBox.innerText = "U heeft de activiteit succesvol afgerond";
+                    window.alert("U heeft de activiteit succesvol afgerond");
+                } catch (e) {
+                    window.alert("Er is iets misgegaan, probeer het opnieuw!");
+                    console.log(e)
+                }
+            }.bind(this));
+            cloneButtonDelete.addEventListener("click", async function () {
+                try {
+                    const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, false, true);
+                    console.log(data);
+                    // validBox.innerText = "U heeft de activiteit succesvol afgerond";
+                    window.alert("U heeft de activiteit niet afgerond");
+                } catch (e) {
+                    window.alert("Er is iets misgegaan, probeer het opnieuw!");
+                    console.log(e)
+                }
+            }.bind(this));
+
 
 
         }
-
-
     }
 }
 
 
-/**Popup maken*/
-// dayActivity.addEventListener("click", function(){
-//      window.alert("tes123");
-//
-//  });
