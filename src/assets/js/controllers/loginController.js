@@ -47,8 +47,8 @@ export class LoginController extends Controller{
         App.handleNavElementVisibility();
 
         //get the input field elements from the view and retrieve the value
-        const emailAddress = this.#loginView.querySelector("#exampleInputEmailAddress").value;
-        const password = this.#loginView.querySelector("#exampleInputPassword").value;
+        const emailAddress = this.#loginView.querySelector("#InputEmailAddress").value;
+        const password = this.#loginView.querySelector("#InputPassword").value;
 
         try{
             const user = await this.#usersRepository.login(emailAddress, password);
@@ -57,7 +57,7 @@ export class LoginController extends Controller{
             App.sessionManager.set("role", user.role)
             App.sessionManager.set("user_id", user.user_id);
 
-            App.loadController(App.CONTROLLER_PROFILE);
+            App.loadController(App.CONTROLLER_WELCOME);
         } catch(error) {
             //if unauthorized error code, show error message to the user
             if(error.code === 401) {

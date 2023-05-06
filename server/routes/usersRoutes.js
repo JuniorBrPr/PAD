@@ -32,6 +32,10 @@ class UsersRoutes {
             //TODO: You shouldn't save a password unencrypted!! Improve this by using this.#cryptoHelper functions :)
             const password = req.body.password;
 
+            //want to implement this when we have a register form
+            //const hashedPassword = this.#cryptoHelper.getHashedPassword(password)
+
+            //TODO: Do something with access tokens : )
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: "SELECT id, isAdmin FROM user WHERE emailAddress = ? AND password = ?",
