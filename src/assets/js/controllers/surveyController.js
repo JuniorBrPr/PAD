@@ -1,24 +1,10 @@
 import {SurveyRepository} from "../repositories/surveyRepository.js";
 import {Controller} from "./controller.js";
+import {App} from "../app.js";
 
 /**
  * Responsible for handling the actions happening on the survey view.
  *
- * @class SurveyController
- * @classdesc Handles the actions happening on the survey view.
- * @property {SurveyRepository} #surveyRepository - The repository for survey related requests.
- * @property {ActivityFrequencyRepository} #frequencyRepository - The repository for activity frequency related
- * requests.
- * @property {HTMLElement} #surveyView - The HTML element containing the survey view.
- * @property {number} #currentQuestion - The index of the current question.
- * @property {number} #questionsAnswered - The number of questions answered.
- * @property {[Object]} #data - The data of the survey.
- * @property {HTMLElement} #CONTAINER - The HTML element containing the survey questions.
- * @property {HTMLElement} #QUESTION_TEMPLATE - The HTML element containing the template for a question.
- * @property {HTMLElement} #CHECKBOX_OPTION - The HTML element containing the template for a checkbox option.
- * @property {HTMLElement} #CHECKBOX_FIELD_OPTION - The HTML element containing the template for a checkbox field
- * option.
- * @property {HTMLElement} #RADIO_OPTION - The HTML element containing the template for a radio option.
  * @author Junior Javier Brito Perez
  */
 export class SurveyController extends Controller {
@@ -46,10 +32,8 @@ export class SurveyController extends Controller {
     }
 
     /**
-     * Loads contents of desired HTML file into the index.html .content div.
-     * @async
-     * @private
-     * @author Junior Javier Brito Perez
+     * Loads contents of desired HTML file into the index.html .content div
+     * @returns {Promise<void>}
      */
     async #setupView() {
         this.#surveyView = await super.loadHtmlIntoContent("html_views/survey.html");
@@ -62,7 +46,8 @@ export class SurveyController extends Controller {
 
         if (unansweredSurveys.length === 0) {
             await this.#surveyRepository.setSurveyComplete(App.sessionManager.get('user_id'));
-            App.loadController("welcome");
+            App.loadController("welcome", {});
+
         } else {
             for (const survey of unansweredSurveys) {
                 switch (survey.id) {
@@ -133,10 +118,7 @@ export class SurveyController extends Controller {
 
     /**
      * Fetches the nutrition survey from the database.
-     * @async
-     * @private
      * @returns {Promise<void>}
-     * @author Junior Javier Brito Perez
      */
     async #fetchSurvey(surveyId) {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
@@ -151,9 +133,83 @@ export class SurveyController extends Controller {
     /**
      * Displays the questions on the survey view.
      * @private
-     * @author Junior Javier Brito Perez
      */
     #displayQuestions() {
+        if (this.#data.length > 0 && this.#data[0].surveyId === 1) {
+            this.#displayNutritionSurvey();
+        } else if (this.#data.length > 0 && this.#data[0].surveyId === 2) {
+            this.#displayExerciseSurvey();
+        }
+        this.#showTab();
+    }
+
+    #displayExerciseSurvey() {
+        const weeklyRecurringActivityQuestions =
+            this.#data.filter(question => question.type === "weeklyRecurringActivity");
+        const recurringPhysicalActivityQuestions =
+            this.#data.filter(question => question.type === "recurringPhysicalActivity");
+        const householdActivityQuestions = this.#data.filter(question => question.type === "householdActivity");
+        const leisureActivityQuestions = this.#data.filter(question => question.type === "leisureActivity");
+        const sportActivityQuestions = this.#data.filter(question => question.type === "sportActivity");
+
+        this.#createExerciseQuestionTab(
+            "backAndForthActivityTable",
+            weeklyRecurringActivityQuestions,
+            "Vervoer ten behoeve van terugkerende, geplande activiteiten (heen en terug).",
+            "Geef aan hoe vaak je per week naar een activiteit gaat en hoe lang je er over doet om er te " +
+            "komen en weer terug te gaan.Bijvoorbeeld mantel-zorg, oppassen, vrijwilligerswerk, cursus volgen etc."
+        );
+
+        this.#createExerciseQuestionTab(
+            "recurringPhysicalActivityTable",
+            recurringPhysicalActivityQuestions,
+            "Lichamelijke activiteit op de vorige terugkerende bezigheden of vrijwilligerswerk, indien van" +
+            " toepassing (niet zijnde huishoudelijk werk en vrijetijdsbestedingen)",
+            ""
+        );
+
+        this.#createExerciseQuestionTab(
+            "householdActivityTable",
+            householdActivityQuestions,
+            "Huishoudelijke activiteiten",
+            "Geef aan hoe vaak je per week huishoudelijke activiteiten doet en hoe lang je er over doet. "
+        );
+
+        this.#createExerciseQuestionTab(
+            "backAndForthActivityTable",
+            leisureActivityQuestions,
+            "Vrijetijdsbesteding",
+            "Activiteiten voor eigen plezier."
+        );
+
+        this.#createExerciseQuestionTab(
+            "backAndForthActivityTable",
+            sportActivityQuestions,
+            "Sporten",
+            "Sporten voor eigen plezier."
+        );
+    }
+
+    #createExerciseQuestionTab(templateId, questions, title, subtitle) {
+        const questionTab = this.#surveyView.querySelector(`#${templateId}`).content
+            .querySelector(".questionTab").cloneNode(true);
+        questionTab.style.display = "none";
+
+        questionTab.querySelector(".title").innerText = title;
+        questionTab.querySelector(".subtitle").innerText = subtitle;
+
+        for (const question of questions) {
+            const row = questionTab.querySelector(".rowTemplate").content
+                .querySelector(".questionRow").cloneNode(true);
+            row.querySelector(".questionText").innerText = question.text;
+            row.querySelector(".questionText").id = question.id;
+            questionTab.querySelector("tbody").prepend(row);
+        }
+
+        this.#CONTAINER.appendChild(questionTab);
+    }
+
+    #displayNutritionSurvey() {
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
             const questionTab = this.#QUESTION_TEMPLATE.content.querySelector(".questionTab").cloneNode(true);
@@ -261,7 +317,6 @@ export class SurveyController extends Controller {
     /**
      * Loads the progress bar percentage.
      * @private
-     * @author Junior Javier Brito Perez
      */
     #loadPercentage() {
         let x = this.#surveyView.getElementsByClassName("questionTab").length;
@@ -275,7 +330,6 @@ export class SurveyController extends Controller {
     /**
      * Shows the current question.
      * @private
-     * @author Junior Javier Brito Perez
      */
     #showTab() {
         const questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -300,7 +354,6 @@ export class SurveyController extends Controller {
      * @private
      * @param {number} nextTabNumber -1 for previous question, 1 for next question.
      * @returns {Promise<boolean>} true if the user is on the last question.
-     * @author Junior Javier Brito Perez
      */
     async #nextPrev(nextTabNumber) {
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
@@ -338,9 +391,13 @@ export class SurveyController extends Controller {
      * Validates the form of the current question.
      * @private
      * @returns {boolean} true if the form is valid.
-     * @author Junior Javier Brito Perez
      */
     #validateForm() {
+        if (this.#currentQuestion >= this.#data.length) return true;
+
+        //TODO: remove this line
+        if (this.#data[this.#currentQuestion].surveyId === 2) return true;
+
         let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
         const alert = this.#currentQuestion < questionTabs.length ? questionTabs[this.#currentQuestion].querySelector(".alert") : null;
         let optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
@@ -469,11 +526,9 @@ export class SurveyController extends Controller {
 
     /**
      * Gets the survey response data.
-     * @private
      * @param completed {boolean} true if the user has answered all the questions in the current survey.
-     * @returns {[Object]} An array of objects containing the survey response data.
-     * @todo Implement data collection for all types of questions.
-     * @author Junior Javier Brito Perez.
+     * @returns {{surveyId: number, data: [{id: number, options: [{text: string, open: boolean}] }] }}
+     * @private
      */
     #getSurveyResponseData(completed) {
         //TODO: Implement data collection for all types of questions.
