@@ -44,6 +44,9 @@ class JWTHelper {
             if (e) return res.sendStatus(this.#errorCodes.FORBIDDEN_CODE);
 
             req.user = user;
+
+            console.log(`userid ${user.userId} - ${user.firstname} making request...`);
+
             next();
         })
     }
