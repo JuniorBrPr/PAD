@@ -7,7 +7,7 @@
 class UsersRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
-    #cryptoHelper = require("../framework/utils/cryptoHelper");
+    #JWTHelper = require("../framework/utils/JWTHelper");
     #app
 
     /**
@@ -35,22 +35,27 @@ class UsersRoutes {
             //want to implement this when we have a register form
             //const hashedPassword = this.#cryptoHelper.getHashedPassword(password)
 
-            //TODO: Do something with access tokens : )
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT id, isAdmin FROM user WHERE emailAddress = ? AND password = ?",
+                    query: "SELECT id, firstname, role FROM user WHERE emailAddress = ? AND password = ?",
                     values: [emailAddress, password]
                 });
-
                 if (data.length === 1) {
-                    //return just the username for now, never send password back!
+
+                    const payload = {
+                        userId: data[0].id,
+                        firstname: data[0].firstname,
+                        role: data[0].role,
+                    };
+
+                    const accessToken = this.#JWTHelper.createJWTToken(payload);
+
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({
-                        "user_id": data[0].id,
-                        "role": data[0].isAdmin
+                        accessToken: accessToken,
                     });
+
                     console.log(`User ${data[0].firstname} logged in`);
                 } else {
-                    //wrong username
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Wrong username or password"});
                     console.log(`User ${emailAddress} tried to login but failed`)
                 }

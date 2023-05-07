@@ -18,6 +18,7 @@ import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 import {HomeController} from "./controllers/homeController.js";
 import {ActivityController} from "./controllers/activityController.js";
+import {ErrorController} from "./controllers/errorController.js";
 
 export class App {
 
@@ -39,6 +40,7 @@ export class App {
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
+    static CONTROLLER_ERROR = "error";
 
 
     constructor() {
@@ -78,6 +80,10 @@ export class App {
         App.setCurrentController(name, controllerData);
 
         switch (name) {
+
+            case App.CONTROLLER_ERROR:
+                new ErrorController(controllerData);
+                break;
 
             case App.CONTROLLER_HOME:
                 App.isLoggedIn(
@@ -236,8 +242,9 @@ export class App {
      * @param whenYes - function to execute when user is logged in
      * @param whenNo - function to execute when user is logged in
      */
+
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("user_id")) {
+        if (App.sessionManager.get("token")) {
             whenYes();
         } else {
             whenNo();
@@ -268,9 +275,7 @@ export class App {
      */
 
     static async surveyStatusChecker() {
-        const status = await this.#surveyRepository.getSurveyStatus(
-            App.sessionManager.get("user_id")
-        );
+        const status = await this.#surveyRepository.getSurveyStatus();
 
         return status.survey_status === 1;
     }
