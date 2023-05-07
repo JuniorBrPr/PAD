@@ -5,37 +5,38 @@
  * @author Jayden.G
  */
 
-class HomeRoute {
 
-    #errorCodes = require("../framework/utils/httpErrorCodes")
-    #databaseHelper = require("../framework/utils/databaseHelper")
-    #app;
-    #activeHomeConfig;
+class HomeRoute {
+    #errorCodes = require("../framework/utils/httpErrorCodes");
+    #databaseHelper = require("../framework/utils/databaseHelper");
 
     constructor(app) {
-        this.#app = app;
-        this.#activeHomeConfig = 1;
+        this.app = app;
+        this.ACTIVE_HOME_CONFIG = 1;
 
-        this.#getHomeData();
+        this.#registerRoutes(); // Register the routes with the Express app
     }
 
-    #getHomeData() {
-        this.#app.get("/home/data", async (res, req) => {
+    #registerRoutes() {
+        this.app.get("/home/data", async (req, res) => {
             try {
-                const id = this.#activeHomeConfig;
-
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT video, board_message
                             FROM home
                             WHERE id = ?;`,
-                    values: [id]
+                    values: [this.ACTIVE_HOME_CONFIG],
                 });
-                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                    "video": data[0].video,
+                    "board_message": data[0].board_message
+                });
             } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
     }
+
+
 }
 
-module.exports = HomeRoute
+module.exports = HomeRoute;

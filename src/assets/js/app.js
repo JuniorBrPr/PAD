@@ -16,7 +16,7 @@ import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
-import {WelcomeController} from "./controllers/welcomeController.js";
+import {HomeController} from "./controllers/homeController.js";
 import {ActivityController} from "./controllers/activityController.js";
 
 export class App {
@@ -30,7 +30,7 @@ export class App {
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
-    static CONTROLLER_WELCOME = "welcome";
+    static CONTROLLER_HOME = "home";
     static CONTROLLER_LOGIN = "login";
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_REGISTER = "register";
@@ -45,8 +45,8 @@ export class App {
         //Always load the navigation
         App.loadController(App.CONTROLLER_NAVBAR);
 
-        //Attempt to load the controller from the URL, if it fails, fall back to the welcome controller.
-        App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
+        //Attempt to load the controller from the URL, if it fails, fall back to the home controller.
+        App.loadControllerFromUrl(App.CONTROLLER_HOME);
     }
 
     /**
@@ -79,10 +79,10 @@ export class App {
 
         switch (name) {
 
-            case App.CONTROLLER_WELCOME:
+            case App.CONTROLLER_HOME:
                 App.isLoggedIn(
-                    () => new WelcomeController(),
-                    () => new WelcomeController());
+                    () => new HomeController(),
+                    () => new HomeController());
                 break;
 
             case App.CONTROLLER_LOGIN:
@@ -293,7 +293,7 @@ export class App {
 
 window.addEventListener("hashchange", function () {
     App.dontSetCurrentController = true;
-    App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
+    App.loadControllerFromUrl(App.CONTROLLER_HOME);
     App.dontSetCurrentController = false;
 });
 
