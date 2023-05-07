@@ -31,24 +31,33 @@ export class LoginController extends Controller{
         this.#loginView.querySelector(".btn").addEventListener("click", event => this.#handleLogin(event));
 
     }
+
     /**
-     * Async function that does a login request via repository
-     * @param event
+     * @author Jayden.G & Framework Creators
+     * Handles login event and when successful, loads the profile page and sets session data.
+     *
+     * @param event prevents default.
+     * @private
      */
+
     async #handleLogin(event) {
         //prevent actual submit and page refresh
         event.preventDefault();
+        //handle the navbar visibility
+        App.handleNavElementVisibility();
 
         //get the input field elements from the view and retrieve the value
-        const username = this.#loginView.querySelector("#exampleInputUsername").value;
-        const password = this.#loginView.querySelector("#exampleInputPassword").value;
+        const emailAddress = this.#loginView.querySelector("#InputEmailAddress").value;
+        const password = this.#loginView.querySelector("#InputPassword").value;
 
         try{
-            const user = await this.#usersRepository.login(username, password);
+            const user = await this.#usersRepository.login(emailAddress, password);
 
             //let the session manager know we are logged in by setting the username, never set the password in localstorage
-            App.sessionManager.set("user_id", user.userId);
-            App.loadController(App.CONTROLLER_PROFILE);
+            App.sessionManager.set("role", user.role)
+            App.sessionManager.set("user_id", user.user_id);
+
+            App.loadController(App.CONTROLLER_WELCOME);
         } catch(error) {
             //if unauthorized error code, show error message to the user
             if(error.code === 401) {

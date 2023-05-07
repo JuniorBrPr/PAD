@@ -1,5 +1,5 @@
 //Context: Login
-describe("Login",  () => {
+describe("Login", () => {
     const endpoint = "/users/login";
 
     //Run before each test in this context
@@ -10,22 +10,22 @@ describe("Login",  () => {
 
     //Test: Validate login form
     it("Valid login form", () => {
-        //Find the field for the username, check if it exists.
-        cy.get("#exampleInputUsername").should("exist");
+        //Find the field for the email, check if it exists.
+        cy.get("#InputEmailAddress").should("exist");
 
         //Find the field for the password, check if it exists.
-        cy.get("#exampleInputPassword").should("exist");
+        cy.get("#InputPassword").should("exist");
 
         //Find the button to login, check if it exists.
         cy.get(".login-form button").should("exist");
     });
 
     //Test: Successful login
-    it("Successful login",  () => {
+    it("Successful login", () => {
         //Start a fake server
         cy.server();
 
-        const mockedResponse = {"username": "test"};
+        const mockedResponse = {"email": "test"};
 
         //Add a stub with the URL /users/login as a POST
         //Respond with a JSON-object when requested
@@ -35,11 +35,11 @@ describe("Login",  () => {
             body: mockedResponse,
         }).as('login');
 
-        //Find the field for the username and type the text "test".
-        cy.get("#exampleInputUsername").type("test");
+        //Find the field for the email and type the text "test".
+        cy.get("#InputEmailAddress").type("test");
 
         //Find the field for the password and type the text "test".
-        cy.get("#exampleInputPassword").type("test");
+        cy.get("#InputPassword").type("test");
 
         //Find the button to login and click it
         console.log(cy.get(".login-form button"));
@@ -50,9 +50,9 @@ describe("Login",  () => {
 
         //The @login-stub is called, check the contents of the incoming request.
         cy.get("@login").should((xhr) => {
-            //The username should match what we typed earlier
+            //The email should match what we typed earlier
             const body = xhr.request.body;
-            expect(body.username).equals("test");
+            expect(body.emailAddress).equals("test");
 
             //The password should match what we typed earlier
             expect(body.password).equals("test");
@@ -63,7 +63,7 @@ describe("Login",  () => {
     });
 
     //Test: Failed login
-    it("Failed login",  () => {
+    it("Failed login", () => {
         //Start a fake server
         cy.server();
 
@@ -81,11 +81,11 @@ describe("Login",  () => {
         }).as('login');
 
 
-        //Find the field for the username and type the text "test".
-        cy.get("#exampleInputUsername").type("test");
+        //Find the field for the Email and type the text "test".
+        cy.get("#InputEmailAddress").type("test");
 
         //Find the field for the password and type the text "test".
-        cy.get("#exampleInputPassword").type("test");
+        cy.get("#InputPassword").type("test");
 
         //Find the button to login and click it.
         cy.get(".login-form button").click();

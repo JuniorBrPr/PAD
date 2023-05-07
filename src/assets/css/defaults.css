@@ -5,12 +5,13 @@ footer {
     width: 100%;
 }
 
-body{
-    overflow-x: hidden;
+.btn.btn-primary {
+    background-color: #008C93;
+    border-color: #008C93;
 }
 
 .navbar {
-    background-color: #2F72B9;
+    background-color: #008C93;
 }
 
 .bd-navbar .navbar-nav .nav-link {
@@ -29,10 +30,6 @@ body{
     background-color: #008C93;
 }
 
-.card{
-    border-width: 4px;
-    border-color: #008C93;
-}
 
 
 .colProfile{
@@ -40,7 +37,7 @@ body{
     top: -30px;
 }
 
-.profielFoto{
+.profielFoto {
     width: 100px;
     height: 100px;
     border: white 3px solid;
@@ -60,13 +57,13 @@ body{
     min-height: 100vh;
 }
 
-.divForm{
+.divForm {
     border-radius: 20px;
     margin-top: 10px;
     width: 400px;
 }
 
-.formEditProfile{
+.formEditProfile {
     margin-bottom: 50px;
 }
 
@@ -95,7 +92,7 @@ body{
     border-bottom-width: 3px;
 }
 
-#imagePreview{
+#imagePreview {
     min-height: 190px;
     max-height: 190px;
     min-width: 190px;
@@ -116,7 +113,7 @@ body{
     text-align: center;
 }
 
-#InputProfileImage{
+#InputProfileImage {
     display: none;
 }
 

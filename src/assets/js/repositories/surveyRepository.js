@@ -99,4 +99,37 @@ export class SurveyRepository {
         return await this.#networkManager
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
+
+    /**
+     *  @author Jayden.G
+     *  Method to update the completion status to complete for a user
+     *
+     *  @param {number}userId The user you want to change the survey status to complete of
+     */
+    async setSurveyComplete(userId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}status/complete/${userId}`, "PUT", {});
+    }
+
+    /**
+     *  @author Jayden.G
+     *  Method to update the completion status to incomplete for a user
+     *
+     *  @param {number}userId The user you want to change the survey status to incomplete of
+     */
+    async setSurveyIncomplete(userId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}status/incomplete/${userId}`, "PUT", {});
+    }
+
+    /**
+     *  @author Jayden.G
+     *  Method to update the completion status surveys for a user
+     *
+     *  @param {number}userId The user you want to retrieve the survey status of
+     */
+    async getSurveyStatus(userId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}status/${userId}`, "GET", {});
+    }
 }

@@ -58,7 +58,7 @@ class profileRoutes {
     //     this.#app.get("/editProfile/:userId", async (req, res) => {
     //         try {
     //             const data = await this.#databaseHelper.handleQuery({
-    //                 query: `SELECT firstname, surname, date_of_birth, emailAdress, weight, height
+    //                 query: `SELECT firstname, surname, date_of_birth, emailAddress, weight, height
     //                         FROM user
     //                         WHERE id = ?`,
     //                 values: [1] // VUL HIER DE ID MET DE HAND IN

@@ -17,6 +17,9 @@ class surveyRoutes {
         this.#getQuestionOptions();
         this.#putSurveyResult();
         this.#getUnansweredSurveys();
+        this.#setSurveyComplete();
+        this.#setSurveyIncomplete();
+        this.#getSurveyStatus()
     }
 
     /**
@@ -245,6 +248,105 @@ class surveyRoutes {
                     reason: e,
                     failure: true,
                     message: "Er is iets fout gegaan bij het opslaan van de vragenlijst antwoorden."
+                });
+            }
+        });
+    }
+
+    /**
+     * @author Jayden.G
+     * Sets the status of the surveyCompletion to complete for a user.
+     *
+     * @returns {Promise<boolean>}
+     * @private
+     */
+
+    #setSurveyComplete() {
+        this.#app.put("/survey/status/complete/:userId", async (req, res) => {
+            try {
+                const userId = req.params.userId;
+
+                await this.#databaseHelper.handleQuery({
+                    query: `UPDATE user
+                            SET completedSurvey = 1
+                            WHERE id = ?`,
+                    values: [userId]
+                });
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                    failure: false,
+                });
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({
+                    failure: true,
+                    reason: e
+                });
+            }
+        });
+    }
+
+    /**
+     * @author Jayden.G
+     * Sets the status of the surveyCompletion to incomplete for a user.
+     *
+     * @returns {Promise<boolean>}
+     */
+
+    #setSurveyIncomplete() {
+        this.#app.put("/survey/status/incomplete/:userId", async (req, res) => {
+            try {
+                const userId = req.params.userId;
+
+                await this.#databaseHelper.handleQuery({
+                    query: `UPDATE user
+                            SET completedSurvey = 0
+                            WHERE id = ?`,
+                    values: [userId]
+                });
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                    failure: false,
+                });
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({
+                    failure: true,
+                    reason: e
+                });
+            }
+        });
+    }
+
+    /**
+     * @author Jayden.G
+     * Gets the status of the surveyCompletion for a user.
+     *
+     * @returns {Promise<boolean>}
+     * @private
+     */
+
+    #getSurveyStatus() {
+        this.#app.get("/survey/status/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT completedSurvey
+                            FROM user
+                            WHERE id = ?;`,
+                    values: [req.params.userId]
+                });
+
+                if (data.length === 0) {
+                    res.status(this.#errorCodes.BAD_REQUEST_CODE).json({
+                        reason: "No completion status found for this user"
+                    });
+                } else {
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                        "survey_status": data[0].completedSurvey
+                });
+                }
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({
+                    failure: true,
+                    reason: e
                 });
             }
         });
