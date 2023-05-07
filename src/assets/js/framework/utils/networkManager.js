@@ -55,7 +55,7 @@ export class NetworkManager {
 
                 App.loadController(App.CONTROLLER_ERROR, {
                     httpCode: response.status,
-                    message: "Your token has expired or is invalid. Please log in again."
+                    message: "Jouw login is verlopen, log alstublieft opnieuw in."
                 });
 
                 return;
