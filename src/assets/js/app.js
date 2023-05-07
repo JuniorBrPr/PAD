@@ -86,9 +86,7 @@ export class App {
                 break;
 
             case App.CONTROLLER_HOME:
-                App.isLoggedIn(
-                    () => new HomeController(),
-                    () => new HomeController());
+                new HomeController();
                 break;
 
             case App.CONTROLLER_LOGIN:

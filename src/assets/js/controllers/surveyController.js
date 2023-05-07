@@ -66,7 +66,7 @@ export class SurveyController extends Controller {
         const unansweredSurveys = await this.#fetchUnansweredSurveys();
 
         if (unansweredSurveys.length === 0) {
-            await this.#surveyRepository.setSurveyComplete(App.sessionManager.get('user_id'));
+            await this.#surveyRepository.setSurveyComplete();
             App.loadController("welcome");
         } else {
             for (const survey of unansweredSurveys) {

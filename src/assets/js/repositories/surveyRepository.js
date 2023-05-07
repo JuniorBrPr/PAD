@@ -106,7 +106,7 @@ export class SurveyRepository {
      */
     async setSurveyComplete() {
         return await this.#networkManager
-            .doRequest(`${this.#route}status/complete`, "PUT", {});
+            .doRequest(`${this.#route}status/complete`, "PUT");
     }
 
     /**
@@ -115,7 +115,7 @@ export class SurveyRepository {
      */
     async setSurveyIncomplete() {
         return await this.#networkManager
-            .doRequest(`${this.#route}status/incomplete`, "PUT", {});
+            .doRequest(`${this.#route}status/incomplete`, "PUT");
     }
 
     /**
@@ -124,6 +124,6 @@ export class SurveyRepository {
      */
     async getSurveyStatus() {
         return await this.#networkManager
-            .doRequest(`${this.#route}status`, "GET", {});
+            .doRequest(`${this.#route}status`, "GET");
     }
 }
