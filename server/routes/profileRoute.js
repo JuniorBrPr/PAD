@@ -23,10 +23,14 @@ class profileRoutes {
         this.#app = app;
         //call method per route for the users entity
         this.#getData()
+        this.#getUserGoals()
         this.#getGoals()
+        this.#insertGoal()
         this.#updateGoalCompletion()
-        this.#calculateGoalCompletionPercentage()
+        this.#calculateDailyGoalCompletionPercentage()
+        this.#calculateWeeklyGoalCompletionPercentage()
     }
+
     /**
      * Private method that sets up the route handler for getting user data.
      * Handles a GET request to the /profile/:userId endpoint.
@@ -56,33 +60,25 @@ class profileRoutes {
         });
     }
 
-    #getGoals() {
-        this.#app.get("/profile/goals/:userId", async (req, res) => {
+    #getUserGoals() {
+        this.#app.get("/profile/userGoals/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.userId,
                                    usergoal.dayOfTheWeek,
-                                   goal.value,
-                                   goal.date,
+                                   usergoal.valueChosenByUser,
                                    activity.unit,
                                    activity.name,
-                                   goal.completed,
                                    usergoal.id AS usergoalID
                             FROM usergoal
-                                     INNER JOIN activity
-                                                ON usergoal.activityId = activity.id
-                                     INNER JOIN goal
-                                                ON goal.activityID = usergoal.id
+                                     INNER JOIN activity ON usergoal.activityId = activity.id
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
-                              AND goal.completed = 0
                     `,
                     values: [req.params.userId, new Date().getDay()]
                 });
                 if (data.length >= 1) {
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-                } else {
-                    res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Er zijn geen doelen gevonden"});
                 }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
@@ -90,43 +86,116 @@ class profileRoutes {
         });
     }
 
-    #updateGoalCompletion() {
-        this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
+    #getGoals() {
+        this.#app.get("/profile/goals/:userId", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `UPDATE goal SET completed = 1 WHERE activityID = ?`,
-                    values: [req.params.usergoalID]
-                })
-                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-            }
-            catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-            }
-        })
-    }
-
-    #calculateGoalCompletionPercentage() {
-        this.#app.put("/profile/goalCompletionPercentage/:userId", async (req, res) => {
-            try {
-                const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage
+                    query: `SELECT usergoal.dayOfTheWeek,
+                                   goal.completed,
+                                   goal.value,
+                                   goal.userID,
+                                   goal.activityID AS usergoalID
                             FROM goal
-                                     INNER JOIN usergoal
-                                                ON goal.activityID = usergoal.id
-                            WHERE usergoal.userId = ?
-                              AND dayOfTheWeek = ?
+                                     INNER JOIN usergoal ON goal.activityID = usergoal.id
+                            WHERE goal.userID = ?
+                              AND usergoal.dayOfTheWeek = ?
                     `,
                     values: [req.params.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-            }
-            catch (e) {
+            } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         })
     }
 
+    #insertGoal() {
+        this.#app.post("/profile/insertGoal/:usergoalID", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `INSERT INTO goal(activityID, userID, completed, value, date)
+                        VALUES (?, ?, 0, ?, ?)`,
+                    values: [req.params.usergoalID, req.query.userId, req.query.value, new Date()]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
+
+    #updateGoalCompletion() {
+        this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `UPDATE goal
+                            SET completed = 1
+                            WHERE activityID = ?`,
+                    values: [req.params.usergoalID]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
+    #calculateDailyGoalCompletionPercentage() {
+        this.#app.get("/profile/dailyGoalCompletionPercentage/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
+                                   NULL                                  AS activityID
+                            FROM usergoal
+                                     LEFT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.userId = ?
+                              AND usergoal.dayOfTheWeek = ?
+                            UNION
+                            SELECT usergoal.id,
+                                   goal.activityID
+                            FROM usergoal
+                                     RIGHT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.id IS NULL
+                              AND goal.userId = ?
+                              AND usergoal.dayOfTheWeek = ?;
+                    `,
+                    values: [req.params.userId, new Date().getDay(), req.params.userId, new Date().getDay()]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
+    #calculateWeeklyGoalCompletionPercentage() {
+        this.#app.get("/profile/weeklyGoalCompletionPercentage/:userId", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
+                                   NULL                                  AS activityID
+                            FROM usergoal
+                                     LEFT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.userId = ?
+                            UNION
+                            SELECT usergoal.id,
+                                   goal.activityID
+                            FROM usergoal
+                                     RIGHT JOIN goal on usergoal.id = goal.activityID
+                            WHERE usergoal.id IS NULL
+                              AND goal.userId = ?
+                    `,
+                    values: [req.params.userId, req.params.userId]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
 }
+
 /**
  * Exports the profileRoutes class.
  */

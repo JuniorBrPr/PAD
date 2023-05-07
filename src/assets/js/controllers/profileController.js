@@ -32,8 +32,9 @@ export class profileController extends Controller {
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
         await this.#setProfileImage()
+        await this.#displayWeeklyGoalCompletion(1)
         await this.#setupGoals(1)
-        await this.#displayGoalCompletionPercentage(1)
+        await this.#displayDailyGoalCompletionPercentage(1)
     }
 
     /**
@@ -83,75 +84,92 @@ export class profileController extends Controller {
         const cardContainer = document.getElementById('card-container');
         let date = new Date().toISOString().split('T')[0];
         document.getElementById('date').innerHTML = date;
-        
+        document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
         try {
-            let goals = await this.#profileRepository.getGoals(userId);
-            for (let i = 0; i < goals.data.length; i++) {
-                let goals = await this.#profileRepository.getGoals(userId);
-                // Constant we are gonna use
-                let goalTitle = goals.data[i].name;
-                let goalAmount = goals.data[i].value;
-                let valueType = goals.data[i].unit;
-                let usergoalID = goals.data[i].usergoalID;
+            let userGoals = await this.#profileRepository.getUserGoals(userId);
+            if (userGoals.data.length >= 1) {
+                document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag' // Update text if goals have been found
+                for (let i = 0; i < userGoals.data.length; i++) {
+                    let usergoal = await this.#profileRepository.getUserGoals(userId);
+                    let goal = await this.#profileRepository.getGoals(userId)
+                    // Constants we are gonna use
+                    let goalTitle = usergoal.data[i].name;
+                    let unit = usergoal.data[i].unit;
+                    let usergoalID = usergoal.data[i].usergoalID;
 
-                // This is the layout of every card, it will be filled with the constants of the parameters
-                let card = document.createElement('div');
-                card.classList.add('card');
-                card.innerHTML = `
+                    // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
+                    let completed = goal.data[i]?.completed || 0;
+
+                    // When goal hasnt been made yet (goal undefined) the value will be set to the value
+                    // which was chosen by user and is from usergoal
+                    let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
+                    if (completed === 0) {
+                        // This is the layout of every card, it will be filled with the constants of the parameters
+                        let card = document.createElement('div');
+                        card.classList.add('card');
+                        card.innerHTML = `
                 <div class="mx-auto my-4">
                   <div class="card-body justify-content-center text-center">
                     <h5 id="activity-title" class="card-title">${goalTitle}</h5>
-                    <h6 id="activity-amount" class="card-subtitle mb-2">${goalAmount} ${valueType}</h6>
+                    <h6 id="activity-amount" class="card-subtitle mb-2">${value} ${unit}</h6>
                       <button id="activity-btn-completed" class="=w-50">Gehaald</button>
                   </div>
                 </div>`;
 
-                // Styling
-                const cardBody = card.querySelector('.card-body');
-                card.style.border = "0"
-                cardBody.style.backgroundColor = '#008C93';
-                cardBody.style.borderRadius = '20px';
-                cardBody.style.color = 'white';
-                cardBody.style.width = '500px';
-                const buttonElement = card.querySelector('#activity-btn-completed');
-                buttonElement.style.backgroundColor = 'rgba(0, 64, 67, 1)';
-                buttonElement.style.border = '1px solid white'
-                buttonElement.style.borderRadius = '20px'
-                buttonElement.style.color = 'white'
+                        // Styling
+                        const cardBody = card.querySelector('.card-body');
+                        card.style.border = "0"
+                        cardBody.style.backgroundColor = '#008C93';
+                        cardBody.style.borderRadius = '20px';
+                        cardBody.style.color = 'white';
+                        cardBody.style.width = '500px';
+                        const buttonElement = card.querySelector('#activity-btn-completed');
+                        buttonElement.style.backgroundColor = 'rgba(0, 64, 67, 1)';
+                        buttonElement.style.border = '1px solid white'
+                        buttonElement.style.borderRadius = '20px'
+                        buttonElement.style.color = 'white'
 
-                // When button is pressed this function will run
-                card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
-                    await this.#profileRepository.updateGoalCompletion(usergoalID);
-                    card.style.opacity = '0'; // Set opacity to 0 to start the transition
-                    card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
-                    setTimeout(() => {
-                        cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
-                    }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                    await this.#displayGoalCompletionPercentage(userId) // Update goalcompletionpercentage
-                });
-                cardContainer.appendChild(card);
+                        // When button is pressed this function will run
+                        card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
+                            if (typeof goal.data[i] === 'undefined') {
+                                await this.#profileRepository.insertGoal(usergoalID, userId, value)
+                            }
+
+                            await this.#profileRepository.updateGoalCompletion(usergoalID);
+
+                            card.style.opacity = '0'; // Set opacity to 0 to start the transition
+                            card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+
+                            setTimeout(() => {
+                                cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
+                            }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
+                            await this.#displayDailyGoalCompletionPercentage(userId) // Update daily goal completion percentage
+                            await this.#displayWeeklyGoalCompletion(userId) // Update weekly goal completion percentage
+                        });
+                        cardContainer.appendChild(card);
+                    }
+                }
             }
         } catch(e){
             console.log(e)
-            document.getElementById('noActivitysMessage').innerHTML = "U heeft geen doelen vandaag"
         }
     }
 
 
-    async #displayGoalCompletionPercentage(userId) {
-        let calculateGoalCompletionPercentage = await this.#profileRepository.calculateGoalCompletionPercentage(userId);
+    async #displayDailyGoalCompletionPercentage(userId) {
+        let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage(userId);
         const percentageText = document.getElementById('percentage');
-        let percentageGoalCompletion = parseInt(calculateGoalCompletionPercentage.data[0].percentage);
+        let percentageGoalCompletion = parseInt(calculateDailyGoalCompletionPercentage.data[0].percentage);
+        // Text percentage
+        percentageText.innerHTML = percentageGoalCompletion + "%"; // If there already is a goal then present percentage
 
-        if (isNaN(percentageGoalCompletion)) {
-            document.getElementById('progressRingDiv').remove();
-        }else {
-            // Text percentage
-            percentageText.innerHTML = percentageGoalCompletion + "%";
+        if (isNaN(percentageGoalCompletion)) { // If no goals exist
+            percentageText.innerHTML = "0%"; // Set innertext to 0% of NaN%
         }
 
         function updatePercentageBar(){
             let circle = document.querySelector('circle');
+            document.getElementById('progress-ring').style.display = 'block'
             let radius = circle.r.baseVal.value;
             let circumference = radius * 2 * Math.PI;
 
@@ -160,10 +178,31 @@ export class profileController extends Controller {
 
             const offset = circumference - percentageGoalCompletion / 100 * circumference;
             circle.style.strokeDashoffset = offset;
+
+            if(percentageGoalCompletion === 100){
+                document.getElementById("titleDoelen").innerHTML = 'U heeft uw doel(en) behaald voor vandaag' // Standard text
+            }
         }
 
         // Call the updatePercentageBar function initially to set the initial percentage value
         updatePercentageBar();
+    }
+
+    async #displayWeeklyGoalCompletion(userId){
+        let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage(userId);
+        let percentageWeeklyGoalCompletion = parseInt(data.data[0].percentage);
+        let percentageBar = document.getElementById("progress-bar")
+        function updateWeeklyPercentageBar(){
+            percentageBar.innerHTML = `${percentageWeeklyGoalCompletion}%`;
+            percentageBar.style.height =  `${percentageWeeklyGoalCompletion}%`;
+
+            if(isNaN(percentageWeeklyGoalCompletion)){
+                percentageBar.style.height =  `0%`;
+                percentageBar.innerHTML = `0%`;
+            }
+        }
+        // Call the updatePercentageBar function initially to set the initial percentage value
+        updateWeeklyPercentageBar();
     }
 
 

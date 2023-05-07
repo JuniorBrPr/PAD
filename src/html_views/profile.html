@@ -31,13 +31,24 @@
 </div>
 <h1 class="d-flex justify-content-center my-3">Dag overzicht</h1>
 <div id="progressRingDiv" class="d-flex justify-content-center">
-  <svg class="progress-ring" width="120" height="120">
+  <svg class="progress-ring" id="progress-ring" width="120" height="120">
     <circle class="progress-ring__circle" stroke="#008C93" stroke-width="10" fill="transparent" r="52" cx="60" cy="60"/>
     <text id="percentage" class="progress-ring__text" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="30"></text>
   </svg>
 </div>
-<h2 class="d-flex justify-content-center my-3">Uw doelen van vandaag</h2>
+<h2 class="d-flex justify-content-center my-3" id="titleDoelen"></h2>
 <h3 class="d-flex justify-content-center" id="date"></h3>
-<h5 class="d-flex justify-content-center" id="noActivitysMessage"></h5>
 <div id="card-container"></div>
+<h1 class="d-flex justify-content-center">Week overzicht</h1>
+<div class="barcontainer">
+<!--Lines to make it more visible what percentage the bar is at-->
+  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr>  <hr> <hr>
+  <div class="bar" id="progress-bar"></div>
+  <div class="belowBar">
+  </div>
+  <div class="belowBarWhite">
+
+  </div>
+</div>
+
 

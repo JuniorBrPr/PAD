@@ -30,17 +30,30 @@ export class profileRepository {
         return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "GET", userId);
     }
 
+    async getUserGoals(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/userGoals/${userId}`, "GET", userId);
+    }
     async getGoals(userId) {
         return await this.#networkManager.doRequest(`${this.#route}/goals/${userId}`, "GET", userId);
     }
 
+    async insertGoal(userGoalID, userId, value) {
+        return await this.#networkManager.doRequest(`/profile/insertGoal/${userGoalID}?userId=${userId}&value=${value}`, "POST", {
+            "usergoalID": userGoalID,
+            "userId": userId,
+            "value": value
+        });
+    }
+
     async updateGoalCompletion(userGoalID) {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletion/${userGoalID}`, "PUT", userGoalID);
-
     }
 
-    async calculateGoalCompletionPercentage(userId) {
-        return await this.#networkManager.doRequest(`${this.#route}/goalCompletionPercentage/${userId}`, "PUT", userId);
+    async calculateDailyGoalCompletionPercentage(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/dailyGoalCompletionPercentage/${userId}`, "GET", userId);
     }
 
+    async calculateWeeklyGoalCompletionPercentage(userId) {
+        return await this.#networkManager.doRequest(`${this.#route}/weeklyGoalCompletionPercentage/${userId}`, "GET", userId);
+    }
 }
