@@ -8,14 +8,12 @@
 class ActivityRoute {
 
     #errorCodes = require("../framework/utils/httpErrorCodes")
-    #activityCodes = require("../framework/utils/activityCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
     #app;
 
     constructor(app) {
         this.#app = app;
 
-        this.#getUserGoals();
         this.#getGoalTemplates();
         this.#createUserGoal();
     }
@@ -70,41 +68,6 @@ class ActivityRoute {
                             FROM goaltemplate gt
                                      INNER JOIN activity a ON gt.activityId = a.id;`,
                     values: null
-                });
-                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-            } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
-            }
-        });
-    }
-
-    /**
-     * @author Jayden.G
-     * Retrieves userGoals for userId.
-     *
-     * Fetches user goal data from the 'usergoal', 'goalTemplate', and 'activity' tables in the database.
-     * @throws {Error} If there is an error during the database query execution.
-     * @private
-     */
-
-    #getUserGoals() {
-        this.#app.get("/activity/goals/:userId", async (req, res) => {
-            try {
-                //
-                const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT ug.userId,
-                                   a.activity_name,
-                                   a.activity_description,
-                                   ug.startdate,
-                                   g.difficulty
-                            FROM usergoal ug
-                                     INNER JOIN goalTemplate g ON ug.goal_templateId = g.templateId
-                                     INNER JOIN activity a ON g.activityId = a.activityId
-                            WHERE ug.startDate >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-                              AND ug.startDate <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
-                              AND ug.userId = ?
-                            GROUP BY ug.startDate ASC;`,
-                    values: [this.#activityCodes.MIN_DAYS, this.#activityCodes.MAX_DAYS, req.params.userId]
                 });
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
             } catch (e) {
