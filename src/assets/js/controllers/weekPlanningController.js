@@ -66,21 +66,22 @@ export class WeekPlanningController extends Controller {
 
             //For each dataToDotoday another activity
             const data = await this.#weekPlanningRepository.dataWeekPlanning(id)
-            if (i === 0) {
-                dayActivity.innerHTML = data[0].name;
-            } else if (i === 1) {
-                dayActivity.innerHTML = data[1].name;
-            } else if (i === 2) {
-                dayActivity.innerHTML = data[2].name;
-            } else if (i === 3) {
-                dayActivity.innerHTML = data[3].name;
-            } else if (i === 4) {
-                dayActivity.innerHTML = data[4].name;
-            } else if (i === 5) {
-                dayActivity.innerHTML = data[5].name;
-            } else if (i === 6) {
-                dayActivity.innerHTML = data[6].name;
-            }
+            // if (i === 0) {
+            //     dayActivity.innerHTML = data[0].name;
+            // } else if (i === 1) {
+            //     dayActivity.innerHTML = data[1].name;
+            // } else if (i === 2) {
+            //     dayActivity.innerHTML = data[2].name;
+            // } else if (i === 3) {
+            //     dayActivity.innerHTML = data[3].name;
+            // } else if (i === 4) {
+            //     dayActivity.innerHTML = data[4].name;
+            // } else if (i === 5) {
+            //     dayActivity.innerHTML = data[5].name;
+            // } else if (i === 6) {
+            //     dayActivity.innerHTML = data[6].name;
+            // }
+            dayActivity.innerHTML = data[i].name;
 
 
             //Box toegevoegd
@@ -98,7 +99,7 @@ export class WeekPlanningController extends Controller {
             }
             document.body.appendChild(datePlanningDiv);
 
-           // datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
+            // datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
 
             //Buttons
             let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
@@ -131,7 +132,7 @@ export class WeekPlanningController extends Controller {
                     let date = new Date(dateToday);
                     date.setDate(date.getDate() + index);
                     //const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-                     dateElement.innerHTML = date.toLocaleDateString('nl', options);
+                    dateElement.innerHTML = date.toLocaleDateString('nl', options);
                 });
             });
             //Last week button
@@ -174,8 +175,6 @@ export class WeekPlanningController extends Controller {
                     console.log(e)
                 }
             }.bind(this));
-
-
 
 
         }
