@@ -291,6 +291,8 @@ export class App {
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);
+
+        window.location.reload();
     }
 }
 
