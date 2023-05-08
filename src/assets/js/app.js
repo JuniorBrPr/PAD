@@ -94,7 +94,7 @@ export class App {
                     () => console.log("Error: Already logged in"),
                     () => new LoginController());
                 break;
-                
+
             case App.CONTROLLER_REGISTER:
                 App.isLoggedIn(
                     () => console.log("Error: Can't register when already logged in"),
@@ -128,7 +128,7 @@ export class App {
                         ),
                     () => new LoginController());
                 break;
-                
+
             case App.CONTROLLER_ACTIVITY:
                 App.isLoggedIn(
                     () =>
@@ -137,8 +137,8 @@ export class App {
                             () => new SurveyController(),
                         ),
                     () => new LoginController());
-                break;    
-                
+                break;
+
             default:
                 return false;
         }
@@ -199,7 +199,7 @@ export class App {
      * @param controllerData
      */
     static setCurrentController(name, controllerData) {
-        if (App.dontSetCurrentController) {
+        if(App.dontSetCurrentController) {
             return;
         }
 
@@ -240,7 +240,6 @@ export class App {
      * @param whenYes - function to execute when user is logged in
      * @param whenNo - function to execute when user is logged in
      */
-
     static isLoggedIn(whenYes, whenNo) {
         if (App.sessionManager.get("token")) {
             whenYes();
@@ -282,7 +281,6 @@ export class App {
      * @author Jayden.G
      * Removes username via sessionManager and loads the login screen
      */
-
     static handleLogout() {
         App.sessionManager.clear();
 
