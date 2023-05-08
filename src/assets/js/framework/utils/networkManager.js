@@ -9,7 +9,7 @@ import {App} from "../../app.js";
 
 export class NetworkManager {
 
-    sessionManager = new SessionManager();
+    #sessionManager = new SessionManager();
 
     /**
      * Does an AJAX request to server(NodeJS)
@@ -32,7 +32,7 @@ export class NetworkManager {
                 },
             };
 
-            const token = this.sessionManager.get("token");
+            const token = this.#sessionManager.get("token");
 
             if (token) {
                 options.headers.Authorization = "Bearer " + token;
