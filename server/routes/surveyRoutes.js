@@ -33,10 +33,12 @@ class surveyRoutes {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT survey.id AS id
                             FROM survey
-                                     INNER JOIN question ON survey.id = question.surveyId
+                                     INNER JOIN question
+                                                ON survey.id = question.surveyId
                             WHERE question.id NOT IN (SELECT questionId
                                                       FROM answer
-                                                               INNER JOIN response ON response.id = answer.responseId
+                                                               INNER JOIN response
+                                                                          ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             GROUP BY survey.id;`,
                     values: [req.params.userId]
@@ -326,7 +328,7 @@ class surveyRoutes {
                 } else {
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({
                         "survey_status": data[0].completedSurvey
-                });
+                    });
                 }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({

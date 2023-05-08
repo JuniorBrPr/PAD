@@ -21,16 +21,14 @@ footer {
 }
 
 .questionContainer {
-    min-height: fit-content;
     height: 70vh;
+    min-height: fit-content;
 }
 
 /* Profile */
 .profilesection{
     background-color: #008C93;
 }
-
-
 
 .colProfile{
     position: relative;

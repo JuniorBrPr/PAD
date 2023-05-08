@@ -3,7 +3,6 @@
         <div class="container survey-welcome">
             <div class="alert alert-success alert-dismissible fade show" style="display: none">
                 <strong>Success!</strong> Jouw antwoorden zijn opgeslagen.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <div class="row d-flex">
                 <h1 class="text-center">Intake vragenlijst</h1>
@@ -32,7 +31,7 @@
         </div>
         <div class="survey-form container mt-3 mb-4">
             <div class="mt-3 d-flex">
-                <div class="col">
+                <div class="col d-flex flex-column">
                     <div class="row">
                         <div class="col">
                             <div class="progress">
@@ -42,7 +41,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row d-flex questionContainer mb-1">
+                    <div class="row d-flex questionContainer mb-3">
 
                     </div>
                     <div class="row d-flex mt-2">
@@ -66,7 +65,6 @@
                 <h3 class="questionText">Question text</h3>
             </div>
             <div class="alert alert-danger alert-dismissible fade show text-center">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         </div>
         <div class="row mt-3 mb-4">
@@ -92,7 +90,7 @@
     <li class="option mt-1 border rounded row">
         <div class="col d-flex">
             <div class="form-check align-items-center">
-                <input id="formCheckBox1" class="formCheckBox form-check-input d-md-flex m-3" type="checkbox"/>
+                <input id="formCheckBox1" class="formCheckBox form-check-input d-flex m-3" type="checkbox"/>
                 <label class="optionText form-check-label fs-4 d-md-flex" for="formCheckBox1">Open
                     input</label>
             </div>
@@ -104,19 +102,28 @@
 </template>
 
 <template id="radio">
-    <li class="option mt-1 border rounded row">
+    <li class="option border rounded row">
         <div class="form-check">
-            <div class="radio-button-container d-flex flex-fill col">
+            <div class="radio-button-container d-flex flex-column">
             </div>
         </div>
     </li>
 </template>
 
 <template id="radioButton">
-    <li class="formRadioBtn form-check d-flex flex-fill justify-content-center border mx-1 rounded mt-3 mb-1">
-        <input id="radioBtn" class="formRadioBtn form-check-input ms-0 me-auto" type="radio" name="portion"/>
-        <label class="option-text form-check-label me-auto" for="radioBtn"></label>
+    <li class="formRadioBtn form-check d-flex row border border-1 m-1">
+        <div class="col d-flex flex-grow-1 justify-content-center">
+            <input id="radioBtn" class="formCheckBox" type="radio" name="portion"/>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col text-start">
+                    <label class="optionText form-check-label col-form-label fs-5"></label>
+                </div>
+            </div>
+        </div>
     </li>
+
 </template>
 
 <template id="backAndForthActivityTable">
@@ -126,6 +133,9 @@
         </div>
         <div class="row d-flex justify-content-center">
             <p class="text-center h6 subtitle"></p>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show text-center" style="display: none">
+            Error default text!
         </div>
         <div class="table-responsive">
             <table class="table">
@@ -137,7 +147,7 @@
                     <th>Inspanning</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="backAndForthActivity">
                 <template class="rowTemplate">
                     <tr class="questionRow">
                         <td class="questionText">qTxt</td>
@@ -146,15 +156,15 @@
                                 class="form-control-sm" type="number" min="0" max="59"/> minuten
                         </td>
                         <td>
-                            <div class="form-check"><input id="formCheck-4" class="form-check-input" type="radio"
+                            <div class="form-check"><input id="formCheck-4" class="form-check-input radio" type="radio"
                                                            name="intensity"/><label class="form-check-label"
                                                                                     for="formCheck-4">Langzaam</label>
                             </div>
-                            <div class="form-check"><input id="formCheck-5" class="form-check-input" type="radio"
+                            <div class="form-check"><input id="formCheck-5" class="form-check-input radio" type="radio"
                                                            name="intensity"/><label class="form-check-label"
                                                                                     for="formCheck-5">Gemiddeld</label>
                             </div>
-                            <div class="form-check"><input id="formCheck-6" class="form-check-input" type="radio"
+                            <div class="form-check"><input id="formCheck-6" class="form-check-input radio" type="radio"
                                                            name="intensity"/><label class="form-check-label"
                                                                                     for="formCheck-6">Snel</label></div>
                         </td>
@@ -162,14 +172,13 @@
                 </template>
                 <tr>
                     <td>Niet van toepassing</td>
-                    <td class="flex-grow-1 align-content-center"><input type="checkbox"/></td>
+                    <td class="flex-grow-1 align-content-center"><input type="checkbox" class="nvtCheck"/></td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </template>
-
 
 <template id="recurringPhysicalActivityTable">
     <div class="questionTab border rounded p-4 mt-2">
@@ -179,6 +188,10 @@
         <div class="row d-flex justify-content-center">
             <p class="text-center h6 subtitle"></p>
         </div>
+        <div class="alert alert-danger alert-dismissible fade show text-center" style="display: none">
+            Error default text!
+            <button type="button" class="btn-close"></button>
+        </div>
         <div class="table-responsive ">
             <table class="table">
                 <thead>
@@ -187,7 +200,7 @@
                     <th>Gemiddelde tijd per week</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="recurringPhysicalActivity">
                 <template class="rowTemplate">
                     <tr class="questionRow">
                         <td class="questionText"></td>
@@ -198,7 +211,7 @@
                 </template>
                 <tr>
                     <td>Niet van toepassing</td>
-                    <td><input class="flex-grow-1" type="checkbox"/></td>
+                    <td><input class="flex-grow-1 nvtCheck" type="checkbox" /></td>
                 </tr>
                 </tbody>
             </table>
@@ -207,12 +220,15 @@
 </template>
 
 <template id="householdActivityTable">
-    <div class="questionTab border rounded p-4 mt-2">
+    <div class="questionTab border rounded p-4 mt-2 householdActivity">
         <div class="row d-flex justify-content-center">
             <h2 class="text-center title"></h2>
         </div>
         <div class="row d-flex justify-content-center">
             <p class="text-center h6 subtitle"></p>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show text-center" style="display: none">
+            Error default text!
         </div>
         <div class="table-responsive">
             <table class="table">
@@ -223,7 +239,7 @@
                     <th>Gemiddelde tijd per dag</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="householdActivity">
                 <template class="rowTemplate">
                     <tr class="questionRow">
                         <td class="questionText"></td>
@@ -235,7 +251,7 @@
                 </template>
                 <tr>
                     <td>Niet van toepassing</td>
-                    <td><input class="flex-grow-1" type="checkbox"/></td>
+                    <td><input class="flex-grow-1 nvtCheck" type="checkbox"/></td>
                 </tr>
                 </tbody>
             </table>

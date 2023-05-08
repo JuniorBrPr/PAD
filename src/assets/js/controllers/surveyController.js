@@ -194,15 +194,31 @@ export class SurveyController extends Controller {
         const questionTab = this.#surveyView.querySelector(`#${templateId}`).content
             .querySelector(".questionTab").cloneNode(true);
         questionTab.style.display = "none";
-
         questionTab.querySelector(".title").innerText = title;
         questionTab.querySelector(".subtitle").innerText = subtitle;
+
+        const nvtCheckbox = questionTab.querySelector(".nvtCheck");
+        nvtCheckbox.addEventListener("change", () => {
+            for (let i = 0; i < questionTab.querySelectorAll(".questionRow").length; i++) {
+                this.#toggleEnabledInput(questionTab.querySelectorAll(".questionRow")[i], !nvtCheckbox.checked);
+            }
+        });
 
         for (const question of questions) {
             const row = questionTab.querySelector(".rowTemplate").content
                 .querySelector(".questionRow").cloneNode(true);
             row.querySelector(".questionText").innerText = question.text;
             row.querySelector(".questionText").id = question.id;
+
+            for (let i = 0; i < row.querySelectorAll("input").length; i++) {
+                if (row.querySelectorAll("input")[i].type === "number") {
+                    row.querySelectorAll("input")[i].defaultValue = 0;
+                }
+                if (row.querySelectorAll("input")[i].type === "radio") {
+                    row.querySelectorAll("input")[i].name = question.id;
+                }
+            }
+
             questionTab.querySelector("tbody").prepend(row);
         }
 
@@ -235,7 +251,6 @@ export class SurveyController extends Controller {
                         const option = this.#RADIO_OPTION.content.querySelector(".option")
                             .cloneNode(true);
                         const radioBtnContainer = option.querySelector(".radio-button-container");
-                        console.log(question);
                         switch (question.type) {
                             case "numberScale":
                                 for (let j = 0; j < 8; j++) {
@@ -249,6 +264,13 @@ export class SurveyController extends Controller {
                                 optionsContainer.appendChild(option);
                                 break;
                             case "weeklyPortions" :
+                                optionsContainer.classList.add("d-flex", "flex-row", "justify-content-between");
+
+                                const daysOptionContainer = document.createElement("div");
+                                daysOptionContainer.classList.add("col-5", "daysOptionContainer");
+                                const portionsOptionContainer = document.createElement("div");
+                                portionsOptionContainer.classList.add("col-5", "portionsOptionContainer");
+
                                 const daysLbl = document.createElement("h4");
                                 daysLbl.classList.add("text-center");
                                 daysLbl.innerText = "Hoeveel dagen?";
@@ -256,26 +278,6 @@ export class SurveyController extends Controller {
                                 const portionsLbl = document.createElement("h4");
                                 portionsLbl.innerText = "Hoeveel porties per dag?";
                                 portionsLbl.classList.add("text-center");
-
-                                for (let j = 0; j < 8; j++) {
-                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
-                                        .cloneNode(true);
-                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
-                                        "Nooit" : j === 7 ?
-                                            "Elke dag" : String(j);
-                                    if (j === 0) {
-                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
-                                            portionOption.style.display = "none";
-                                            portionsLbl.style.display = "none";
-                                        });
-                                    } else {
-                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
-                                            portionOption.style.display = "block";
-                                            portionsLbl.style.display = "block";
-                                        });
-                                    }
-                                    radioBtnContainer.appendChild(radioBtn);
-                                }
 
                                 const portionOption = this.#RADIO_OPTION.content.querySelector(".option")
                                     .cloneNode(true);
@@ -290,12 +292,30 @@ export class SurveyController extends Controller {
                                     portionBtnContainer.appendChild(radioBtn);
                                 }
 
-                                portionOption.style.display = "none";
-                                portionsLbl.style.display = "none";
-                                optionsContainer.appendChild(daysLbl);
-                                optionsContainer.appendChild(option);
-                                optionsContainer.appendChild(portionsLbl);
-                                optionsContainer.appendChild(portionOption)
+                                for (let j = 0; j < 8; j++) {
+                                    const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
+                                        .cloneNode(true);
+                                    radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
+                                        "Nooit" : j === 7 ?
+                                            "Elke dag" : String(j);
+                                    if (j === 0) {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            this.#toggleEnabledInput(portionOption, false);
+                                        });
+                                    } else {
+                                        radioBtn.querySelector("#radioBtn").addEventListener("click", () => {
+                                            this.#toggleEnabledInput(portionOption, true);
+                                        });
+                                    }
+                                    radioBtnContainer.appendChild(radioBtn);
+                                }
+
+                                daysOptionContainer.appendChild(daysLbl);
+                                daysOptionContainer.appendChild(option);
+                                portionsOptionContainer.appendChild(portionsLbl);
+                                portionsOptionContainer.appendChild(portionOption);
+                                optionsContainer.appendChild(daysOptionContainer);
+                                optionsContainer.appendChild(portionsOptionContainer);
                                 break;
                             case "portion":
                                 for (let j = 1; j <= 8; j++) {
@@ -304,7 +324,6 @@ export class SurveyController extends Controller {
                                     radioBtn.querySelector(".form-check-label").innerText = String(j);
                                     optionsContainer.appendChild(radioBtn);
                                 }
-                                // optionsContainer.appendChild(option);
                                 break;
                         }
                         break;
@@ -372,8 +391,10 @@ export class SurveyController extends Controller {
             const response = await this.#surveyRepository.putSurveyResult(
                 this.#getSurveyResponseData(this.#data[0].surveyId !== 2), 1);
             await this.#setupView();
+
             const alert = this.#surveyView.querySelector(".alert");
             alert.style.display = "block";
+
             if (response.failure) {
                 alert.classList.add("alert-danger");
                 alert.classList.remove("alert-success");
@@ -395,134 +416,245 @@ export class SurveyController extends Controller {
     #validateForm() {
         if (this.#currentQuestion >= this.#data.length) return true;
 
-        //TODO: remove this line
-        if (this.#data[this.#currentQuestion].surveyId === 2) return true;
-
-        let questionTabs = this.#surveyView.getElementsByClassName("questionTab");
-        const alert = this.#currentQuestion < questionTabs.length ? questionTabs[this.#currentQuestion].querySelector(".alert") : null;
-        let optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
-        let optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll(".formRadioBtn");
-        const currentQuestionObj = this.#data[this.#currentQuestion];
+        const questionTabs = this.#surveyView.getElementsByClassName("questionTab");
+        let currentQuestionTab;
         let valid = false;
-        let checked = 0;
+        let alert;
 
-        switch (currentQuestionObj.type) {
-            case "singleChoice":
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (checked > 1) break;
-                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
-                        checked++;
-                    }
-                }
-                if (checked === 1) {
+        if (this.#data[this.#currentQuestion].surveyId === 1) {
+            const optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
+            alert = this.#currentQuestion < questionTabs.length ?
+                questionTabs[this.#currentQuestion].querySelector(".alert") : null;
+            alert.style.display = "none";
+
+            currentQuestionTab = questionTabs[this.#currentQuestion];
+            this.#resetBorderColors(currentQuestionTab)
+
+            switch (this.#data[this.#currentQuestion].type) {
+                case "singleChoice":
+                    valid = this.#validateSingleChoice(optionsCurrentQuestionTab, alert);
+                    break;
+                case "portion":
+                case "numberScale" :
+                    valid = this.#validateNumberScale(questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn"),
+                        alert);
+                    break;
+                case "multipleChoice":
+                    valid = this.#validateMultipleChoice(optionsCurrentQuestionTab, alert);
+                    break;
+                case "weeklyPortions":
+                    valid = this.#validateWeeklyPortions(questionTabs[this.#currentQuestion], alert);
+                    break;
+                case "title":
                     valid = true;
-                } else if (checked > 1) {
-                    alert.innerText = "Gelieve slechts 1 antwoord te selecteren.";
-                } else {
-                    alert.innerText = "Gelieve een antwoord te selecteren.";
-                }
-                break;
-            case "portion":
-            case "numberScale" :
-                optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
-                const labels = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (optionsCurrentQuestionTab[i].checked) {
-                        //TODO: Don't remove this console.log for now, it's used to get the correct answer.
-                        // Will be removed later.
-                        console.log(labels[i].innerText);
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    alert.innerText = "Gelieve een antwoord te selecteren.";
-                }
-                break;
-            case "multipleChoice":
-                checked = 0;
-                for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
-                    if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
-                        valid = true;
-                        break;
-                    } else {
-                        alert.innerText = "Gelieve een antwoord te selecteren.";
-                    }
-                }
-                break;
-            //TODO: Implement validation weeklyPortions and title.
-            case "weeklyPortions":
-            case "title":
-                valid = true;
-                break;
-            case "frequency":
-                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
-                const labelFrequency = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
-                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
-                    if (optionsCurrentQuestionTabRadio[i].checked) {
-                        console.log(labelFrequency[i].innerText);
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    alert.innerText = "Gelieve een antwoord te selecteren.";
-                }
-                break;
-            case "yesNo":
-                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
-                const labelYesNo = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
-                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
-                    if (optionsCurrentQuestionTabRadio[i].checked) {
-                        console.log(labelYesNo[i].innerText);
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    alert.innerText = "Gelieve een antwoord te selecteren.";
-                }
-                break;
-            case "time":
-                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
-                const labelTime = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
-                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
-                    if (optionsCurrentQuestionTabRadio[i].checked) {
-                        console.log(labelTime[i].innerText);
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    alert.innerText = "Gelieve een antwoord te selecteren.";
-                }
-                break;
-            case "effort":
-                optionsCurrentQuestionTabRadio = questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn");
-                const labelEffort = questionTabs[this.#currentQuestion].querySelectorAll(".option-text");
-                for (let i = 0; i < optionsCurrentQuestionTabRadio.length; i++) {
-                    if (optionsCurrentQuestionTabRadio[i].checked) {
-                        console.log(labelEffort[i].innerText);
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    alert.innerText = "Gelieve een antwoord te selecteren.";
-                }
-                break;
-            default:
-                valid = false;
-                break;
+                    break;
+                default:
+                    valid = false;
+                    break;
+            }
         }
 
-        if (!valid) {
+        if (this.#data[0].surveyId === 2) {
+            for (let i = 0; i < questionTabs.length; i++) {
+                if (questionTabs[i].style.display === "block") {
+                    currentQuestionTab = questionTabs[i];
+                    this.#resetBorderColors(currentQuestionTab);
+
+                    alert = questionTabs[i].querySelector(".alert");
+                    alert.style.display = "none";
+
+                    valid = this.#validateActivitySurvey(questionTabs[i], alert);
+                }
+            }
+        }
+
+        if (alert !== null) {
             alert.style.display = valid ? "none" : "block";
-        } else {
-            questionTabs[this.#currentQuestion].querySelector(".alert").style.display = "none";
         }
         return valid;
     }
+
+    #resetBorderColors(questionTab) {
+        const inputs = questionTab.querySelectorAll("input");
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].style.borderColor = "";
+        }
+    }
+
+    #toggleEnabledInput(container, enabled) {
+        const inputs = container.querySelectorAll("input");
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = !enabled;
+        }
+    }
+
+    #validateActivitySurvey(questionTab, alert) {
+        const questionsCurrentQuestionTab = questionTab.querySelectorAll(".questionRow");
+        const nvtCheckbox = questionTab.querySelector(".nvtCheck");
+
+        if (nvtCheckbox.checked) {
+            return true;
+        } else {
+            if (this.#validateAllZero(questionTab)) {
+                alert.innerText = "Vul minstens één waarde in.";
+                return false;
+            }
+            let valid = true;
+            for (let i = 0; i < questionsCurrentQuestionTab.length; i++){
+                if (!this.#validateQuestion(questionsCurrentQuestionTab[i], alert)){
+                    valid = false;
+                }
+            }
+            return valid;
+        }
+
+    }
+
+    #validateQuestion(question, alert) {
+        if (this.#validateAllZero(question)) {
+            return true;
+        }
+        const inputs = question.querySelectorAll("input");
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].type === "number") {
+                if (!this.#validateNumberInput(inputs[i], alert)) {
+                    return false;
+                }
+            }
+        }
+        const radios = question.querySelectorAll(".radio");
+        if (radios.length > 0) {
+            if (!this.#validateRadiosInput(radios, alert)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    #validateAllZero(question) {
+        const inputs = question.querySelectorAll("input[type=number]");
+        for (let i = 0; i < inputs.length; i++) {
+            if (parseInt(inputs[i].value) !== 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    #validateNumberInput(input, alert) {
+        if (input.value === "") {
+            input.style.borderColor = "red";
+            alert.innerText = "Gelieve alle velden in te vullen.";
+            return false;
+        }
+        if (parseInt(input.value) < input.min) {
+            input.style.borderColor = "red";
+            alert.innerText = `Gelieve een waarde groter dan ${input.min} in te vullen.`;
+            return false;
+        }
+        if (parseInt(input.value) > input.max) {
+            input.style.borderColor = "red";
+            alert.innerText = `Gelieve een waarde kleiner dan ${input.max} in te vullen.`;
+            return false;
+        }
+        return true;
+    }
+
+    #validateRadiosInput(radios, alert) {
+        let checked = 0;
+        for (let i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                checked++;
+                break;
+            }
+        }
+        if (checked === 0) {
+            alert.innerText = "Gelieve een antwoord te selecteren.";
+            for (let i = 0; i < radios.length; i++) {
+                radios[i].style.borderColor = "red";
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    #validateSingleChoice(optionsCurrentQuestionTab, alert) {
+        let checked = 0;
+        for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
+            if (checked > 1) break;
+            if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                checked++;
+            }
+        }
+
+        if (checked === 1) {
+            return true;
+        } else if (checked > 1) {
+            alert.innerText = "Gelieve slechts 1 antwoord te selecteren.";
+            return false;
+        } else {
+            alert.innerText = "Gelieve een antwoord te selecteren.";
+            return false;
+        }
+    }
+
+    #validateNumberScale(optionsCurrentQuestionTab, alert) {
+        for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
+            if (optionsCurrentQuestionTab[i].checked) {
+                return true;
+            }
+        }
+        alert.innerText = "Gelieve een antwoord te selecteren.";
+        return false;
+    }
+
+    #validateMultipleChoice(optionsCurrentQuestionTab, alert) {
+        for (let i = 0; i < optionsCurrentQuestionTab.length; i++) {
+            if (optionsCurrentQuestionTab[i].querySelector("input").checked) {
+                return true;
+            }
+        }
+        alert.innerText = "Gelieve een antwoord te selecteren.";
+        return false;
+    }
+
+    #validateWeeklyPortions(currentQuestionTab, alert) {
+        const dayOptions = currentQuestionTab.querySelector(".daysOptionContainer")
+            .querySelectorAll("#radioBtn");
+        const portionOptions = currentQuestionTab.querySelector(".portionsOptionContainer")
+            .querySelectorAll("#radioBtn");
+
+        for (let i = 0; i < dayOptions.length; i++) {
+            if (dayOptions[i].checked) {
+                if (i === 0) {
+                    for (let j = 0; j < portionOptions.length; j++) {
+                        if (portionOptions[j].checked) {
+                            portionOptions[j].checked = false;
+                            return true;
+                        }
+                    }
+                    portionOptions.forEach(option => {
+                        if (option.checked) {
+                            option.checked = false;
+                        }
+                    });
+                    return true;
+                } else {
+                    for (let j = 0; j < portionOptions.length; j++) {
+                        if (portionOptions[j].checked) {
+                            return true;
+                        }
+                    }
+                    alert.innerText = "Gelieve aantal porties te selecteren.";
+                    return false;
+                }
+            }
+        }
+        alert.innerText = "Gelieve een antwoord te selecteren.";
+        return false;
+    }
+
 
     /**
      * Gets the survey response data.
@@ -550,7 +682,7 @@ export class SurveyController extends Controller {
                     const option = options[j];
                     let text;
                     let open = false;
-                    if (question.hasOwnProperty("options")) {
+                    if (question.hasOwnProperty("options") && question.options.length > 0) {
                         open = question.options[j].open;
                         text = question.options[j].text + (open ?
                             " " + option.querySelector(".input-field").value : "");
@@ -571,8 +703,8 @@ export class SurveyController extends Controller {
         }
 
         responseData = {
-            surveyId: this.#data[0].surveyId,
-            data: surveyData,
+            // surveyId: this.#data[0].surveyId,
+            // data: surveyData,
         };
 
         return responseData;

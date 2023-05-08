@@ -103,6 +103,8 @@ export class SurveyRepository {
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
 
+
+    //TODO: Waarom 2 aparte functies voor het updaten van de survey status? Kan in 1 functie. - Junior
     /**
      *  @author Jayden.G
      *  Method to update the completion status to complete for a user
