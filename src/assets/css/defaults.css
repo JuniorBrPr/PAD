@@ -34,8 +34,6 @@ footer {
     background-color: #008C93;
 }
 
-
-
 .colProfile{
     position: relative;
     top: -30px;
@@ -49,6 +47,27 @@ footer {
 
 .buttonWijzig{
     background-color: rgba(0, 64, 67, 1);
+    border: 1px solid white;
+    border-radius: 20px;
+    color: white;
+}
+
+.activityCard{
+    border: 0;
+    display: flex;
+    justify-content: center;
+}
+.activity-body{
+    background-color: #008C93 ;
+    border-radius: 20px;
+    color: white;
+    width: 500px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#activity-btn-completed{
+    background-color: rgba(0, 64, 67, 1) ;
     border: 1px solid white;
     border-radius: 20px;
     color: white;

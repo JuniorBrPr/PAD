@@ -39,23 +39,21 @@ export class editProfileRepository {
      * @param {number} weight - The user's weight.
      * @param {number} height - The user's height.
      * @param {number} age - The user's age.
-     * @param {number} userId - The user's ID.
      * @return {Promise<*>} - The response from the server.
      */
-    async sendData(firstname, surname, email, weight, height, age, userId) {
-        return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "PUT",
+    async sendData(firstname, surname, email, weight, height, age, ) {
+        return await this.#networkManager.doRequest(`${this.#route}`, "PUT",
             {
                 firstname: firstname,
                 surname: surname,
                 email: email,
                 weight: weight,
                 height: height,
-                age: age,
-                userId: userId
+                age: age
             });
     }
 
-    async getData(userId) {
-        return await this.#networkManager.doRequest(`/profile/${userId}`, "GET", userId);
+    async getData() {
+        return await this.#networkManager.doRequest(`/profile`, "GET");
     }
 }

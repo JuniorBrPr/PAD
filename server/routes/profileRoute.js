@@ -10,7 +10,7 @@
 class profileRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
-    #cryptoHelper = require("../framework/utils/cryptoHelper");
+    #JWTHelper = require("../framework/utils/JWTHelper");
     #app
 
     /**
@@ -33,18 +33,18 @@ class profileRoutes {
 
     /**
      * Private method that sets up the route handler for getting user data.
-     * Handles a GET request to the /profile/:userId endpoint.
+     * Handles a GET request to the /profile endpoint.
      * Retrieves user data from the database and sends it as a JSON response.
      * If the user is not found, an error message is sent as a response.
      */
     #getData() {
-        this.#app.get("/profile/:userId", async (req, res) => {
+        this.#app.get("/profile", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT firstname, surname, date_of_birth, emailAddress, weight, height
                             FROM user
                             WHERE id = ?`,
-                    values: [req.params.userId]
+                    values: [req.user.userId]
                 });
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
@@ -61,7 +61,7 @@ class profileRoutes {
     }
 
     #getUserGoals() {
-        this.#app.get("/profile/userGoals/:userId", async (req, res) => {
+        this.#app.get("/profile/userGoals", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.userId,
@@ -75,7 +75,7 @@ class profileRoutes {
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
                     `,
-                    values: [req.params.userId, new Date().getDay()]
+                    values: [req.user.userId, new Date().getDay()]
                 });
                 if (data.length >= 1) {
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
@@ -87,7 +87,7 @@ class profileRoutes {
     }
 
     #getGoals() {
-        this.#app.get("/profile/goals/:userId", async (req, res) => {
+        this.#app.get("/profile/goals", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.dayOfTheWeek,
@@ -100,7 +100,7 @@ class profileRoutes {
                             WHERE goal.userID = ?
                               AND usergoal.dayOfTheWeek = ?
                     `,
-                    values: [req.params.userId, new Date().getDay()]
+                    values: [req.user.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
@@ -110,12 +110,12 @@ class profileRoutes {
     }
 
     #insertGoal() {
-        this.#app.post("/profile/insertGoal/:usergoalID", async (req, res) => {
+        this.#app.post("/profile/insertGoal/:usergoalID", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO goal(activityID, userID, completed, value, date)
                         VALUES (?, ?, 0, ?, ?)`,
-                    values: [req.params.usergoalID, req.query.userId, req.query.value, new Date()]
+                    values: [req.params.usergoalID, req.user.userId, req.query.value, new Date()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
@@ -142,7 +142,7 @@ class profileRoutes {
     }
 
     #calculateDailyGoalCompletionPercentage() {
-        this.#app.get("/profile/dailyGoalCompletionPercentage/:userId", async (req, res) => {
+        this.#app.get("/profile/dailyGoalCompletionPercentage", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
@@ -160,7 +160,7 @@ class profileRoutes {
                               AND goal.userId = ?
                               AND usergoal.dayOfTheWeek = ?;
                     `,
-                    values: [req.params.userId, new Date().getDay(), req.params.userId, new Date().getDay()]
+                    values: [req.user.userId, new Date().getDay(), req.user.userId, new Date().getDay()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
@@ -170,7 +170,7 @@ class profileRoutes {
     }
 
     #calculateWeeklyGoalCompletionPercentage() {
-        this.#app.get("/profile/weeklyGoalCompletionPercentage/:userId", async (req, res) => {
+        this.#app.get("/profile/weeklyGoalCompletionPercentage", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
@@ -186,7 +186,7 @@ class profileRoutes {
                             WHERE usergoal.id IS NULL
                               AND goal.userId = ?
                     `,
-                    values: [req.params.userId, req.params.userId]
+                    values: [req.user.userId, req.user.userId]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {

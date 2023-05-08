@@ -14,6 +14,7 @@ export class profileController extends Controller {
     #profileRepository
     #data
     #app
+
     /**
      * Constructs a new profileController instance.
      */
@@ -39,12 +40,11 @@ export class profileController extends Controller {
 
     /**
      * Fetches user data from the repository and displays it on the profile view.
-     * @param {number} userId - The ID of the user whose data is being fetched.
      @private
      */
-    async #fetchUserData(userId){
+    async #fetchUserData() {
         try {
-            const data = await this.#profileRepository.getData(userId);
+            const data = await this.#profileRepository.getData();
             document.getElementById("profileFullName").innerHTML = data.data[0].firstname + " " + data.data[0].surname
             document.getElementById("profileEmail").innerHTML = data.data[0].emailAddress
             document.getElementById("profileAge").innerHTML = this.#calculateAge(data.data[0].date_of_birth) + " Jaar"
@@ -54,6 +54,7 @@ export class profileController extends Controller {
             console.log("Error while loading", e)
         }
     }
+
     /**
      * Calculates the age of the user based on their date of birth.
      * @param {string} dateOfBirth - The date of birth of the user.
@@ -70,6 +71,7 @@ export class profileController extends Controller {
         }
         return age;
     }
+
     /**
      * Sets the profile image for the user from local storage.
      * @private
@@ -80,18 +82,18 @@ export class profileController extends Controller {
         img.src = url;
     }
 
-    async #setupGoals(userId) {
+    async #setupGoals() {
         const cardContainer = document.getElementById('card-container');
         let date = new Date().toISOString().split('T')[0];
         document.getElementById('date').innerHTML = date;
         document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
         try {
-            let userGoals = await this.#profileRepository.getUserGoals(userId);
+            let userGoals = await this.#profileRepository.getUserGoals();
             if (userGoals.data.length >= 1) {
                 document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag' // Update text if goals have been found
                 for (let i = 0; i < userGoals.data.length; i++) {
-                    let usergoal = await this.#profileRepository.getUserGoals(userId);
-                    let goal = await this.#profileRepository.getGoals(userId)
+                    let usergoal = await this.#profileRepository.getUserGoals();
+                    let goal = await this.#profileRepository.getGoals()
                     // Constants we are gonna use
                     let goalTitle = usergoal.data[i].name;
                     let unit = usergoal.data[i].unit;
@@ -106,33 +108,20 @@ export class profileController extends Controller {
                     if (completed === 0) {
                         // This is the layout of every card, it will be filled with the constants of the parameters
                         let card = document.createElement('div');
-                        card.classList.add('card');
+                        card.classList.add('activityCard');
                         card.innerHTML = `
                 <div class="mx-auto my-4">
-                  <div class="card-body justify-content-center text-center">
+                  <div class="activity-body justify-content-center text-center">
                     <h5 id="activity-title" class="card-title">${goalTitle}</h5>
                     <h6 id="activity-amount" class="card-subtitle mb-2">${value} ${unit}</h6>
                       <button id="activity-btn-completed" class="=w-50">Gehaald</button>
                   </div>
                 </div>`;
 
-                        // Styling
-                        const cardBody = card.querySelector('.card-body');
-                        card.style.border = "0"
-                        cardBody.style.backgroundColor = '#008C93';
-                        cardBody.style.borderRadius = '20px';
-                        cardBody.style.color = 'white';
-                        cardBody.style.width = '500px';
-                        const buttonElement = card.querySelector('#activity-btn-completed');
-                        buttonElement.style.backgroundColor = 'rgba(0, 64, 67, 1)';
-                        buttonElement.style.border = '1px solid white'
-                        buttonElement.style.borderRadius = '20px'
-                        buttonElement.style.color = 'white'
-
                         // When button is pressed this function will run
                         card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
                             if (typeof goal.data[i] === 'undefined') {
-                                await this.#profileRepository.insertGoal(usergoalID, userId, value)
+                                await this.#profileRepository.insertGoal(usergoalID, value)
                             }
 
                             await this.#profileRepository.updateGoalCompletion(usergoalID);
@@ -143,21 +132,21 @@ export class profileController extends Controller {
                             setTimeout(() => {
                                 cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
                             }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                            await this.#displayDailyGoalCompletionPercentage(userId) // Update daily goal completion percentage
-                            await this.#displayWeeklyGoalCompletion(userId) // Update weekly goal completion percentage
+                            await this.#displayDailyGoalCompletionPercentage() // Update daily goal completion percentage
+                            await this.#displayWeeklyGoalCompletion() // Update weekly goal completion percentage
                         });
                         cardContainer.appendChild(card);
                     }
                 }
             }
-        } catch(e){
+        } catch (e) {
             console.log(e)
         }
     }
 
 
-    async #displayDailyGoalCompletionPercentage(userId) {
-        let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage(userId);
+    async #displayDailyGoalCompletionPercentage() {
+        let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage();
         const percentageText = document.getElementById('percentage');
         let percentageGoalCompletion = parseInt(calculateDailyGoalCompletionPercentage.data[0].percentage);
         // Text percentage
@@ -167,7 +156,7 @@ export class profileController extends Controller {
             percentageText.innerHTML = "0%"; // Set innertext to 0% of NaN%
         }
 
-        function updatePercentageBar(){
+        function updatePercentageBar() {
             let circle = document.querySelector('circle');
             document.getElementById('progress-ring').style.display = 'block'
             let radius = circle.r.baseVal.value;
@@ -179,7 +168,7 @@ export class profileController extends Controller {
             const offset = circumference - percentageGoalCompletion / 100 * circumference;
             circle.style.strokeDashoffset = offset;
 
-            if(percentageGoalCompletion === 100){
+            if (percentageGoalCompletion === 100) {
                 document.getElementById("titleDoelen").innerHTML = 'U heeft uw doel(en) behaald voor vandaag' // Standard text
             }
         }
@@ -188,23 +177,23 @@ export class profileController extends Controller {
         updatePercentageBar();
     }
 
-    async #displayWeeklyGoalCompletion(userId){
-        let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage(userId);
+    async #displayWeeklyGoalCompletion() {
+        let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage();
         let percentageWeeklyGoalCompletion = parseInt(data.data[0].percentage);
         let percentageBar = document.getElementById("progress-bar")
-        function updateWeeklyPercentageBar(){
-            percentageBar.innerHTML = `${percentageWeeklyGoalCompletion}%`;
-            percentageBar.style.height =  `${percentageWeeklyGoalCompletion}%`;
 
-            if(isNaN(percentageWeeklyGoalCompletion)){
-                percentageBar.style.height =  `0%`;
+        function updateWeeklyPercentageBar() {
+            percentageBar.innerHTML = `${percentageWeeklyGoalCompletion}%`;
+            percentageBar.style.height = `${percentageWeeklyGoalCompletion}%`;
+
+            if (isNaN(percentageWeeklyGoalCompletion)) {
+                percentageBar.style.height = `0%`;
                 percentageBar.innerHTML = `0%`;
             }
         }
+
         // Call the updatePercentageBar function initially to set the initial percentage value
         updateWeeklyPercentageBar();
     }
-
-
 }
 

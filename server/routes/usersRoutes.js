@@ -50,6 +50,8 @@ class UsersRoutes {
 
                     const accessToken = this.#JWTHelper.createJWTToken(payload);
 
+                    console.log(accessToken)
+
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({
                         accessToken: accessToken,
                     });
