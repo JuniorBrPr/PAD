@@ -1,0 +1,45 @@
+
+
+.register-form-signup {
+    margin: 0 auto;
+    max-width: 400px;
+    padding: 15px;
+}
+
+.register-form-signup h2 {
+    text-align: center;
+}
+
+.register-btn{
+    min-width: 380px;
+}
+
+
+#stepBol{
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+/*.step {*/
+/*    height: 25px;*/
+/*    width: 25px;*/
+/*    margin: 0 2px;*/
+/*    background-color: #bbbbbb;*/
+/*    border: none;*/
+/*    border-radius: 50%;*/
+/*    display: inline-block;*/
+/*    opacity: 0.5;*/
+/*}*/
+
+/*.step.active {*/
+/*    opacity: 1;*/
+/*}*/
+
+/*!* Mark the steps that are finished and valid: *!*/
+/*.step.finish {*/
+/*    background-color: #04AA6D;*/
+/*}*/
+.error{
+    border: red;
+
+}

@@ -7,36 +7,49 @@
  * @author Lennard Fonteijn & Pim Meijer
  */
 
-import { SessionManager } from "./framework/utils/sessionManager.js"
-import { LoginController } from "./controllers/loginController.js"
-import { NavbarController }  from "./controllers/navbarController.js"
-import { UploadController }  from "./controllers/uploadController.js"
-import { WelcomeController }  from "./controllers/welcomeController.js"
-import { WeekPlanningController }  from "./controllers/weekPlanningController.js"
-
+import {SurveyRepository} from "./repositories/surveyRepository.js";
+import {SessionManager} from "./framework/utils/sessionManager.js"
+import {LoginController} from "./controllers/loginController.js"
+import {NavbarController} from "./controllers/navbarController.js"
+import {SurveyController} from "./controllers/surveyController.js";
+import {profileController} from "./controllers/profileController.js"
+import {editProfileController} from "./controllers/editProfileController.js"
+import {RegisterController} from "./controllers/registerController.js";
+import {WeekPlanningController} from "./controllers/weekPlanningController.js";
+import {HomeController} from "./controllers/homeController.js";
+import {ActivityController} from "./controllers/activityController.js";
+import {ErrorController} from "./controllers/errorController.js";
 
 export class App {
+
+    //To check the survey completion
+    static #surveyRepository = new SurveyRepository();
+
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
     static sessionManager = new SessionManager();
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
+    static CONTROLLER_HOME = "home";
     static CONTROLLER_LOGIN = "login";
     static CONTROLLER_LOGOUT = "logout";
-    static CONTROLLER_WELCOME = "welcome";
-    static CONTROLLER_UPLOAD = "upload";
+    static CONTROLLER_REGISTER = "register";
     static CONTROLLER_WEEKPLANNING = "weekPlanning";
+    static CONTROLLER_ACTIVITY = "activity";
+    static CONTROLLER_SURVEY = "survey";
+    static CONTROLLER_PROFILE = "profile";
+    static CONTROLLER_EDITPROFILE = "editProfile";
+    static CONTROLLER_ERROR = "error";
+
 
     constructor() {
         //Always load the navigation
         App.loadController(App.CONTROLLER_NAVBAR);
 
-        //Attempt to load the controller from the URL, if it fails, fall back to the welcome controller.
-        App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
+        //Attempt to load the controller from the URL, if it fails, fall back to the home controller.
+        App.loadControllerFromUrl(App.CONTROLLER_HOME);
     }
-
-
 
     /**
      * Loads a controller
@@ -53,7 +66,7 @@ export class App {
         }
 
         //Check for a special controller that shouldn't modify the URL
-        switch(name) {
+        switch (name) {
             case App.CONTROLLER_NAVBAR:
                 new NavbarController();
                 return true;
@@ -65,28 +78,72 @@ export class App {
 
         //Otherwise, load any of the other controllers
         App.setCurrentController(name, controllerData);
-        
+
         switch (name) {
+
+            case App.CONTROLLER_ERROR:
+                new ErrorController(controllerData);
+                break;
+
+            case App.CONTROLLER_HOME:
+                new HomeController();
+                break;
+
             case App.CONTROLLER_LOGIN:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+                App.isLoggedIn(
+                    () => console.log("Error: Already logged in"),
+                    () => new LoginController());
                 break;
 
-            case App.CONTROLLER_WELCOME:
-                App.isLoggedIn(() => new WelcomeController(), () => new LoginController());
+            case App.CONTROLLER_REGISTER:
+                App.isLoggedIn(
+                    () => console.log("Error: Can't register when already logged in"),
+                    () => new RegisterController());
                 break;
 
-            case App.CONTROLLER_UPLOAD:
-                App.isLoggedIn(() => new UploadController(), () => new LoginController());
+            case App.CONTROLLER_SURVEY:
+                App.isLoggedIn(
+                    () => new SurveyController(),
+                    () => new LoginController());
+                break;
+
+            case App.CONTROLLER_PROFILE:
+                App.isLoggedIn(
+                    () => new profileController(),
+                    () => new LoginController());
+                break;
+
+            case App.CONTROLLER_EDITPROFILE:
+                App.isLoggedIn(
+                    () => new editProfileController(),
+                    () => new LoginController());
                 break;
 
             case App.CONTROLLER_WEEKPLANNING:
-                App.isLoggedIn(() => new WeekPlanningController(), () => new LoginController());
+                App.isLoggedIn(
+                    () =>
+                        App.hasCompletedSurvey(
+                            () => new WeekPlanningController(),
+                            () => new SurveyController(),
+                        ),
+                    () => new LoginController());
+                break;
+
+            case App.CONTROLLER_ACTIVITY:
+                App.isLoggedIn(
+                    () =>
+                        App.hasCompletedSurvey(
+                            () => new ActivityController(),
+                            () => new SurveyController(),
+                        ),
+                    () => new LoginController());
                 break;
 
             default:
                 return false;
         }
 
+        App.handleNavElementVisibility();
         return true;
     }
 
@@ -113,20 +170,19 @@ export class App {
     static getCurrentController() {
         const fullPath = location.hash.slice(1);
 
-        if(!fullPath) {
+        if (!fullPath) {
             return undefined;
         }
 
         const queryStringIndex = fullPath.indexOf("?");
-        
+
         let path;
         let queryString;
 
-        if(queryStringIndex >= 0) {
+        if (queryStringIndex >= 0) {
             path = fullPath.substring(0, queryStringIndex);
             queryString = Object.fromEntries(new URLSearchParams(fullPath.substring(queryStringIndex + 1)));
-        }
-        else {
+        } else {
             path = fullPath;
             queryString = undefined
         }
@@ -140,19 +196,43 @@ export class App {
     /**
      * Sets current controller name in URL of the browser
      * @param name
+     * @param controllerData
      */
     static setCurrentController(name, controllerData) {
         if(App.dontSetCurrentController) {
             return;
         }
 
-        if(controllerData) {
-            history.pushState(undefined, undefined, `#${name}?${new URLSearchParams(controllerData)}`);    
-        }
-        else
-        {
+        if (controllerData) {
+            history.pushState(undefined, undefined, `#${name}?${new URLSearchParams(controllerData)}`);
+        } else {
             history.pushState(undefined, undefined, `#${name}`);
         }
+    }
+
+    static handleNavElementVisibility() {
+        const navElements = document.querySelectorAll(".nav-item");
+
+        App.isLoggedIn(
+            () => {
+                for (const navElement of navElements) {
+                    if (navElement.classList.contains("logged-out-only")) {
+                        navElement.classList.add("d-none");
+                    } else {
+                        navElement.classList.remove("d-none");
+                    }
+                }
+            },
+            () => {
+                for (const navElement of navElements) {
+                    if (navElement.classList.contains("logged-in-only")) {
+                        navElement.classList.add("d-none");
+                    } else {
+                        navElement.classList.remove("d-none");
+                    }
+                }
+            }
+        );
     }
 
     /**
@@ -161,7 +241,7 @@ export class App {
      * @param whenNo - function to execute when user is logged in
      */
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("username")) {
+        if (App.sessionManager.get("token")) {
             whenYes();
         } else {
             whenNo();
@@ -169,19 +249,54 @@ export class App {
     }
 
     /**
+     * @author Jayden.G
+     * Convenience functions to handle Survey Completion states
+     *
+     * @param whenYes - function to execute when user has completed survey
+     * @param whenNo - function to execute when user has completed survey
+     */
+
+    static async hasCompletedSurvey(whenYes, whenNo) {
+        if (await this.surveyStatusChecker()) {
+            whenYes();
+        } else {
+            whenNo();
+        }
+    }
+
+    /**
+     * @author Jayden.G
+     * Checks for if the user has completed the surveys
+     *
+     * @returns {Promise<boolean>} - true if surveyStatus is complete (which would be if its 1), false otherwise
+     */
+
+    static async surveyStatusChecker() {
+        const status = await this.#surveyRepository.getSurveyStatus();
+
+        return status.survey_status === 1;
+    }
+
+    /**
+     * @author Jayden.G
      * Removes username via sessionManager and loads the login screen
      */
     static handleLogout() {
-        App.sessionManager.remove("username");
+        App.sessionManager.clear();
+
+        //handle the navbar visibility
+        App.handleNavElementVisibility();
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);
+
+        window.location.reload();
     }
 }
 
-window.addEventListener("hashchange", function() {
+window.addEventListener("hashchange", function () {
     App.dontSetCurrentController = true;
-    App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
+    App.loadControllerFromUrl(App.CONTROLLER_HOME);
     App.dontSetCurrentController = false;
 });
 

@@ -7,7 +7,7 @@
 class UsersRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
-    #cryptoHelper = require("../framework/utils/cryptoHelper");
+    #JWTHelper = require("../framework/utils/JWTHelper");
     #app
 
     /**
@@ -27,24 +27,39 @@ class UsersRoutes {
      */
     #login() {
         this.#app.post("/users/login", async (req, res) => {
-            const username = req.body.username;
+            const emailAddress = req.body.emailAddress;
 
             //TODO: You shouldn't save a password unencrypted!! Improve this by using this.#cryptoHelper functions :)
             const password = req.body.password;
 
+            //want to implement this when we have a register form
+            //const hashedPassword = this.#cryptoHelper.getHashedPassword(password)
+
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT username, password FROM users WHERE username = ? AND password = ?",
-                    values: [username, password]
+                    query: "SELECT id, firstname, role FROM user WHERE emailAddress = ? AND password = ?",
+                    values: [emailAddress, password]
                 });
-
-                //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
-                    //return just the username for now, never send password back!
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json({"username": data[0].username});
+
+                    const payload = {
+                        userId: data[0].id,
+                        firstname: data[0].firstname,
+                        role: data[0].role,
+                    };
+
+                    const accessToken = this.#JWTHelper.createJWTToken(payload);
+
+                    console.log(accessToken)
+
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                        accessToken: accessToken,
+                    });
+
+                    console.log(`User ${data[0].firstname} logged in`);
                 } else {
-                    //wrong username
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Wrong username or password"});
+                    console.log(`User ${emailAddress} tried to login but failed`)
                 }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});

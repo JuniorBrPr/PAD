@@ -1,0 +1,42 @@
+<div class="container-editProfile justify-content-center d-flex ">
+    <div class="divForm">
+        <div class="editProfileIMG pt-5 px-5 w-lg-25 d-flex mx-auto flex-column">
+            <img id="imagePreview" class="mx-auto" src="../src/images/standardProfileIMG.png" alt="Profielfoto">
+            <label id="choosePhoto" for="InputProfileImage" class="mx-auto" >Kies een profielfoto</label>
+        </div>
+        <form class="formEditProfile">
+            <input type="file" id="InputProfileImage" class="fileUpload" name="myfile">
+            <div class="inputFieldEditProfileWithLabel">
+                <label>Voornaam</label>
+                <label class="labelInvalid" id="invalidFirstname"></label>
+                <input class="inputFieldEditProfile" id="InputFirstname" type="text" placeholder="Voornaam">
+            </div>
+            <div class="inputFieldEditProfileWithLabel">
+                <label>Achternaam</label>
+                <input class="inputFieldEditProfile" id="InputSurname"  type="text" placeholder="Achternaam">
+            </div>
+            <div class="inputFieldEditProfileWithLabel">
+                <label>Email</label>
+                <label class="labelInvalid" id="invalidEmail"></label>
+                <input class="inputFieldEditProfile" id="InputEmail"  type="text" placeholder="Email">
+            </div>
+            <div class="inputFieldEditProfileWithLabel">
+                <label id="labelWeight">Gewicht in kilo</label>
+                <label class="labelInvalid" id="invalidWeight"></label>
+                <input class="inputFieldEditProfile" id="InputWeight"  type="text" placeholder="Gewicht in kilo">
+            </div>
+            <div class="inputFieldEditProfileWithLabel">
+                <label>Lengte in cm</label>
+                <label class="labelInvalid" id="invalidHeight"></label>
+                <input class="inputFieldEditProfile"  id="InputHeight" type="text" placeholder="Lengte in cm">
+            </div>
+            <div class="inputFieldEditProfileWithLabel">
+                <label>Geboorte datum</label>
+                <label class="labelInvalid" id="invalidAge"></label>
+                <input class="inputFieldEditProfile" id="InputAge"  type="date">
+            </div>
+        </form>
+        <button type="submit" id="saveProfileBtn" class="saveProfileBtn">Gegevens opslaan</button>
+    </div>
+</div>
+

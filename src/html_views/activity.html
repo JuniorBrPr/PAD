@@ -1,0 +1,152 @@
+<div class="container">
+    <div class="row justify-content-md-center mb-5">
+        <section class="col text-center gx-2">
+
+            <div class="d-sm-flex justify-content-between align-items-center m-4">
+                <h3 class="text-dark mb-0">Activiteiten</h3>
+            </div>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6 col-xl-3 mb-4">
+                    <div class="card py-2">
+                        <div class="card-body">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col">
+                                    <div class="h6 mb-1"><span>Totale score</span></div>
+                                    <div class="h5 total-activity-score"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3 mb-4">
+                    <div class="card py-2">
+                        <div class="card-body">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col me-2">
+                                    <div class="h6 mb-1"><span>Favoriete activiteit</span></div>
+                                    <div class="h5 favorite-activity"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3 mb-4">
+                    <div class="card py-2">
+                        <div class="card-body">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col">
+                                    <div class="h6 mb-1"><span>placeholder</span></div>
+                                    <div class="h5 activity-streak"><span>placeholder</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3 mb-4">
+                    <div class="card py-2">
+                        <div class="card-body">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col">
+                                    <div class="h6 mb-1"><span>placeholder</span></div>
+                                    <div class="h5"><span>placeholder</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<!--                <div class="col-md-6 col-xl-3 mb-4">-->
+<!--                    <div class="card py-2">-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="row align-items-center no-gutters">-->
+<!--                                <div class="col">-->
+<!--                                    <div class="h6 mb-1"><span>Streak</span></div>-->
+<!--                                    <div class="h5 activity-streak"><span>18</span></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="col-md-6 col-xl-3 mb-4">-->
+<!--                    <div class="card py-2">-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="row align-items-center no-gutters">-->
+<!--                                <div class="col">-->
+<!--                                    <div class="h6 mb-1"><span>Maak nieuw doel aan</span></div>-->
+<!--                                    <div class="h5"><span>placeholder</span></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+            </div>
+
+            <div id="carousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
+
+                <div class="carousel-indicators" style="top: 95%">
+                    <button type="button" data-bs-interval="false" data-bs-target="#carousel" data-bs-slide-to="0"
+                            aria-label="Slide 1"></button>
+                    <button type="button" data-bs-interval="false" data-bs-target="#carousel" data-bs-slide-to="1"
+                            aria-label="Slide 2" aria-current="true" class="active"></button>
+                    <button type="button" data-bs-interval="false" data-bs-target="#carousel" data-bs-slide-to="2"
+                            aria-label="Slide 3"></button>
+                </div>
+
+                <div class="carousel-inner">
+
+                    <div class="carousel-item" data-bs-interval="false">
+                        <div class="card mx-auto w-75" style="margin: 1.5rem;">
+                            <div class="card-body">
+                                <h5 class="card-title prev-activity-title">Vorige doel</h5>
+                                <p class="card-text prev-activity-description"></p>
+                                <p class="card-text prev-activity-date"></p>
+<!--                                <a href="#" class="btn btn-primary">Klaar</a>-->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item active" data-bs-interval="false">
+                        <div class="card mx-auto w-75" style="margin: 1.5rem;">
+                            <div class="card-body">
+                                <h5 class="card-title current-activity-title">Huidige doel</h5>
+                                <p class="card-text current-activity-description"></p>
+                                <p class="card-text current-activity-date"></p>
+<!--                                <a href="#" class="btn btn-primary">Klaar</a>-->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item" data-bs-interval="false">
+                        <div class="card mx-auto w-75" style="margin: 1.5rem;">
+                            <div class="card-body">
+                                <h5 class="card-title next-activity-title">Volgende doel</h5>
+                                <p class="card-text next-activity-description"></p>
+                                <p class="card-text next-activity-date"></p>
+<!--                                <a href="#" class="btn btn-primary">Klaar</a>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-interval="false" data-bs-target="#carousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-interval="false" data-bs-target="#carousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </section>
+    </div>
+</div>

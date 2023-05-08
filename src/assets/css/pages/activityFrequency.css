@@ -1,0 +1,10 @@
+main{
+    /*background-color: #b02a37;*/
+}
+body {
+    display: flex;
+}
+
+.container{
+    background-color: #f38792;
+}
