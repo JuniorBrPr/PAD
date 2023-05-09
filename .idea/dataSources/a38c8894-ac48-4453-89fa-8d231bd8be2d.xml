@@ -1613,87 +1613,82 @@ disabilityId</ColNames>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <foreign-key id="432" parent="293" name="uguserId">
-      <ColNames>userId</ColNames>
-      <RefColNames>id</RefColNames>
-      <RefTableName>user</RefTableName>
-    </foreign-key>
-    <foreign-key id="433" parent="293" name="usergoal_activity_fk">
+    <foreign-key id="432" parent="293" name="usergoal_activity_fk">
       <ColNames>activityId</ColNames>
       <RefColNames>id</RefColNames>
       <RefTableName>activity</RefTableName>
     </foreign-key>
-    <index id="434" parent="293" name="PRIMARY">
+    <index id="433" parent="293" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="435" parent="293" name="userId_idx">
+    <index id="434" parent="293" name="userId_idx">
       <ColNames>userId</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="436" parent="293" name="usergoal_activity_fk">
+    <index id="435" parent="293" name="usergoal_activity_fk">
       <ColNames>activityId</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="437" parent="293" name="PRIMARY">
+    <key id="436" parent="293" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="438" parent="294" name="id">
+    <column id="437" parent="294" name="id">
       <AutoIncrement>23</AutoIncrement>
       <DasType>int(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="439" parent="294" name="date">
+    <column id="438" parent="294" name="date">
       <DasType>varchar(250)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="440" parent="294" name="done">
+    <column id="439" parent="294" name="done">
       <DasType>tinyint(1)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="441" parent="294" name="notDone">
+    <column id="440" parent="294" name="notDone">
       <DasType>tinyint(1)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <index id="442" parent="294" name="PRIMARY">
+    <index id="441" parent="294" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="443" parent="294" name="PRIMARY">
+    <key id="442" parent="294" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="444" parent="295" name="id">
+    <column id="443" parent="295" name="id">
       <AutoIncrement>8</AutoIncrement>
       <DasType>int(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="445" parent="295" name="name">
+    <column id="444" parent="295" name="name">
       <DasType>varchar(200)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="446" parent="295" name="time">
+    <column id="445" parent="295" name="time">
       <DasType>varchar(200)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <index id="447" parent="295" name="PRIMARY">
+    <index id="446" parent="295" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="448" parent="295" name="PRIMARY">
+    <key id="447" parent="295" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>

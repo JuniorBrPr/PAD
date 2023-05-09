@@ -17,7 +17,7 @@ import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 import {WelcomeController} from "./controllers/welcomeController.js";
-import {ActivityController} from "./controllers/activityController.js";
+import {RecommendationsController} from "./controllers/recommendationsController.js";
 
 export class App {
 
@@ -129,7 +129,7 @@ export class App {
                 App.isLoggedIn(
                     () =>
                         App.hasCompletedSurvey(
-                            () => new ActivityController(),
+                            () => new RecommendationsController(),
                             () => new SurveyController(),
                         ),
                     () => new LoginController());
