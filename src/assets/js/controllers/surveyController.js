@@ -710,6 +710,19 @@ export class SurveyController extends Controller {
         return surveyData;
     }
 
+    // #getExerciseSurveyResponseData(questionTabs, completed, range) {
+    //     const surveyData = [];
+    //     let array = [];
+    //     for (let i = 0; questionTabs.length; i++) {
+    //
+    //     }
+    //     for (let i = 0; i < this.#data.length; i++) {
+    //         array.push({
+    //             surveyId: 2,
+    //             this.#data[i].id});
+    //     }
+    // }
+
     #getSingleChoiceData(questionTab) {
         const options = questionTab.querySelectorAll(".option");
         let answer;

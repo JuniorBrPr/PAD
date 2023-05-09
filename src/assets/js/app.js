@@ -17,8 +17,8 @@ import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 import {HomeController} from "./controllers/homeController.js";
-import {ActivityController} from "./controllers/activityController.js";
 import {ErrorController} from "./controllers/errorController.js";
+import {RecommendationsController} from "./controllers/recommendationsController.js";
 
 export class App {
 
@@ -36,7 +36,7 @@ export class App {
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_REGISTER = "register";
     static CONTROLLER_WEEKPLANNING = "weekPlanning";
-    static CONTROLLER_ACTIVITY = "activity";
+    static CONTROLLER_RECOMMENDATION = "recommendation";
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
@@ -129,14 +129,11 @@ export class App {
                     () => new LoginController());
                 break;
 
-            case App.CONTROLLER_ACTIVITY:
-                App.isLoggedIn(
-                    () =>
-                        App.hasCompletedSurvey(
-                            () => new ActivityController(),
-                            () => new SurveyController(),
-                        ),
-                    () => new LoginController());
+            case App.CONTROLLER_RECOMMENDATION:
+
+
+                new RecommendationsController()
+
                 break;
 
             default:
@@ -199,7 +196,7 @@ export class App {
      * @param controllerData
      */
     static setCurrentController(name, controllerData) {
-        if(App.dontSetCurrentController) {
+        if (App.dontSetCurrentController) {
             return;
         }
 
