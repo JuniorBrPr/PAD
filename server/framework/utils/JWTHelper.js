@@ -7,8 +7,6 @@ class JWTHelper {
     #jwt = require("jsonwebtoken");
     #errorCodes = require("./httpErrorCodes");
 
-    #ACCESS_TOKEN_SECRET = 'wokeupinanewbugatti39bb754cd1c959d42fcc8804aa42a9adaf3c779ff8d93219029bc3c9eb700dd691ccaf6a241cb580f87e558f1d83d33e4184f0c89b04d'
-
     /**
      * @author Jayden.G
      * Generates a JWT token with the provided payload
@@ -18,7 +16,7 @@ class JWTHelper {
      */
 
     createJWTToken(payload) {
-        return this.#jwt.sign(payload, this.#ACCESS_TOKEN_SECRET, {expiresIn: '30d'});
+        return this.#jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30d'});
     }
 
     /**
@@ -38,7 +36,7 @@ class JWTHelper {
         //unauthorized
         if (token == null) return res.sendStatus(this.#errorCodes.AUTHORIZATION_ERROR_CODE);
 
-        this.#jwt.verify(token, this.#ACCESS_TOKEN_SECRET, (e, user) => {
+        this.#jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (e, user) => {
 
             //forbidden (invalid signature)
             if (e) return res.sendStatus(this.#errorCodes.FORBIDDEN_CODE);
