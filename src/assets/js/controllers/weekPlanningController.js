@@ -91,8 +91,14 @@ export class WeekPlanningController extends Controller {
             let datePlanningDiv = document.createElement("div");
             datePlanningDiv.classList.add('dateplanningDiv');
             const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-            datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
+            if (date.toDateString() === today.toDateString()) { // check if date is today
+                datePlanningDiv.innerHTML = '<strong>' + date.toLocaleDateString('nl', options) + '</strong>';
+            } else {
+                datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options);
+            }
+            document.body.appendChild(datePlanningDiv);
 
+           // datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
 
             //Buttons
             let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
@@ -124,8 +130,8 @@ export class WeekPlanningController extends Controller {
                 dateElements.forEach(function (dateElement, index) {
                     let date = new Date(dateToday);
                     date.setDate(date.getDate() + index);
-                    const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-                    dateElement.innerHTML = date.toLocaleDateString('nl', options);
+                    //const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
+                     dateElement.innerHTML = date.toLocaleDateString('nl', options);
                 });
             });
             //Last week button
@@ -151,7 +157,7 @@ export class WeekPlanningController extends Controller {
                     const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, true, false);
                     console.log(data);
                     // validBox.innerText = "U heeft de activiteit succesvol afgerond";
-                    window.alert("U heeft de activiteit succesvol afgerond");
+                    window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
                 } catch (e) {
                     window.alert("Er is iets misgegaan, probeer het opnieuw!");
                     console.log(e)
@@ -162,7 +168,7 @@ export class WeekPlanningController extends Controller {
                     const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, false, true);
                     console.log(data);
                     // validBox.innerText = "U heeft de activiteit succesvol afgerond";
-                    window.alert("U heeft de activiteit niet afgerond");
+                    window.alert("U heeft de activiteit niet afgerond van: " + selectedDate);
                 } catch (e) {
                     window.alert("Er is iets misgegaan, probeer het opnieuw!");
                     console.log(e)
@@ -171,7 +177,9 @@ export class WeekPlanningController extends Controller {
 
 
 
+
         }
+
     }
 }
 
