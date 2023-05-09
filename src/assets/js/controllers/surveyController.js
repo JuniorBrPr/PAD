@@ -208,7 +208,7 @@ export class SurveyController extends Controller {
             const row = questionTab.querySelector(".rowTemplate").content
                 .querySelector(".questionRow").cloneNode(true);
             row.querySelector(".questionText").innerText = question.text;
-            row.querySelector(".questionText").id = question.id;
+            row.id = question.id;
 
             for (let i = 0; i < row.querySelectorAll("input").length; i++) {
                 if (row.querySelectorAll("input")[i].type === "number") {
@@ -228,7 +228,9 @@ export class SurveyController extends Controller {
     #displayNutritionSurvey() {
         for (let i = 0; i < this.#data.length; i++) {
             const question = this.#data[i];
-            const questionTab = this.#QUESTION_TEMPLATE.content.querySelector(".questionTab").cloneNode(true);
+            const questionTab = this.#QUESTION_TEMPLATE.content
+                .querySelector(".questionTab").cloneNode(true);
+            questionTab.id = question.id;
             questionTab.style.display = "none";
             questionTab.querySelector(".questionText").innerText =
                 `(${i + 1}/${this.#data.length}) ${question.text}`;
@@ -286,7 +288,7 @@ export class SurveyController extends Controller {
                                 for (let j = 1; j <= 8; j++) {
                                     const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
                                         .cloneNode(true);
-                                    radioBtn.querySelector("#radioBtn").name = "p";
+                                    radioBtn.querySelector("#radioBtn").name = "portions-" + i;
                                     radioBtn.querySelector(".form-check-label").innerText = j === 8 ?
                                         "Meer dan 7" : String(j);
                                     portionBtnContainer.appendChild(radioBtn);
@@ -295,6 +297,7 @@ export class SurveyController extends Controller {
                                 for (let j = 0; j < 8; j++) {
                                     const radioBtn = this.#RADIO_BUTTON.content.querySelector(".form-check")
                                         .cloneNode(true);
+                                    radioBtn.querySelector("#radioBtn").name = "days-" + i;
                                     radioBtn.querySelector(".form-check-label").innerText = j === 0 ?
                                         "Nooit" : j === 7 ?
                                             "Elke dag" : String(j);
@@ -390,8 +393,8 @@ export class SurveyController extends Controller {
             // TODO: remove hardcoded user id
             const response = await this.#surveyRepository.putSurveyResult(
                 this.#getSurveyResponseData(this.#data[0].surveyId !== 2), 1);
-            await this.#setupView();
 
+            await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
             alert.style.display = "block";
 
@@ -500,8 +503,8 @@ export class SurveyController extends Controller {
                 return false;
             }
             let valid = true;
-            for (let i = 0; i < questionsCurrentQuestionTab.length; i++){
-                if (!this.#validateQuestion(questionsCurrentQuestionTab[i], alert)){
+            for (let i = 0; i < questionsCurrentQuestionTab.length; i++) {
+                if (!this.#validateQuestion(questionsCurrentQuestionTab[i], alert)) {
                     valid = false;
                 }
             }
@@ -665,49 +668,133 @@ export class SurveyController extends Controller {
     #getSurveyResponseData(completed) {
         //TODO: Implement data collection for all types of questions.
         let responseData;
-        const surveyData = [];
+        const questionTabs = this.#surveyView.querySelectorAll(".questionTab");
         const range = completed ? this.#data.length : this.#questionsAnswered;
 
-        for (let i = 0; i < range; i++) {
-            const question = this.#data[i];
-            const questionObj = {
-                id: question.id,
-                options: []
-            };
-
-            const options = this.#surveyView.querySelectorAll(".questionTab")[i].querySelectorAll(".option");
-
-            for (let j = 0; j < options.length; j++) {
-                if (options[j].querySelector("input").checked) {
-                    const option = options[j];
-                    let text;
-                    let open = false;
-                    if (question.hasOwnProperty("options") && question.options.length > 0) {
-                        open = question.options[j].open;
-                        text = question.options[j].text + (open ?
-                            " " + option.querySelector(".input-field").value : "");
-                    } else if (question.type === "numberScale") {
-                        text = option.querySelector(".optionText").innerText;
-                    }
-
-                    const optionObj = {
-                        optionId: question.type === "numberScale" ? null : question.options[j].id,
-                        text: text,
-                        open: open
-                    };
-                    questionObj.options.push(optionObj);
-                }
-            }
-
-            surveyData.push(questionObj);
+        let surveyData = [];
+        if (this.#data[0].surveyId === 1) {
+            surveyData = this.#getNutritionSurveyResponseData(questionTabs, completed, range);
+        } else if (this.#data[0].surveyId === 2) {
+            surveyData = this.#getExerciseSurveyResponseData(questionTabs, completed, range);
         }
 
         responseData = {
-            // surveyId: this.#data[0].surveyId,
-            // data: surveyData,
+            surveyId: this.#data[0].surveyId,
+            data: surveyData,
         };
 
         return responseData;
+    }
+
+    #getNutritionSurveyResponseData(questionTabs, completed, range) {
+        const surveyData = [];
+        for (let i = 0; i < range; i++) {
+            const questionTab = questionTabs[i];
+            const questionId = parseInt(questionTab.id);
+            const questionType = this.#data.find(question => question.id === questionId).type;
+
+            switch (questionType) {
+                case "numberScale":
+                case "portion" :
+                case "singleChoice":
+                    surveyData.push(this.#getSingleChoiceData(questionTab));
+                    break;
+                case "multipleChoice":
+                    surveyData.push(this.#getMultipleChoiceData(questionTab));
+                    break;
+                case "weeklyPortions":
+                    surveyData.push(this.#getWeeklyPortionsData(questionTab));
+                    break;
+            }
+        }
+        return surveyData;
+    }
+
+    #getSingleChoiceData(questionTab) {
+        const options = questionTab.querySelectorAll(".option");
+        let answer;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].querySelector("input").checked) {
+                if (options[i].querySelector(".input-field") !== null) {
+                    answer = options[i].querySelector(".optionText").innerText + " " +
+                        options[i].querySelector(".input-field").value;
+                }
+                answer = options[i].querySelector(".optionText").innerText;
+            }
+        }
+
+        return {
+            surveyId: 1,
+            questionId: parseInt(questionTab.id),
+            answer: answer
+        }
+    }
+
+    #getMultipleChoiceData(questionTab) {
+        const options = questionTab.querySelectorAll(".option");
+        let answers = [];
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].querySelector("input").checked) {
+                if (options[i].querySelector(".input-field") !== null) {
+                    answers.push(options[i].querySelector(".optionText").innerText + " " +
+                        options[i].querySelector(".input-field").value);
+                }
+                answers.push(options[i].querySelector(".optionText").innerText);
+            }
+        }
+
+        return {
+            surveyId: 1,
+            questionId: parseInt(questionTab.id),
+            answer: answers.join(", ")
+        }
+    }
+
+    #getWeeklyPortionsData(questionTab) {
+        const dayOptions = questionTab.querySelector(".daysOptionContainer")
+            .querySelectorAll("#radioBtn");
+        const portionOptions = questionTab.querySelector(".portionsOptionContainer")
+            .querySelectorAll("#radioBtn");
+
+        let portionsPerWeek = 0;
+
+        if (dayOptions[0].checked) {
+            portionsPerWeek = 0;
+        } else {
+            let daysPerWeek = 0;
+            let portionsPerDay = 0;
+            for (let i = 0; i < dayOptions.length; i++) {
+                if (i === 7 && dayOptions[i].checked) {
+                    daysPerWeek = 7;
+                    break;
+                }
+                if (dayOptions[i].checked) {
+                    daysPerWeek = i;
+                }
+            }
+
+            for (let i = 0; i < portionOptions.length; i++) {
+                if (i === 7 && portionOptions[i].checked) {
+                    portionsPerDay = 8;
+                    break;
+                }
+                if (portionOptions[i].checked) {
+                    portionsPerDay = i + 1;
+                }
+            }
+
+            portionsPerWeek = daysPerWeek * portionsPerDay;
+        }
+
+        return {
+            surveyId: 1,
+            questionId: parseInt(questionTab.id),
+            answer: portionsPerWeek
+        };
+    }
+
+    #getExerciseSurveyResponseData(questionTabs, completed, range) {
+        return [];
     }
 }
 

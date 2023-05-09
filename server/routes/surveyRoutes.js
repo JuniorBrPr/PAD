@@ -137,16 +137,7 @@ class surveyRoutes {
      *  "data": [
      *      {
      *      "id": 1,
-     *      "options": [
-     *          {
-     *           "optionId": 1,
-     *           "text": "Option 1"
-     *          },
-     *          {
-     *           "optionId": 2,
-     *           "text": "Option 2"
-     *          }
-     *        ]
+     *      "answer": "Yes"
      *      },
      * }
      * @returns {Promise<>}
@@ -175,56 +166,13 @@ class surveyRoutes {
 
                 let answers = [];
                 for (const question of data.data) {
-                    answers.push([null, responseId, question.id, null]);
+                    answers.push([null, responseId, question.questionId, question.answer]);
                 }
                 await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO answer (id, responseId, questionId, answer)
                             VALUES ?`,
                     values: [answers]
                 });
-
-                let answersOptions = [];
-
-                for (const question of data.data) {
-                    const answerId = await this.#databaseHelper.handleQuery({
-                        query: `SELECT id
-                                FROM answer
-                                WHERE responseId = ?
-                                  AND questionId = ?;`,
-                        values: [responseId, question.id]
-                    }).then((result) => {
-                        if (result.length === 0) {
-                            throw "No answer found";
-                        }
-                        return result[0].id;
-                    });
-
-                    for (const option of question.options) {
-                        const openOption = option.optionId != null ? await this.#databaseHelper.handleQuery({
-                            query: `SELECT openOption as open
-                                    FROM questionoption
-                                    WHERE id = ?;`,
-                            values: [option.optionId]
-                        }).then((data) => {
-                            return data[0].open;
-                        }) : 0;
-
-                        answersOptions.push([
-                            null,
-                            answerId,
-                            option.optionId,
-                            openOption === 1 || option.optionId === null ? option.text : null
-                        ])
-                    }
-                }
-
-                if (answersOptions.length > 0) {
-                    await this.#databaseHelper.handleQuery({
-                        query: `INSERT INTO answeroption (id, answerId, questionOtionId, answeroption.text)
-                                values ?;`,
-                        values: [answersOptions]
-                    });
-                }
 
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({
                     failure: false,

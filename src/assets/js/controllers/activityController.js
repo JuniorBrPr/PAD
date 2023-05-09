@@ -6,17 +6,19 @@
 import {activityRepository} from "../repositories/activityRepository.js";
 import {Controller} from "./controller.js";
 import {App} from "../app.js";
+import {recommendationsRepository} from "../repositories/recommendationsRepository.js";
 
 export class ActivityController extends Controller {
 
     #activityView
     #goalTemplate
     #activityRepository
+    #recommendationsRepository
 
     constructor() {
         super();
         this.#activityRepository = new activityRepository
-
+        this.#recommendationsRepository = new recommendationsRepository();
         this.#setupView();
     }
 
@@ -44,33 +46,46 @@ export class ActivityController extends Controller {
      */
 
     async #loadGoalTemplates() {
-        const data = await this.#fetchGoalTemplates();
+        // const data = await this.#fetchGoalTemplates();
+        const data = await this.#fetchRecommendations();
         const goalTemplate = this.#activityView.querySelector("#goalTemplate").cloneNode(true);
 
-        for (const template of data) {
+        for (const goal of data) {
             const card = goalTemplate.content.querySelector(".card").cloneNode(true);
-            card.querySelector(".card-title").innerText = `${template.baseValue} ${template.unit} ${template.name}`;
-            card.querySelector(".card-text").innerText = template.description;
+            card.querySelector(".card-title").innerText = `${goal.recommendedValue} ${goal.unit} ${goal.name}`;
+            card.querySelector(".card-text").innerText = goal.description;
 
             const daysContainer = card.querySelector(".daysContainer");
 
-            card.dataset.id = template.id;
+            card.dataset.id = goal.id;
 
             card.querySelector(".selectGoal").addEventListener("click", () => {
                 if (daysContainer.style.display === "none") {
-                    daysContainer.style.display = "block";
+                    daysContainer.style.display = "flex";
                 } else {
                     daysContainer.style.display = "none";
                 }
             });
 
-            card.querySelector(".submitGoal").addEventListener("click", () => {
-                this.#handleGoalSubmit(template.id, template.baseValue);
+            card.querySelectorAll(".dayBtn").forEach((dayBtn) => {
+                dayBtn.addEventListener("click", () => {
+                    dayBtn.classList.toggle("btn-primary");
+                });
             });
 
             this.#activityView.querySelector(".templatesContainer").appendChild(card);
         }
     }
+
+    async #fetchRecommendations() {
+        return await this.#recommendationsRepository.getNutritionRecommendations(1);
+    }
+
+    #handleGoalSubmit(templateId, templateValue) {
+        const dayBtns = this.#activityView.querySelector(`[data-id="${templateId}"]`)
+            .querySelectorAll(".dayBtn");
+    }
+
 
     /**
      * @author Jayden.G
@@ -88,52 +103,52 @@ export class ActivityController extends Controller {
      * @private
      */
 
-    async #handleGoalSubmit(templateId, templateValue) {
-        const checkboxes = this.#activityView.querySelector(
-            `[data-id="${templateId}"]`).querySelector(
-            ".daysContainer").querySelectorAll(
-            ".form-check-input"
-        );
-
-        const selectedDays = [];
-        const days = [1, 2, 3, 4, 5, 6, 7];
-
-        console.log(templateId)
-
-        checkboxes.forEach((checkbox, index) => {
-            if (checkbox.checked) {
-                selectedDays.push(days[index]);
-            }
-        });
-
-        if (selectedDays.length === 0) {
-            // TODO: Display this message!
-            console.log("No days selected...");
-        } else {
-            console.log("trying to save selected goals...");
-
-            let data = [];
-
-            const date = new Date()
-
-            console.log(date.toISOString())
-
-            selectedDays.forEach((day) => {
-                data.push([
-                    null,
-                    App.sessionManager.get("user_id"),
-                    templateId,
-                    date.toISOString().substring(0, 10),
-                    day,
-                    templateValue
-                ]);
-            });
-
-            console.log(data);
-
-            await this.#activityRepository.createGoals(data);
-        }
-    }
+    // async #handleGoalSubmit(templateId, templateValue) {
+    //     const checkboxes = this.#activityView.querySelector(
+    //         `[data-id="${templateId}"]`).querySelector(
+    //         ".daysContainer").querySelectorAll(
+    //         ".form-check-input"
+    //     );
+    //
+    //     const selectedDays = [];
+    //     const days = [1, 2, 3, 4, 5, 6, 7];
+    //
+    //     console.log(templateId)
+    //
+    //     checkboxes.forEach((checkbox, index) => {
+    //         if (checkbox.checked) {
+    //             selectedDays.push(days[index]);
+    //         }
+    //     });
+    //
+    //     if (selectedDays.length === 0) {
+    //         // TODO: Display this message!
+    //         console.log("No days selected...");
+    //     } else {
+    //         console.log("trying to save selected goals...");
+    //
+    //         let data = [];
+    //
+    //         const date = new Date()
+    //
+    //         console.log(date.toISOString())
+    //
+    //         selectedDays.forEach((day) => {
+    //             data.push([
+    //                 null,
+    //                 App.sessionManager.get("user_id"),
+    //                 templateId,
+    //                 date.toISOString().substring(0, 10),
+    //                 day,
+    //                 templateValue
+    //             ]);
+    //         });
+    //
+    //         console.log(data);
+    //
+    //         await this.#activityRepository.createGoals(data);
+    //     }
+    // }
 
     /**
      * @author Jayden.G
