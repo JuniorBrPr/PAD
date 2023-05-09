@@ -182,12 +182,12 @@ export class SurveyController extends Controller {
             "Activiteiten voor eigen plezier."
         );
 
-        this.#createExerciseQuestionTab(
-            "backAndForthActivityTable",
-            sportActivityQuestions,
-            "Sporten",
-            "Sporten voor eigen plezier."
-        );
+        // this.#createExerciseQuestionTab(
+        //     "backAndForthActivityTable",
+        //     sportActivityQuestions,
+        //     "Sporten",
+        //     "Sporten voor eigen plezier."
+        // );
     }
 
     #createExerciseQuestionTab(templateId, questions, title, subtitle) {
@@ -391,6 +391,10 @@ export class SurveyController extends Controller {
 
         if (this.#currentQuestion >= questionTabs.length) {
             // TODO: remove hardcoded user id
+            if (this.#data[0].surveyId === 2) {
+                await this.#setupView();
+                return;
+            }
             const response = await this.#surveyRepository.putSurveyResult(
                 this.#getSurveyResponseData(this.#data[0].surveyId !== 2), 1);
 
@@ -709,19 +713,6 @@ export class SurveyController extends Controller {
         }
         return surveyData;
     }
-
-    // #getExerciseSurveyResponseData(questionTabs, completed, range) {
-    //     const surveyData = [];
-    //     let array = [];
-    //     for (let i = 0; questionTabs.length; i++) {
-    //
-    //     }
-    //     for (let i = 0; i < this.#data.length; i++) {
-    //         array.push({
-    //             surveyId: 2,
-    //             this.#data[i].id});
-    //     }
-    // }
 
     #getSingleChoiceData(questionTab) {
         const options = questionTab.querySelectorAll(".option");
