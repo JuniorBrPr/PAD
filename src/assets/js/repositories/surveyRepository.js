@@ -45,10 +45,8 @@ export class SurveyRepository {
      * @author Junior Javier Brito Perez
      */
     async getAll() {
-        const data = await this.#networkManager
+        return await this.#networkManager
             .doRequest(`${this.#route}all`, "GET", {});
-
-        return await this.getOptions(data);
     }
 
     /**
@@ -87,6 +85,11 @@ export class SurveyRepository {
         return data;
     }
 
+    async getQuestions(userId, surveyId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId, userId: userId});
+    }
+
     /**
      * Get all the questions in the physical activity survey.
      * @async
@@ -100,6 +103,8 @@ export class SurveyRepository {
             .doRequest(`${this.#route}response/${userId}`, "PUT", data);
     }
 
+
+    //TODO: Waarom 2 aparte functies voor het updaten van de survey status? Kan in 1 functie. - Junior
     /**
      *  @author Jayden.G
      *  Method to update the completion status to complete for a user

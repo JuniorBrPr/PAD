@@ -14,10 +14,9 @@ class surveyRoutes {
         this.#app = app;
 
         this.#getAllQuestions();
-        this.#getNutritionSurvey();
-        this.#getQuestionOptions();
         this.#putSurveyResult();
         this.#getUnansweredSurveys();
+        this.#getSurvey();
         this.#setSurveyComplete();
         this.#setSurveyIncomplete();
         this.#getSurveyStatus()
@@ -35,10 +34,12 @@ class surveyRoutes {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT survey.id AS id
                             FROM survey
-                                     INNER JOIN question on survey.id = question.surveyId
+                                     INNER JOIN question
+                                                ON survey.id = question.surveyId
                             WHERE question.id NOT IN (SELECT questionId
                                                       FROM answer
-                                                               JOIN response on response.id = answer.responseId
+                                                               INNER JOIN response
+                                                                          ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             GROUP BY survey.id;`,
                     values: [req.params.userId]
@@ -80,67 +81,53 @@ class surveyRoutes {
     }
 
     /**
-     * Gets all questions from the nutrition survey that the use has not answered. The questions are ordered by
+     * Gets all questions from the survey that the use has not answered. The questions are ordered by
      * the order column.
      * @private
-     * @returns {Promise<>} - All questions from the nutrition survey that the user has not answered.
+     * @returns {Promise<>} - All questions from the survey that the user has not answered.
      * @author Junior Javier Brito Perez
      */
-    #getNutritionSurvey() {
-        //TODO: Implement bearer token authentication instead of using the userId in the url.
-        this.#app.get("/survey/nutrition/:userId", async (req, res) => {
+    #getSurvey() {
+        this.#app.post("/survey/questions", async (req, res) => {
             try {
-                const data = await this.#databaseHelper.handleQuery({
+                const response = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
                                    questionType.type     AS type,
                                    question.surveyId     AS surveyId
                             FROM question
                                      INNER JOIN questionType ON question.questionTypeId = questionType.id
-                            WHERE question.surveyId = 1
+                            WHERE question.surveyId = ?
                               AND question.id NOT IN (SELECT questionId
                                                       FROM answer
                                                                INNER JOIN response ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             ORDER BY question.order;`,
-                    values: [req.params.userId]
+                    values: [req.body.surveyId, req.body.userId]
                 });
-                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-            } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-            }
-        });
-    }
 
-    /**
-     * Gets all options for a question. The options are ordered by the order column.
-     * @private
-     * @returns {Promise<>} - All options for a question.
-     * @author Junior Javier Brito Perez
-     */
-    #getQuestionOptions() {
-        this.#app.get("/survey/options/:questionId", async (req, res) => {
-            try {
-                const data = await this.#databaseHelper.handleQuery({
+                const options = await this.#databaseHelper.handleQuery({
                     query: `SELECT questionoption.id         AS id,
+                                   questionoption.questionId as questionId,
                                    questionoption.value      AS text,
                                    questionoption.openOption AS open
                             FROM questionoption
-                            WHERE questionId = ?
+                            WHERE questionId IN (?)
                             ORDER BY questionoption.order;`,
-                    values: [req.params.questionId]
+                    values: [response.map(question => question.id)]
                 });
 
-                if (data.length === 0) {
-                    res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: "No options found for this question"});
-                } else {
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+                for (let i = 0; i < response.length; i++) {
+                    response[i].options = options.filter(option => option.questionId === response[i].id);
                 }
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(response);
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
     }
+
 
     /**
      * Puts the survey result in the database. The survey result is a JSON object with the following structure:
@@ -151,16 +138,7 @@ class surveyRoutes {
      *  "data": [
      *      {
      *      "id": 1,
-     *      "options": [
-     *          {
-     *           "optionId": 1,
-     *           "text": "Option 1"
-     *          },
-     *          {
-     *           "optionId": 2,
-     *           "text": "Option 2"
-     *          }
-     *        ]
+     *      "answer": "Yes"
      *      },
      * }
      * @returns {Promise<>}
@@ -189,56 +167,13 @@ class surveyRoutes {
 
                 let answers = [];
                 for (const question of data.data) {
-                    answers.push([null, responseId, question.id, null]);
+                    answers.push([null, responseId, question.questionId, question.answer]);
                 }
                 await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO answer (id, responseId, questionId, answer)
                             VALUES ?`,
                     values: [answers]
                 });
-
-                let answersOptions = [];
-
-                for (const question of data.data) {
-                    const answerId = await this.#databaseHelper.handleQuery({
-                        query: `SELECT id
-                                FROM answer
-                                WHERE responseId = ?
-                                  AND questionId = ?;`,
-                        values: [responseId, question.id]
-                    }).then((result) => {
-                        if (result.length === 0) {
-                            throw "No answer found";
-                        }
-                        return result[0].id;
-                    });
-
-                    for (const option of question.options) {
-                        const openOption = option.optionId != null ? await this.#databaseHelper.handleQuery({
-                            query: `SELECT openOption as open
-                                    FROM questionoption
-                                    WHERE id = ?;`,
-                            values: [option.optionId]
-                        }).then((data) => {
-                            return data[0].open;
-                        }) : 0;
-
-                        answersOptions.push([
-                            null,
-                            answerId,
-                            option.optionId,
-                            openOption === 1 || option.optionId === null ? option.text : null
-                        ])
-                    }
-                }
-
-                if (answersOptions.length > 0) {
-                    await this.#databaseHelper.handleQuery({
-                        query: `INSERT INTO answeroption (id, answerId, questionOtionId, answeroption.text)
-                                values ?;`,
-                        values: [answersOptions]
-                    });
-                }
 
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({
                     failure: false,
@@ -345,7 +280,7 @@ class surveyRoutes {
                 } else {
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({
                         "survey_status": data[0].completedSurvey
-                });
+                    });
                 }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({

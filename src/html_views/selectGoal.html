@@ -1,16 +1,15 @@
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="d-sm-flex justify-content-between align-items-center m-4">
-            <h3 class="text-dark mb-0">Voorgestelde doelen</h3>
-        </div>
+<div class="container mb-4">
+    <div class="row d-flex">
+        <h1 class="text-center mt-5 ">Voorgestelde doelen</h1>
+        <p class="text-center mb-4">Op basis van jouw antwoorden op de vragenlijst, stellen we je de volgende doelen
+            voor om fit te blijven!</p>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-10 templatesContainer">
+    <div class="row justify-content-center border border-1">
+        <div class="col-8 templatesContainer m-3">
 
         </div>
     </div>
-
 </div>
 
 <template id="goalTemplate">
@@ -18,46 +17,41 @@
         <div class="card-body">
             <h4 class="card-title">baseValue unit doelNaam</h4>
             <p class="card-text">description</p>
-
-            <div class="justify-content-center">
-                <a class="selectGoal btn btn-primary">Select</a>
+            <div class="row">
+                <div class="col justify-content-center">
+                    <a class="selectGoal btn btn-primary d-block">Selecteren</a>
+                </div>
             </div>
-
-            <div class="row daysContainer" style="display: none">
-                <div class="col border my-1">
-                    <div class="form-check"><input id="formCheck-1" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-1">Maandag</label></div>
+            <div class="row mt-2 daysDescriptionContainer mt-2" style="display: none">
+                <p class="text-center fs-4">Op welke dagen wil je dit doel uitvoeren?</p>
+            </div>
+            <div class="row  mt-2 daysContainer" style="display: none">
+                <div class="col d-flex justify-content-center">
+                    <button id="1" class="btn btn-secondary fs-5 dayBtn" type="button">MA</button>
                 </div>
-                <div class="col border my-1">
-                    <div class="form-check"><input id="formCheck-2" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-2">Dinsdag</label></div>
+                <div class="col d-flex justify-content-center">
+                    <button id="2"  class="btn btn-secondary fs-5 dayBtn" type="button">DI</button>
                 </div>
-                <div class="col border my-1">
-                    <div class="form-check"><input id="formCheck-3" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-3">Woensdag</label></div>
+                <div class="col d-flex justify-content-center">
+                    <button id="3" class="btn btn-secondary fs-5 dayBtn" type="button">WO</button>
                 </div>
-                <div class="col border my-1">
-                    <div class="form-check"><input id="formCheck-4" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-4">Donderdag</label></div>
+                <div class="col d-flex justify-content-center">
+                    <button id="4" class="btn btn-secondary fs-5 dayBtn" type="button">DO</button>
                 </div>
-                <div class="col border my-1">
-                    <div class="form-check"><input id="formCheck-5" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-5">Vrijdag</label></div>
+                <div class="col d-flex justify-content-center">
+                    <button id="5" class="btn btn-secondary fs-5 dayBtn" type="button">VR</button>
                 </div>
-                <div class="col border my-1">
-                    <div class="form-check"><input id="formCheck-6" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-6">Zaterdag</label></div>
+                <div class="col d-flex justify-content-center">
+                    <button id="6" class="btn btn-secondary fs-5 dayBtn" type="button">ZA</button>
                 </div>
-                <div class="col border my-1">
-                    <div class="form-check">
-                        <input id="formCheck-7" class="form-check-input" type="checkbox" />
-                        <label class="form-check-label" for="formCheck-7">Zondag</label></div>
+                <div class="col d-flex justify-content-center">
+                    <button id="7" class="btn btn-secondary fs-5 dayBtn" type="button">ZO</button>
                 </div>
-
-                <div class="justify-content-center">
-                    <a class="submitGoal btn btn-primary">Submit</a>
+            </div>
+            <div class="row mt-2 mb-4">
+                <div class="col justify-content-center">
+                    <a class="saveGoal btn btn-success" style="display: none">Opslaan</a>
                 </div>
-
             </div>
         </div>
     </div>
