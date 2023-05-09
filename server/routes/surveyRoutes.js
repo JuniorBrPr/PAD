@@ -7,6 +7,7 @@
 class surveyRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
+    #JWTHelper = require("../framework/utils/JWTHelper");
     #app
 
     constructor(app) {
@@ -197,9 +198,9 @@ class surveyRoutes {
      */
 
     #setSurveyComplete() {
-        this.#app.put("/survey/status/complete/:userId", async (req, res) => {
+        this.#app.put("/survey/status/complete", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
-                const userId = req.params.userId;
+                const userId = req.user.userId;
 
                 await this.#databaseHelper.handleQuery({
                     query: `UPDATE user
@@ -228,9 +229,9 @@ class surveyRoutes {
      */
 
     #setSurveyIncomplete() {
-        this.#app.put("/survey/status/incomplete/:userId", async (req, res) => {
+        this.#app.put("/survey/status/incomplete", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
-                const userId = req.params.userId;
+                const userId = req.user.userId;
 
                 await this.#databaseHelper.handleQuery({
                     query: `UPDATE user
@@ -260,13 +261,16 @@ class surveyRoutes {
      */
 
     #getSurveyStatus() {
-        this.#app.get("/survey/status/:userId", async (req, res) => {
+        this.#app.get("/survey/status", this.#JWTHelper.verifyJWTToken,  async (req, res) => {
             try {
+
+                const userId = req.user.userId;
+
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT completedSurvey
                             FROM user
                             WHERE id = ?;`,
-                    values: [req.params.userId]
+                    values: [userId]
                 });
 
                 if (data.length === 0) {

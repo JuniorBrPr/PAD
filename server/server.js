@@ -5,6 +5,9 @@
  *
  * @author Pim Meijer & Lennard Fonteijn
  */
+
+require('dotenv').config()
+
 const SERVER_ENVIRONMENT_LOCAL = "LOCAL";
 const SERVER_ENVIRONMENT_DEV = "DEV";
 const SERVER_ENVIRONMENT_LIVE = "LIVE";

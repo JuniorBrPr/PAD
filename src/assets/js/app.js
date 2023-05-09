@@ -16,8 +16,9 @@ import {profileController} from "./controllers/profileController.js"
 import {editProfileController} from "./controllers/editProfileController.js"
 import {RegisterController} from "./controllers/registerController.js";
 import {WeekPlanningController} from "./controllers/weekPlanningController.js";
-import {WelcomeController} from "./controllers/welcomeController.js";
-import {RecommendationsController} from "./controllers/recommendationsController.js";
+import {HomeController} from "./controllers/homeController.js";
+import {ActivityController} from "./controllers/activityController.js";
+import {ErrorController} from "./controllers/errorController.js";
 
 export class App {
 
@@ -30,7 +31,7 @@ export class App {
 
     //controller identifiers, add new controllers here
     static CONTROLLER_NAVBAR = "navbar";
-    static CONTROLLER_WELCOME = "welcome";
+    static CONTROLLER_HOME = "home";
     static CONTROLLER_LOGIN = "login";
     static CONTROLLER_LOGOUT = "logout";
     static CONTROLLER_REGISTER = "register";
@@ -39,14 +40,15 @@ export class App {
     static CONTROLLER_SURVEY = "survey";
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
+    static CONTROLLER_ERROR = "error";
 
 
     constructor() {
         //Always load the navigation
         App.loadController(App.CONTROLLER_NAVBAR);
 
-        //Attempt to load the controller from the URL, if it fails, fall back to the welcome controller.
-        App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
+        //Attempt to load the controller from the URL, if it fails, fall back to the home controller.
+        App.loadControllerFromUrl(App.CONTROLLER_HOME);
     }
 
     /**
@@ -79,10 +81,12 @@ export class App {
 
         switch (name) {
 
-            case App.CONTROLLER_WELCOME:
-                App.isLoggedIn(
-                    () => new WelcomeController(),
-                    () => new WelcomeController());
+            case App.CONTROLLER_ERROR:
+                new ErrorController(controllerData);
+                break;
+
+            case App.CONTROLLER_HOME:
+                new HomeController();
                 break;
 
             case App.CONTROLLER_LOGIN:
@@ -90,7 +94,7 @@ export class App {
                     () => console.log("Error: Already logged in"),
                     () => new LoginController());
                 break;
-                
+
             case App.CONTROLLER_REGISTER:
                 App.isLoggedIn(
                     () => console.log("Error: Can't register when already logged in"),
@@ -124,17 +128,17 @@ export class App {
                         ),
                     () => new LoginController());
                 break;
-                
+
             case App.CONTROLLER_ACTIVITY:
                 App.isLoggedIn(
                     () =>
                         App.hasCompletedSurvey(
-                            () => new RecommendationsController(),
+                            () => new ActivityController(),
                             () => new SurveyController(),
                         ),
                     () => new LoginController());
-                break;    
-                
+                break;
+
             default:
                 return false;
         }
@@ -195,7 +199,7 @@ export class App {
      * @param controllerData
      */
     static setCurrentController(name, controllerData) {
-        if (App.dontSetCurrentController) {
+        if(App.dontSetCurrentController) {
             return;
         }
 
@@ -237,7 +241,7 @@ export class App {
      * @param whenNo - function to execute when user is logged in
      */
     static isLoggedIn(whenYes, whenNo) {
-        if (App.sessionManager.get("user_id")) {
+        if (App.sessionManager.get("token")) {
             whenYes();
         } else {
             whenNo();
@@ -268,9 +272,7 @@ export class App {
      */
 
     static async surveyStatusChecker() {
-        const status = await this.#surveyRepository.getSurveyStatus(
-            App.sessionManager.get("user_id")
-        );
+        const status = await this.#surveyRepository.getSurveyStatus();
 
         return status.survey_status === 1;
     }
@@ -279,7 +281,6 @@ export class App {
      * @author Jayden.G
      * Removes username via sessionManager and loads the login screen
      */
-
     static handleLogout() {
         App.sessionManager.clear();
 
@@ -288,12 +289,14 @@ export class App {
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);
+
+        window.location.reload();
     }
 }
 
 window.addEventListener("hashchange", function () {
     App.dontSetCurrentController = true;
-    App.loadControllerFromUrl(App.CONTROLLER_WELCOME);
+    App.loadControllerFromUrl(App.CONTROLLER_HOME);
     App.dontSetCurrentController = false;
 });
 

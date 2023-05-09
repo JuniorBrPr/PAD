@@ -125,8 +125,8 @@ https://classroom.udacity.com/courses/ud897/
 
 1. `src/assets/js/app.js` is het startpunt van de front-end applicatie. Deze laadt altijd de `navBarController.js` welke verantwoordelijk is
 voor de navigatie binnen de website. Deze controller vangt een klik af op een link en vraagt via `app.js` een andere controller op voor de betreffende pagina.
-In dit voorbeeld is dit de `welcomeController.js`.
-2. De `welcomeController.js` laadt de pagina `html_views/welcome.html` 
+In dit voorbeeld is dit de `homeController.js`.
+2. De `homeController.js` laadt de pagina `html_views/welcome.html` 
 3. Deze controller maakt ook een instantie van `roomsExampleRepostitory.js`. 
 4. Via deze repository(komt nog aan bod bij OOP2) wordt er data(rooms) opgevraagd: `const roomData = await this.roomsExampleRepository.get(roomId);`. 
    Door middel van het gebruik van `async/await` hoeven we geen callbacks te gebruiken. De repository spreekt de `networkManager.js` aan welke uitendelijk
@@ -156,7 +156,7 @@ de login functionaliteit.
     de front-end: `res.status(this.#errorCodes.HTTP_OK_CODE).json(data);`
 Let ook op dat je ook altijd wat terug moet geven als het fout gaat: `(err) => res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: err})`
 
-Zie verder in de `welcomeController.js` hoe deze data dan weer op het sc~~~~herm getoond wordt. Let wel op dat dit asynchroon(`async`) gebeurt. 
+Zie verder in de `homeController.js` hoe deze data dan weer op het sc~~~~herm getoond wordt. Let wel op dat dit asynchroon(`async`) gebeurt. 
 
 
 ## Links/E-learning

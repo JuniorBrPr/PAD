@@ -11,7 +11,7 @@ const {RowDataPacket} = require("mysql/lib/protocol/packets");
 class profileRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
-    #cryptoHelper = require("../framework/utils/cryptoHelper");
+    #JWTHelper = require("../framework/utils/JWTHelper");
     #app
     /**
      * Initializes a new instance of the ProfileRoutes class.
@@ -32,12 +32,12 @@ class profileRoutes {
      * @function #sendData
      */
     #sendData() {
-        this.#app.put("/editProfile/:userId", async (req, res) => {
+        this.#app.put("/editProfile", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `UPDATE user SET firstname = ?, surname = ?, emailAddress = ?, date_of_birth = ?, weight = ?, height = ? WHERE id = ?`,
                     // values: ["TEST", "TEST", "2005-01-31", "TEST@GMAIL.COM", "100", "100"]
-                    values: [req.body.firstname, req.body.surname, req.body.email, req.body.age, req.body.weight, req.body.height, req.params.userId]
+                    values: [req.body.firstname, req.body.surname, req.body.email, req.body.age, req.body.weight, req.body.height, req.user.userId]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             }
@@ -55,7 +55,7 @@ class profileRoutes {
      */
     // TEST FUNCTION TO SEE IF IT ACTUALLY CHANGES THE VALUES, TO MAKE IT WORK UNCOMMENT FOLLOWING CODE AND UNCOMMENT THE LINE IN CONSTRUCTOR THAT CALLS THIS FUNCTION
     // #getData() {
-    //     this.#app.get("/editProfile/:userId", async (req, res) => {
+    //     this.#app.get("/editProfile", async (req, res) => {
     //         try {
     //             const data = await this.#databaseHelper.handleQuery({
     //                 query: `SELECT firstname, surname, date_of_birth, emailAddress, weight, height

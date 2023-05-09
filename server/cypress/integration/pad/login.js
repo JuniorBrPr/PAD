@@ -58,8 +58,8 @@ describe("Login", () => {
             expect(body.password).equals("test");
         });
 
-        //After a successful login, the URL should now contain #welcome.
-        cy.url().should("contain", "#welcome");
+        //After a successful login, the URL should now contain #profile.
+        cy.url().should("contain", "#profile");
     });
 
     //Test: Failed login

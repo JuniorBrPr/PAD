@@ -1,15 +1,37 @@
 
-<h1>hello</h1>
 
-<div class="dayBox">
-    <div class="dateToday"></div>
-<div  class="col-md-12 container">
-    <div  class="col-5 wholeBox" id="box-1" >box 1
-        <div class="iconBox">
-        <div class="correctIcon">*Correct</div>
+<h1>Weekplanning</h1>
+
+
+<section class="vh-100 planningSection">
+    <div class="container py-5 h100">
+        <div class="row d-flex justify-content-center align-items-center h100">
+            <div class="col col-lg-8 col-xl-4 ">
+
+
+
+
+                <div id="dayContainer">
+
+<!--                    <div class="newContainerTest bg-secondary">  </div>-->
+                    <div id="button-container"></div>
+                    <div class="btn" id="lastWeekPlanning">Vorige</div>
+                    <div class="btn" id="nextWeekPlanning">Volgende</div>
+
+
+                <button type="submit" class="btn btn-danger deleteButtonPlanning">Onafgerond</button>
+                <button type="submit" class="btn btn-success ms-1 completeButtonPlanning">Afgerond</button>
+
+                    <div class="valid-feedback p-3 mb-2 bg-primary text-white" ></div>
+                    <div class="invalid-feedback"></div>
+
+                </div>
+
+
+                <!--Pop up-->
+            </div>
         </div>
     </div>
+</section>
 
-<!--    <div  class="col-5 box" id="box-2">box 2</div>-->
-</div>
-</div>
+

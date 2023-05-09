@@ -35,7 +35,7 @@ export class editProfileController extends Controller {
         document.getElementById("InputFirstname").value = data.data[0].firstname
         document.getElementById("InputSurname").value = data.data[0].surname
         document.getElementById("InputEmail").value = data.data[0].emailAddress
-        document.getElementById("InputAge").value = new Date(data.data[0].date_of_birth ).toISOString().split('T')[0]
+        document.getElementById("InputAge").value = new Date(data.data[0].date_of_birth).toISOString().split('T')[0]
         document.getElementById("InputHeight").value = data.data[0].height
         document.getElementById("InputWeight").value = data.data[0].weight
     }
@@ -52,6 +52,8 @@ export class editProfileController extends Controller {
         let weight = this.#correctWeightOrHeight(document.getElementById("InputWeight").value)
         let age = document.getElementById("InputAge").value
         try {
+            const checkFirstname = await this.#checkFirstName(firstname);
+
             const calculateMinBirthDayResult = await this.#calculateMinBirthDay(age);
 
             const checkWeightValueResult = await this.#checkWeightValue(weight);
@@ -61,6 +63,7 @@ export class editProfileController extends Controller {
             const checkEmailValueResult = await this.#checkEmailValue(email);
 
             if (
+                checkFirstname === true &&
                 calculateMinBirthDayResult === true &&
                 checkWeightValueResult === true &&
                 checkHeightValueResult === true &&
@@ -176,6 +179,22 @@ export class editProfileController extends Controller {
             return false;
         }
     }
+
+    async #checkFirstName(firstname) {
+        let inputFirstName = document.getElementById('InputFirstname')
+        let invalidFirstname = document.getElementById('invalidFirstname')
+        invalidFirstname.innerHTML = `Voornaam is verplicht`
+        if (firstname.trim().length === 0) {
+            inputFirstName.style.borderColor = 'red'
+            invalidFirstname.style.display = 'block'
+            return false;
+        } else {
+            inputFirstName.style.borderColor = '#ccc'
+            invalidFirstname.style.display = 'none'
+            return true;
+        }
+    }
+
     /**
      * Checks if the input email is valid.
      * @private
@@ -200,6 +219,7 @@ export class editProfileController extends Controller {
         })
         reader.readAsDataURL(profileImage.files[0]);
     }
+
     /**
      * Sets the profile image based on the input.
      * @private
@@ -207,7 +227,7 @@ export class editProfileController extends Controller {
     async #saveProfileImage() {
         let profileImage = document.getElementById("InputProfileImage")
         const reader = new FileReader();
-        if(profileImage.files[0] != null) {
+        if (profileImage.files[0] != null) {
             reader.addEventListener("load", () => {
                 localStorage.setItem("profile-image", reader.result);
                 console.log(localStorage.getItem("profile-image"))
@@ -226,11 +246,10 @@ export class editProfileController extends Controller {
      * @param {number} height - The user's height.
      * @param {number} weight - The user's weight.
      * @param {string} age - The user's age.
-     * @param { userId - The user's ID.
      */
-    async #sendData(firstname, surname, email, height, weight, age, userId) {
+    async #sendData(firstname, surname, email, height, weight, age) {
         try {
-            const data = await this.#editProfileRepository.sendData(firstname, surname, email, weight, height, age, userId)
+            const data = await this.#editProfileRepository.sendData(firstname, surname, email, weight, height, age)
         } catch (e) {
             console.log("Er is iets fout gegaan", e)
         }

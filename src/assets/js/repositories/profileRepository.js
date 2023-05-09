@@ -23,24 +23,36 @@ export class profileRepository {
 
     /**
      * Retrieves profile data for a given user ID.
-     * @param {string} userId - The user ID to fetch profile data for.
      * @returns {Promise<*>} A promise resolving to the user profile data.
      */
-    async getData(userId) {
-        return await this.#networkManager.doRequest(`${this.#route}/${userId}`, "GET", userId);
+    async getData() {
+        return await this.#networkManager.doRequest(`${this.#route}`, "GET");
     }
 
-    async getGoals(userId) {
-        return await this.#networkManager.doRequest(`${this.#route}/goals/${userId}`, "GET", userId);
+    async getUserGoals() {
+        return await this.#networkManager.doRequest(`${this.#route}/userGoals`, "GET");
+    }
+
+    async getGoals() {
+        return await this.#networkManager.doRequest(`${this.#route}/goals`, "GET");
+    }
+
+    async insertGoal(userGoalID, value) {
+        return await this.#networkManager.doRequest(`/profile/insertGoal/${userGoalID}?&value=${value}`, "POST", {
+            "usergoalID": userGoalID,
+            "value": value
+        });
     }
 
     async updateGoalCompletion(userGoalID) {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletion/${userGoalID}`, "PUT", userGoalID);
-
     }
 
-    async calculateGoalCompletionPercentage(userId) {
-        return await this.#networkManager.doRequest(`${this.#route}/goalCompletionPercentage/${userId}`, "PUT", userId);
+    async calculateDailyGoalCompletionPercentage() {
+        return await this.#networkManager.doRequest(`${this.#route}/dailyGoalCompletionPercentage`, "GET");
     }
 
+    async calculateWeeklyGoalCompletionPercentage() {
+        return await this.#networkManager.doRequest(`${this.#route}/weeklyGoalCompletionPercentage`, "GET");
+    }
 }
