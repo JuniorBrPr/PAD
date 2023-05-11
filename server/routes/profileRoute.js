@@ -60,6 +60,12 @@ class profileRoutes {
         });
     }
 
+    /**
+     * Private method that sets up the route handler for getting the user's goals for the current day.
+     * Handles a GET request to the /profile/userGoals endpoint.
+     * Retrieves the user's goals for the current day from the database and sends it as a JSON response.
+     * If the user has no goals for the current day, an empty array is sent as a response.
+     */
     #getUserGoals() {
         this.#app.get("/profile/userGoals", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -86,6 +92,12 @@ class profileRoutes {
         });
     }
 
+    /**
+     * Private method that sets up the route handler for getting the goals for the current day.
+     * Handles a GET request to the /profile/goals endpoint.
+     * Retrieves the user's goals for the current day from the database and sends it as a JSON response.
+     * If the user has no goals for the current day, an empty array is sent as a response.
+     */
     #getGoals() {
         this.#app.get("/profile/goals", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -109,6 +121,10 @@ class profileRoutes {
         })
     }
 
+    /**
+     * Private method that sets up the route handler for posting a goal in the table goal.
+     * Handles a POST request to the /profile/insertGoal endpoint.
+     */
     #insertGoal() {
         this.#app.post("/profile/insertGoal/:usergoalID", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -124,7 +140,10 @@ class profileRoutes {
         })
     }
 
-
+    /**
+     * Private method that sets up the route handler for updating a goal in the table goal.
+     * Handles a PUT request to the /profile/goalCompletion endpoint.
+     */
     #updateGoalCompletion() {
         this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
             try {
@@ -141,6 +160,10 @@ class profileRoutes {
         })
     }
 
+    /**
+     * Private method that sets up the route handler for retrieving the completion percentage of goal for the current day.
+     * Handles a GET request to the /profile/dailyGoalCompletion endpoint.
+     */
     #calculateDailyGoalCompletionPercentage() {
         this.#app.get("/profile/dailyGoalCompletionPercentage", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -169,6 +192,10 @@ class profileRoutes {
         })
     }
 
+    /**
+     * Private method that sets up the route handler for retrieving the completion percentage of goal for the current week.
+     * Handles a GET request to the /profile/weeklyGoalCompletion endpoint.
+     */
     #calculateWeeklyGoalCompletionPercentage() {
         this.#app.get("/profile/weeklyGoalCompletionPercentage", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
