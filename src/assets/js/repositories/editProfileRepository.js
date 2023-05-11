@@ -31,15 +31,9 @@ export class editProfileRepository {
     }
 
     /**
-     * Sends user profile data to the server.
+     * Updates the data of the current user.
      *
-     * @param {string} firstname - The user's first name.
-     * @param {string} surname - The user's surname.
-     * @param {string} email - The user's email.
-     * @param {number} weight - The user's weight.
-     * @param {number} height - The user's height.
-     * @param {number} age - The user's age.
-     * @return {Promise<*>} - The response from the server.
+     * @returns {Promise<*>} A promise resolving to the user's data.
      */
     async sendData(firstname, surname, email, weight, height, age, ) {
         return await this.#networkManager.doRequest(`${this.#route}`, "PUT",
@@ -53,6 +47,11 @@ export class editProfileRepository {
             });
     }
 
+    /**
+     * Retrieves profile data for a given user.
+     *
+     * @returns {Promise<*>} A promise resolving to the user profile data.
+     */
     async getData() {
         return await this.#networkManager.doRequest(`/profile`, "GET");
     }

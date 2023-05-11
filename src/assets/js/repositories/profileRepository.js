@@ -22,7 +22,7 @@ export class profileRepository {
     }
 
     /**
-     * Retrieves profile data for a given user ID.
+     * Retrieves profile data for a given user.
      *
      * @returns {Promise<*>} A promise resolving to the user profile data.
      */
