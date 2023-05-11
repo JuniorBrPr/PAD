@@ -31,7 +31,7 @@ export class RegisterController extends Controller {
 
         let firstname = this.#registerView.querySelector("#inputFirstName").value;
         let surname = this.#registerView.querySelector("#inputLastName").value;
-        let emailAdress = this.#registerView.querySelector("#inputEmail").value;
+        let emailAddress = this.#registerView.querySelector("#inputEmail").value;
         let password = this.#registerView.querySelector("#inputPassword").value;
         let confirmPassword = this.#registerView.querySelector("#inputConfirmPassword").value;
 
@@ -41,10 +41,10 @@ export class RegisterController extends Controller {
         const validBox = this.#registerView.querySelector(".valid-feedback");
         const invalidBox = this.#registerView.querySelector(".invalid-feedback");
 
-        if (firstname.length === 0 || surname.length === 0 || emailAdress.length === 0 || password.length === 0 || confirmPassword.length === 0) {
+        if (firstname.length === 0 || surname.length === 0 || emailAddress.length === 0 || password.length === 0 || confirmPassword.length === 0) {
             invalidBox.innerHTML = "Vul dit veld in!";
            errorBox.innerHTML = "U moet eerst uw gegevens invullen";
-        } else if (mailFormat.test(emailAdress) == false ) {
+        } else if (mailFormat.test(emailAddress) == false ) {
            errorBox.innerHTML = "Email klopt niet"
 
         } else if (password !== confirmPassword) {
@@ -53,11 +53,11 @@ export class RegisterController extends Controller {
         }
         else {
            window.alert("U hebt succesvol geregistreerd, u wordt zo omgeleid naar de vragenlijst");
-                    console.log(firstname + surname + emailAdress + password + confirmPassword);
+                    console.log(firstname + surname + emailAddress + password + confirmPassword);
 
                     try {
                         errorBox.innerHTML = "";
-                        const data = await this.#registerRepository.createRegister(firstname, surname, emailAdress, password);
+                        const data = await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
                         console.log(data);
 
                         if (data.id) {

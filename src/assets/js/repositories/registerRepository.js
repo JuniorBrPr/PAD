@@ -13,8 +13,8 @@ export class RegisterRepository{
         this.#networkManager = new NetworkManager();
     }
 
-    createRegister(firstname, surname, emailAdress, password) {
+    createRegister(firstname, surname, emailAddress, password) {
        return this.#networkManager.doRequest(this.#route, "POST",
-            {firstname: firstname, surname: surname, emailAdress: emailAdress , password: password})
+            {firstname: firstname, surname: surname, emailAddress: emailAddress , password: password})
     }
 }
