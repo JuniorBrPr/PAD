@@ -21,4 +21,14 @@ export class emailRepository {
     async getUserGoals() {
         return await this.#networkManager.doRequest(`${this.#route}/usergoals`, "GET");
     }
+
+    async sendEmail(firstname, surname, email, subject, body) {
+        return await this.#networkManager.doRequest(`https://api.hbo-ict.cloud/mail`, "POST",
+            {
+                fullName: firstname + surname,
+                email: email,
+                subject: subject,
+                body: body
+            });
+    }
 }
