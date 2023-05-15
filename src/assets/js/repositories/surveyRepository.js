@@ -31,9 +31,9 @@ export class SurveyRepository {
      * @returns {Promise<*>} - The response from the server
      * @author Junior Javier Brito Perez
      */
-    async getUnansweredSurveys(userId) {
+    async getUnansweredSurveys() {
         return await this.#networkManager
-            .doRequest(`${this.#route}answered/${userId}`, "GET", {});
+            .doRequest(`${this.#route}answered`, "GET");
     }
 
     /**
@@ -46,7 +46,7 @@ export class SurveyRepository {
      */
     async getAll() {
         return await this.#networkManager
-            .doRequest(`${this.#route}all`, "GET", {});
+            .doRequest(`${this.#route}all`, "GET");
     }
 
     /**
@@ -57,9 +57,9 @@ export class SurveyRepository {
      * @returns {Promise<*>}
      * @author Junior Javier Brito Perez
      */
-    async getNutritionSurvey(userId) {
+    async getNutritionSurvey() {
         const data = await this.#networkManager
-            .doRequest(`${this.#route}nutrition/${userId}`, "GET", {});
+            .doRequest(`${this.#route}nutrition`, "GET");
 
         return await this.getOptions(data);
     }
@@ -85,9 +85,9 @@ export class SurveyRepository {
         return data;
     }
 
-    async getQuestions(userId, surveyId) {
+    async getQuestions(surveyId) {
         return await this.#networkManager
-            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId, userId: userId});
+            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId});
     }
 
     /**
@@ -98,9 +98,9 @@ export class SurveyRepository {
      * @param {number} userId - The id of the user
      * @returns {Promise<*>} - The response from the server
      */
-    async putSurveyResult(data, userId) {
+    async putSurveyResult(data) {
         return await this.#networkManager
-            .doRequest(`${this.#route}response/${userId}`, "PUT", data);
+            .doRequest(`${this.#route}response`, "PUT", data);
     }
 
 

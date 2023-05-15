@@ -35,16 +35,8 @@ export class UsersRepository {
             .doRequest(`${this.#route}/login`, "POST", {"emailAddress": emailAddress, "password": password});
     }
 
-    async delete() {
-
-    }
-
     //example endpoint would be: /users/register
     async register(username, password) {
-
-    }
-
-    async update(id, values = {}) {
 
     }
 }

@@ -4,15 +4,14 @@
  *
  * @class ProfileRoutes
  * @author Joey_Poel
- * @requires mysql/lib/protocol/packets
  */
-const {RowDataPacket} = require("mysql/lib/protocol/packets");
 
 class profileRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
     #JWTHelper = require("../framework/utils/JWTHelper");
     #app
+
     /**
      * Initializes a new instance of the ProfileRoutes class.
      *
@@ -33,19 +32,29 @@ class profileRoutes {
      */
     #sendData() {
         this.#app.put("/editProfile", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+
+            const userId = req.user.userId;
+
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `UPDATE user SET firstname = ?, surname = ?, emailAddress = ?, date_of_birth = ?, weight = ?, height = ? WHERE id = ?`,
+                    query: `UPDATE user
+                            SET firstname     = ?,
+                                surname       = ?,
+                                emailAddress  = ?,
+                                date_of_birth = ?,
+                                weight        = ?,
+                                height        = ?
+                            WHERE id = ?`,
                     // values: ["TEST", "TEST", "2005-01-31", "TEST@GMAIL.COM", "100", "100"]
-                    values: [req.body.firstname, req.body.surname, req.body.email, req.body.age, req.body.weight, req.body.height, req.user.userId]
+                    values: [req.body.firstname, req.body.surname, req.body.email, req.body.age, req.body.weight, req.body.height, userId]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-            }
-                catch (e) {
+            } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         })
     }
+
     /**
      * (Optional) Retrieves profile data from the database.
      * Uncomment the code and constructor call to enable this function.
