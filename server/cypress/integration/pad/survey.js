@@ -1,3 +1,9 @@
+/**
+ * Tests for the survey page.
+ *
+ * @author Junior Javier Brito Perez
+ */
+
 describe("Survey", () => {
     beforeEach(() => {
         //Go to the specified URL
@@ -9,11 +15,17 @@ describe("Survey", () => {
         cy.get("#logInButton").click();
     });
 
+    /**
+     * Test if the nutrition survey is available.
+     */
     it("Nutrition survey available", () => {
         cy.get("#surveysNav").click();
         cy.get("#voeding-survey-btn").should("be.enabled");
     });
 
+    /**
+     * Test if the survey page displays the correct state of completion/availability for the nutrition survey.
+     */
     it("Nutrition survey completed", () => {
         cy.server();
         const mockedResponse = [{"id": 2}];
@@ -26,11 +38,17 @@ describe("Survey", () => {
         cy.get("#voeding-survey-btn").should("have.class", "disabled");
     });
 
+    /**
+     * Test if the activity survey page is available.
+     */
     it("Activity survey available", () => {
         cy.get("#surveysNav").click();
         cy.get("#beweging-survey-btn").should("be.enabled");
     });
 
+    /**
+     * Test if the survey page displays the correct state of completion/availability for the activity survey.
+     */
     it("Activity survey completed", () => {
         cy.server();
         const mockedResponse = [{"id": 1}];
@@ -43,10 +61,11 @@ describe("Survey", () => {
         cy.get("#beweging-survey-btn").should("have.class", "disabled");
     });
 
+    /**
+     * Test if you can answer the nutrition survey.
+     */
     it("Answer nutrition survey", () => {
         cy.server();
-
-
         const mockedResponseSurvey = [{
             "id": 1,
             "text": "Heeft u speciale voedingsgewoontes? Hierbij zijn meerdere antwoorden mogelijk.",
