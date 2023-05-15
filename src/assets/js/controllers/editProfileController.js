@@ -255,6 +255,11 @@ export class editProfileController extends Controller {
         }
     }
 
+    /**
+     * Sets the profile image to a standard image.
+     *
+     * @returns {Promise<void>}
+     */
     async #setStandardProfileImage() {
         const url = localStorage.getItem("profile-image")
         const img = document.getElementById("imagePreview")
