@@ -35,7 +35,7 @@ export class editProfileRepository {
      *
      * @returns {Promise<*>} A promise resolving to the user's data.
      */
-    async sendData(firstname, surname, email, weight, height, age, ) {
+    async sendData(firstname, surname, email, weight, height, age) {
         return await this.#networkManager.doRequest(`${this.#route}`, "PUT",
             {
                 firstname: firstname,

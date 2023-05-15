@@ -1,6 +1,7 @@
 class recommendationsRoute {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
+    #JWTHelper = require("../framework/utils/JWTHelper")
     #app
 
     constructor(app) {
@@ -9,7 +10,10 @@ class recommendationsRoute {
     }
 
     #getNutritionRecommendations() {
-        this.#app.get("/recommendations/nutrition/:userId", async (req, res) => {
+        this.#app.get("/recommendations/nutrition", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+
+            const userId = req.user.id;
+
             try {
                 const answers = await this.#databaseHelper.handleQuery({
                     query: `SELECT answer.questionId            AS questionId,
@@ -24,7 +28,7 @@ class recommendationsRoute {
                             WHERE activityId IS NOT NULL
                               AND userId = ?;`
                     ,
-                    values: [req.params.userId]
+                    values: [userId]
                 });
 
                 let recommendations = [];

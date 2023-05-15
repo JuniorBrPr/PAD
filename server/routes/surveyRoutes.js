@@ -29,7 +29,10 @@ class surveyRoutes {
      * @author Junior Javier Brito Perez
      */
     #getUnansweredSurveys() {
-        this.#app.get("/survey/answered/:userId", async (req, res) => {
+        this.#app.get("/survey/answered", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+
+            const userId = req.user.userId;
+
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT survey.id AS id
@@ -42,7 +45,7 @@ class surveyRoutes {
                                                                           ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             GROUP BY survey.id;`,
-                    values: [req.params.userId]
+                    values: [userId]
                 });
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
             } catch (e) {
@@ -88,7 +91,10 @@ class surveyRoutes {
      * @author Junior Javier Brito Perez
      */
     #getSurvey() {
-        this.#app.post("/survey/questions", async (req, res) => {
+        this.#app.post("/survey/questions", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+
+            const userId = req.user.userId;
+
             try {
                 const response = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
@@ -103,7 +109,7 @@ class surveyRoutes {
                                                                INNER JOIN response ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             ORDER BY question.order;`,
-                    values: [req.body.surveyId, req.body.userId]
+                    values: [req.body.surveyId, userId]
                 });
 
                 const options = await this.#databaseHelper.handleQuery({
@@ -145,10 +151,10 @@ class surveyRoutes {
      * @author Junior Javier Brito Perez
      */
     #putSurveyResult() {
-        this.#app.put("/survey/response/:userId", async (req, res) => {
+        this.#app.put("/survey/response", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = req.body;
-                const user = req.params.userId;
+                const userId = req.user.userId;
 
                 const responseId = await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO response (id, surveyId, userId)
@@ -157,7 +163,7 @@ class surveyRoutes {
                     FROM response
                     WHERE userId = ?
                       AND surveyId = ?;`,
-                    values: [0, data.surveyId, user, user, data.surveyId]
+                    values: [0, data.surveyId, userId, userId, data.surveyId]
                 }).then((result) => {
                     if (result[1].length === 0) {
                         throw "No response found";
