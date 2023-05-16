@@ -19,7 +19,7 @@ export class emailRepository {
     }
 
     async getUserGoals() {
-        return await this.#networkManager.doRequest(`${this.#route}/usergoals`, "GET");
+        return await this.#networkManager.doRequest(`${this.#route}/getUserGoals`, "GET");
     }
 
     async sendEmail(firstname, surname, email, subject, body) {

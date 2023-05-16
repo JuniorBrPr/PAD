@@ -40,7 +40,7 @@ class emailRoutes {
     }
 
     #getUserGoals() {
-        this.#app.get("/email/userGoals", async (req, res) => {
+        this.#app.get("/getUserGoals", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT
@@ -78,7 +78,7 @@ class emailRoutes {
                         }
                     ],
                     "subject": req.params.subject,
-                    "html": req.params.body
+                    "html": "Uw doelen voor vandaaag zijn:" + req.params.body
                 }
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
