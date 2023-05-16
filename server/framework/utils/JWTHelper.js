@@ -30,7 +30,7 @@ class JWTHelper {
      */
 
     verifyJWTToken = (req, res, next) => {
-        const authHeader = req.headers['authorization'];
+        const authHeader = req.headers['JWTAuthorization'];
         const token = authHeader && authHeader.split(' ')[1];
 
         //unauthorized
