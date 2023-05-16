@@ -78,7 +78,7 @@ class emailRoutes {
                         }
                     ],
                     "subject": req.params.subject,
-                    "html": "Uw doelen voor vandaaag zijn:" + req.params.body
+                    "html": "Uw doelen voor vandaag zijn:" + req.params.body
                 }
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
@@ -87,3 +87,4 @@ class emailRoutes {
         })
     }
 }
+module.exports = emailRoutes
