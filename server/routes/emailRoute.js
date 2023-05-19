@@ -13,14 +13,14 @@ class emailRoutes {
     constructor(app) {
         this.#app = app;
         //call method per route for the users entity
-        this.#getEmail()
+        this.#getEmailAndName()
         this.#getUserGoals()
         this.#sendEmail()
     }
 
 
-    #getEmail() {
-        this.#app.get("/profile", async (req, res) => {
+    #getEmailAndName() {
+        this.#app.get("/getEmailAndName", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT emailAddress, firstname, surname, id FROM user`
@@ -49,10 +49,13 @@ class emailRoutes {
                                 activity.name
                             FROM usergoal
                                      INNER JOIN activity ON usergoal.activityId = activity.id
+                                     INNER JOIN goal ON usergoal.id = goal.activityID
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
+                              AND completed = ?
+
                     `,
-                    values: [req.params.userId, new Date().getDay()]
+                    values: [req.params.userId, new Date().getDay(), 0]
                 });
                 if (data.length >= 1) {
                     res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
@@ -78,7 +81,7 @@ class emailRoutes {
                         }
                     ],
                     "subject": req.params.subject,
-                    "html": "Uw doelen voor vandaag zijn:" + req.params.body
+                    "html": req.params.body
                 }
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {

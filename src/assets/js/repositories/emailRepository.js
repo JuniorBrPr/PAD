@@ -14,8 +14,8 @@ export class emailRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async getEmail() {
-        return await this.#networkManager.doRequest(`${this.#route}/email`, "GET");
+    async getEmailAndName() {
+        return await this.#networkManager.doRequest(`${this.#route}/emailAndName`, "GET");
     }
 
     async getUserGoals() {
