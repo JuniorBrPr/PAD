@@ -35,8 +35,8 @@ export class UsersRepository {
             .doRequest(`${this.#route}/login`, "POST", {"emailAddress": emailAddress, "password": password});
     }
 
-    //example endpoint would be: /users/register
-    async register(username, password) {
-
+    async isAdmin() {
+        return await this.#networkManager
+            .doRequest(`${this.#route}/isAdmin`, "GET");
     }
 }

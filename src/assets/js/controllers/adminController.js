@@ -4,13 +4,16 @@
  */
 
 import {Controller} from "./controller.js";
+import {AdminRepository} from "../repositories/adminRepository.js";
 
 export class AdminController extends Controller {
 
     #adminView
+    #adminRepository
 
     constructor() {
         super();
+        this.#adminRepository = new AdminRepository();
 
         this.#setupView();
     }
@@ -24,6 +27,6 @@ export class AdminController extends Controller {
      */
 
     async #setupView() {
-
+        this.#adminView = await super.loadHtmlIntoContent("html_views/admin.html");
     }
 }

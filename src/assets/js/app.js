@@ -7,8 +7,14 @@
  * @author Lennard Fonteijn & Pim Meijer
  */
 
+//repository imports
 import {SurveyRepository} from "./repositories/surveyRepository.js";
+import {UsersRepository} from "./repositories/usersRepository.js";
+
+//framework imports
 import {SessionManager} from "./framework/utils/sessionManager.js"
+
+//controller imports
 import {LoginController} from "./controllers/loginController.js"
 import {NavbarController} from "./controllers/navbarController.js"
 import {SurveyController} from "./controllers/surveyController.js";
@@ -19,11 +25,13 @@ import {WeekPlanningController} from "./controllers/weekPlanningController.js";
 import {HomeController} from "./controllers/homeController.js";
 import {ErrorController} from "./controllers/errorController.js";
 import {RecommendationsController} from "./controllers/recommendationsController.js";
+import {AdminController} from "./controllers/adminController.js";
 
 export class App {
 
     //To check the survey completion
     static #surveyRepository = new SurveyRepository();
+    static #usersRepository = new UsersRepository();
 
     //we only need one instance of the sessionManager, thus static use here
     // all classes should use this instance of sessionManager
@@ -41,6 +49,7 @@ export class App {
     static CONTROLLER_PROFILE = "profile";
     static CONTROLLER_EDITPROFILE = "editProfile";
     static CONTROLLER_ERROR = "error";
+    static CONTROLLER_ADMIN = "admin";
 
 
     constructor() {
@@ -130,10 +139,20 @@ export class App {
                 break;
 
             case App.CONTROLLER_RECOMMENDATION:
+                App.isLoggedIn(
+                    () =>
+                        App.hasCompletedSurvey(
+                            () => new RecommendationsController(),
+                            () => new SurveyController(),
+                        ),
+                    () => new LoginController());
+                break;
 
-
-                new RecommendationsController()
-
+            case App.CONTROLLER_ADMIN:
+                App.isAdmin(
+                    () => new AdminController(),
+                    () => new ErrorController({errorCode: 403, errorMessage: "Access Forbidden"})
+                )
                 break;
 
             default:
@@ -254,8 +273,12 @@ export class App {
      * @param whenNo - function to execute when user is admin
      */
 
-    static isAdmin(whenYes, whenNo) {
-        //TODO: Implement isAdmin function route thing for when i get home
+    static async isAdmin(whenYes, whenNo) {
+        if (await this.adminStatusChecker()) {
+            whenYes();
+        } else {
+            whenNo();
+        }
     }
 
     /**
@@ -272,6 +295,19 @@ export class App {
         } else {
             whenNo();
         }
+    }
+
+    /**
+     * @author Jayden.G
+     * Checks for if the user has completed the surveys
+     *
+     * @returns {Promise<boolean>} - true if surveyStatus is complete (which would be if its 1), false otherwise
+     */
+
+    static async adminStatusChecker() {
+        const status = await this.#usersRepository.isAdmin();
+
+        return status.isAdmin;
     }
 
     /**

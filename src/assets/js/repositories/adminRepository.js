@@ -7,7 +7,7 @@
 
 import {NetworkManager} from "../framework/utils/networkManager.js";
 
-export class adminRepository {
+export class AdminRepository {
 
     #route
     #networkManager
