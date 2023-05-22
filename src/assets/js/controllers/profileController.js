@@ -84,8 +84,7 @@ export class profileController extends Controller {
 
     async #setupGoals() {
         const cardContainer = document.getElementById('card-container');
-        let date = new Date().toISOString().split('T')[0];
-        document.getElementById('date').innerHTML = date;
+        document.getElementById('date').innerHTML = new Date().toISOString().split('T')[0];
         document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
         try {
             let userGoals = await this.#profileRepository.getUserGoals();
@@ -98,44 +97,36 @@ export class profileController extends Controller {
                     let goalTitle = usergoal.data[i].name;
                     let unit = usergoal.data[i].unit;
                     let usergoalID = usergoal.data[i].usergoalID;
-
                     // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
                     let completed = goal.data[i]?.completed || 0;
 
-                    // When goal hasnt been made yet (goal undefined) the value will be set to the value
-                    // which was chosen by user and is from usergoal
+                    // When goal hasnt been made yet (goal undefined) the value will be set to the value which was chosen by user and is from usergoal
                     let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
                     if (completed === 0) {
-                        // This is the layout of every card, it will be filled with the constants of the parameters
-                        let card = document.createElement('div');
-                        card.classList.add('activityCard');
-                        card.innerHTML = `
-                <div class="mx-auto my-4">
-                  <div class="activity-body justify-content-center text-center">
-                    <h5 id="activity-title" class="card-title">${goalTitle}</h5>
-                    <h6 id="activity-amount" class="card-subtitle mb-2">${value} ${unit}</h6>
-                      <button id="activity-btn-completed" class="=w-50">Gehaald</button>
-                  </div>
-                </div>`;
+                        // Clone the template
+                        const template = document.getElementById('usergoalTemplate');
+                        const clone = template.content.cloneNode(true);
+                        // Insert the cloned instance wherever needed
+                        const container = document.getElementById('card-container');
+                        container.appendChild(clone);
 
                         // When button is pressed this function will run
-                        card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
+                        template.querySelector('#activity-btn-completed').addEventListener('click', async () => {
                             if (typeof goal.data[i] === 'undefined') {
                                 await this.#profileRepository.insertGoal(usergoalID, value)
                             }
 
                             await this.#profileRepository.updateGoalCompletion(usergoalID);
-
-                            card.style.opacity = '0'; // Set opacity to 0 to start the transition
-                            card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+                            template.style.opacity = '0'; // Set opacity to 0 to start the transition
+                            template.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
 
                             setTimeout(() => {
-                                cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
+                                cardContainer.removeChild(template); // Remove the element from the DOM after the transition is complete
                             }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
                             await this.#displayDailyGoalCompletionPercentage() // Update daily goal completion percentage
                             await this.#displayWeeklyGoalCompletion() // Update weekly goal completion percentage
                         });
-                        cardContainer.appendChild(card);
+                        cardContainer.appendChild(template);
                     }
                 }
             }
