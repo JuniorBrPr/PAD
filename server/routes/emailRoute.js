@@ -1,4 +1,5 @@
 const cron = require("node-cron");
+const Console = require("console");
 
 
 class emailRoutes {
@@ -16,8 +17,8 @@ class emailRoutes {
         //call method per route for the users entity
         // this.#getEmailAndName()
         // this.#getUserGoals()
-        const minutes = "30" // Specified on which minute
-        const hours = "10" // Specified on which hour
+        const minutes = "00" // Specified on which minute
+        const hours = "7" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -72,6 +73,7 @@ class emailRoutes {
     // }
 
     async #returnEmailAndName() {
+        Console.log("Haal data op uit user");
         try {
             const data = await this.#databaseHelper.handleQuery({
                 query: `SELECT emailAddress, firstname, surname, id
@@ -79,6 +81,7 @@ class emailRoutes {
             });
 
             if (data.length >= 1) {
+                Console.log("return userdata");
                 return data;
             }
         } catch (e) {
@@ -102,38 +105,38 @@ class emailRoutes {
             });
 
             if (data.length >= 1) {
-                return {data};
+                return data;
             }
         } catch (e) {
             throw new Error(e);
         }
     }
-E
 
     async #formatEmail() {
         const data = await this.#returnEmailAndName();
         const subject = "Reminder"; // Subject should be the same for every user
-
-        for (let i = 0; i < data.data.length; i++) { // Sends email to every registered email
+        Console.log(("begin format email"))
+        for (let i = 0; i < data.length; i++) { // Sends email to every registered email
             const userGoalsData = await this.#returnUserGoals(data[i].id);
-            if (userGoalsData.data.length >= 1) { // If the user has at least 1 goal the email procedure will continue
+            if (userGoalsData.length >= 1) { // If the user has at least 1 goal the email procedure will continue
 
                 // Create an empty array to store the string parts
                 let stringBuilder = [];
                 stringBuilder.push("Uw doelen voor vandaag zijn: ");
                 stringBuilder.push("\n"); // Empty line
 
-                for (let j = 0; j < userGoalsData.data.length; j++) {
+                for (let i = 0; i < userGoalsData.length; i++) {
+                    Console.log("Add goals to list");
                     // Append strings using push()
-                    stringBuilder.push(userGoalsData.data[j].name);
+                    stringBuilder.push(userGoalsData[i].name);
                     stringBuilder.push(": ");
-                    stringBuilder.push(userGoalsData.data[j].valueChosenByUser);
+                    stringBuilder.push(userGoalsData[i].valueChosenByUser);
                     stringBuilder.push(" ");
-                    stringBuilder.push(userGoalsData.data[j].unit);
+                    stringBuilder.push(userGoalsData[i].unit);
                     stringBuilder.push("\n"); // Empty line
                 } // Example output: "peulvruchten eten: 50 gram"
                 let result = stringBuilder.join(""); // Join the array elements into a single string
-
+                Console.log("sending email");
                 await this.#sendEmail(data.data[i].firstname, data.data[i].surname, data.data[i].emailAddress, subject, result);
             }
         }
@@ -160,7 +163,6 @@ E
                 "Authorization": "Bearer pad_nut_2.FumYdNfXITlTORzO",
                 "Content-Type": "application/json"
             };
-
             // Make the HTTP POST request with the specified headers
             const response = await fetch("https://api.hbo-ict.cloud/mail", {
                 method: "POST",
