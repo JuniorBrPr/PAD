@@ -237,12 +237,25 @@ export class App {
      * @param whenYes - function to execute when user is logged in
      * @param whenNo - function to execute when user is logged in
      */
+
     static isLoggedIn(whenYes, whenNo) {
         if (App.sessionManager.get("token")) {
             whenYes();
         } else {
             whenNo();
         }
+    }
+
+    /**
+     * @author Jayden.G
+     * Convenience functions to handle role states
+     *
+     * @param whenYes - function to execute when user is admin
+     * @param whenNo - function to execute when user is admin
+     */
+
+    static isAdmin(whenYes, whenNo) {
+        //TODO: Implement isAdmin function route thing for when i get home
     }
 
     /**
