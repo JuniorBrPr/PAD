@@ -32,17 +32,10 @@ export class NetworkManager {
                 },
             };
 
-
-            const API_KEY = "pad_nut_2.FumYdNfXITlTORzO";
-
-            if (API_KEY) {
-                options.headers.Authorization = "Bearer " + API_KEY;
-            }
-            
             const token = this.#sessionManager.get("token");
 
             if (token) {
-                options.headers.JWTAuthorization = "Bearer " + token;
+                options.headers.Authorization = "Bearer " + token;
             }
 
             //if there is data passed add it do the fetch request's body(usually this is for a POST request)

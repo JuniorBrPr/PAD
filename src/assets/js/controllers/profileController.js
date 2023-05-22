@@ -106,34 +106,39 @@ export class profileController extends Controller {
                         // Clone the template
                         const template = document.getElementById('usergoalTemplate');
                         const clone = template.content.cloneNode(true);
+
+                        // Set the values in the cloned template
+                        clone.getElementById('activity-title').innerHTML = goalTitle;
+                        clone.getElementById('activity-amount').innerHTML = `${value} ${unit}`;
+
                         // Insert the cloned instance wherever needed
                         const container = document.getElementById('card-container');
                         container.appendChild(clone);
 
                         // When button is pressed this function will run
-                        template.querySelector('#activity-btn-completed').addEventListener('click', async () => {
-                            if (typeof goal.data[i] === 'undefined') {
-                                await this.#profileRepository.insertGoal(usergoalID, value)
-                            }
-
-                            await this.#profileRepository.updateGoalCompletion(usergoalID);
-                            template.style.opacity = '0'; // Set opacity to 0 to start the transition
-                            template.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
-
-                            setTimeout(() => {
-                                cardContainer.removeChild(template); // Remove the element from the DOM after the transition is complete
-                            }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                            await this.#displayDailyGoalCompletionPercentage() // Update daily goal completion percentage
-                            await this.#displayWeeklyGoalCompletion() // Update weekly goal completion percentage
-                        });
-                        cardContainer.appendChild(template);
+                        //     clone.getElementById('activity-btn-completed').addEventListener('click', async () => {
+                        //         if (typeof goal.data[i] === 'undefined') {
+                        //             await this.#profileRepository.insertGoal(usergoalID, value);
+                        //         }
+                        //
+                        //         await this.#profileRepository.updateGoalCompletion(usergoalID);
+                        //         clone.style.opacity = '0'; // Set opacity to 0 to start the transition
+                        //         clone.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
+                        //
+                        //         setTimeout(() => {
+                        //             cardContainer.removeChild(clone); // Remove the element from the DOM after the transition is complete
+                        //         }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
+                        //         await this.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
+                        //         await this.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
+                        //     });
                     }
                 }
             }
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
     }
+
 
 
     async #displayDailyGoalCompletionPercentage() {
