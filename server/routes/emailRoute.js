@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const Console = require("console");
+const https = require('https');
 
 
 class emailRoutes {
@@ -16,8 +17,8 @@ class emailRoutes {
         this.#app = app;
         //call method per route for the users entity
         // this.#getEmailAndName()
-        const minutes = "33" // Specified on which minute
-        const hours = "13" // Specified on which hour
+        const minutes = "07" // Specified on which minute
+        const hours = "15" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -81,7 +82,6 @@ class emailRoutes {
             });
 
             if (data.length >= 1) {
-                Console.log("return userdata");
                 return data;
             } else {
                 return null
@@ -106,7 +106,7 @@ class emailRoutes {
                 values: [userId, new Date().getDay()]
             });
 
-            if (data.length >= 1) {
+            if (data.length > 0) {
                 return data;
             } else {
                 return null
@@ -123,31 +123,25 @@ class emailRoutes {
         for (let i = 0; i < userData.length; i++) { // Loops for every user
             Console.log("User ID: " + userData[i].id)
             const userGoalsData = await this.#returnUserGoals(userData[i].id);
-
             if (userGoalsData.length > 0) { // Check if userGoalsData is not null or empty
-                let unCompletedCounter = 0 // If uncompleted counter stays 0 no email will be sent
                 // Create an empty array to store the string parts
                 let stringBuilder = [];
-                stringBuilder.push("Uw doelen voor vandaag zijn: \n");
+                stringBuilder.push("Uw doelen voor vandaag zijn: ");
 
-                for (let i = 0; i < userGoalsData.length; i++) {
+                for (let j = 0; j < userGoalsData.length; j++) {
                     // When goal hasn't been made yet (goal undefined) the value will be set to 0
-                    let completed = userGoalsData.data[i]?.completed || 0;
-
-                    if (completed === 0) { // If the goal has not been completed
-                        unCompletedCounter ++ // UnCompletedCounter will get higher when a goal has not been completed
-                        stringBuilder.push(`${userGoalsData[i].name}: ${userGoalsData[i].valueChosenByUser} ${userGoalsData[i].unit}\n`)
-                    }
+                    // let completed = userGoalsData.data[j]?.completed || 0;
+                    stringBuilder.push(`${userGoalsData[j].name}: ${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit}, `)
                 } // Example output: "peulvruchten eten: 50 gram"
 
                 let result = stringBuilder.join(""); // Join the array elements into a single string
+                Console.log(result)
                 Console.log("sending email");
-                if (unCompletedCounter > 0){
                 await this.#sendEmail(userData[i].firstname, userData[i].surname, userData[i].emailAddress, subject, result);
-                }
             }
         }
     }
+
 
     async #sendEmail(firstname, surname, email, subject, body) {
         try {
@@ -166,22 +160,32 @@ class emailRoutes {
                 "html": body
             };
 
-            const headers = {
-                "Authorization": "Bearer pad_nut_2.FumYdNfXITlTORzO",
-                "Content-Type": "application/json"
-            };
-            // Make the HTTP POST request with the specified headers
-            const response = await fetch("https://api.hbo-ict.cloud/mail", {
+            const requestData = JSON.stringify(data);
+
+            const options = {
                 method: "POST",
-                headers: headers,
-                body: JSON.stringify(data)
+                hostname: "api.hbo-ict.cloud",
+                path: "/mail",
+                headers: {
+                    "Authorization": "Bearer pad_nut_2.FumYdNfXITlTORzO",
+                    "Content-Type": "application/json",
+                    "Content-Length": requestData.length
+                }
+            };
+
+            const req = https.request(options, (res) => {
+                // Check the response status and throw error if not okay
+                if (res.statusCode < 200 || res.statusCode >= 300) {
+                    throw new Error('Failed to send email');
+                }
             });
 
-            // Check the response status and throw error if not okay
-            if (!response.ok) {
-                throw new Error('Failed to send email');
-            }
+            req.on('error', (e) => {
+                console.error(e);
+            });
 
+            req.write(requestData);
+            req.end();
         } catch (e) {
             console.error(e);
         }
