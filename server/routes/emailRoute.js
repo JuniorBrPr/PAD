@@ -15,63 +15,13 @@ class emailRoutes {
      */
     constructor(app) {
         this.#app = app;
-        //call method per route for the users entity
-        // this.#getEmailAndName()
         const minutes = "38" // Specified on which minute
         const hours = "00" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
-            // await this.#sendEmail("Joey", "Van Der Poel", "Joeywognum@gmail.com","TEST", "Dit is een test")
         })
     }
-
-    // #getEmailAndName() {
-    //     this.#app.get("/getEmailAndName", async (req, res) => {
-    //         try {
-    //             const data = await this.#databaseHelper.handleQuery({
-    //                 query: `SELECT emailAddress, firstname, surname, id FROM user`
-    //             });
-    //             //if we found at least one record we know the user exists in users table
-    //             if (data.length >= 1) {
-    //                 // Values individually saved
-    //                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-    //             } else {
-    //                 //wrong username
-    //                 res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Er bestaan geen geburikers"});
-    //             }
-    //         } catch (e) {
-    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-    //         }
-    //     });
-    // }
-    //
-    // #getUserGoals() {
-    //     this.#app.get("/getUserGoals", async (req, res) => {
-    //         try {
-    //             const data = await this.#databaseHelper.handleQuery({
-    //                 query: `SELECT
-    //                             usergoal.valueChosenByUser,
-    //                             activity.unit,
-    //                             activity.name
-    //                         FROM usergoal
-    //                                  INNER JOIN activity ON usergoal.activityId = activity.id
-    //                                  INNER JOIN goal ON usergoal.id = goal.activityID
-    //                         WHERE usergoal.userId = ?
-    //                           AND dayOfTheWeek = ?
-    //                           AND completed = ?
-    //
-    //                 `,
-    //                 values: [req.params.userId, new Date().getDay(), 0]
-    //             });
-    //             if (data.length >= 1) {
-    //                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-    //             }
-    //         } catch (e) {
-    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-    //         }
-    //     });
-    // }
 
     async #returnEmailAndName() {
         Console.log("Haal data op uit user");
@@ -126,7 +76,9 @@ class emailRoutes {
                 const userGoalsData = await this.#returnUserGoals(userData[i].id);
 
                 if (userGoalsData != null) { // Check if userGoalsData is not null or empty
-                    let body = `<body><p>Beste ${userData[i].firstname} ${userData[i].surname},</p><p>We wilden je even laten weten dat je fantastisch bezig bent! Blijf volhouden en blijf werken aan je persoonlijke doelen.</p><p>Voor vandaag hebben we de volgende doelen voor je:</p><ul>`;
+                    let body = `<body><p>Beste ${userData[i].firstname} ${userData[i].surname},</p>
+                                <p>We wilden je even laten weten dat je fantastisch bezig bent! Blijf volhouden en blijf werken aan je persoonlijke doelen.</p>
+                                <p>Voor vandaag hebben we de volgende doelen voor je:</p><ul>`;
 
                     for (let j = 0; j < userGoalsData.length; j++) {
                         body += `<li>${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} ${userGoalsData[j].name}</li>`;
@@ -193,4 +145,4 @@ class emailRoutes {
     }
 }
 
-    module.exports = emailRoutes
+module.exports = emailRoutes
