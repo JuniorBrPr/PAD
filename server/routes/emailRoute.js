@@ -17,8 +17,8 @@ class emailRoutes {
         this.#app = app;
         //call method per route for the users entity
         // this.#getEmailAndName()
-        const minutes = "11" // Specified on which minute
-        const hours = "15" // Specified on which hour
+        const minutes = "51" // Specified on which minute
+        const hours = "23" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -120,15 +120,16 @@ class emailRoutes {
         const subject = "Reminder"; // Subject should be the same for every user
         Console.log("begin format email")
         for (let i = 0; i < userData.length; i++) { // Loops for every user
+            try{
             Console.log("User ID: " + userData[i].id)
             const userGoalsData = await this.#returnUserGoals(userData[i].id);
-            if (userGoalsData.length > 0) { // Check if userGoalsData is not null or empty
+            if (userGoalsData != null) { // Check if userGoalsData is not null or empty
                 // Create an empty array to store the string parts
                 let stringBuilder = [];
                 stringBuilder.push("Uw doelen voor vandaag zijn: ");
 
                 for (let j = 0; j < userGoalsData.length; j++) {
-                    stringBuilder.push(`${userGoalsData[j].name}: ${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} `)
+                    stringBuilder.push(`${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} ${userGoalsData[j].name}, `)
                 } // Example output: "peulvruchten eten: 50 gram"
 
                 let result = stringBuilder.join(""); // Join the array elements into a single string
@@ -136,8 +137,11 @@ class emailRoutes {
                 Console.log("sending email");
                 await this.#sendEmail(userData[i].firstname, userData[i].surname, userData[i].emailAddress, subject, result);
             }
+        } catch (e){
+            console.log(e)
         }
     }
+}
 
 
     async #sendEmail(firstname, surname, email, subject, body) {
@@ -173,7 +177,7 @@ class emailRoutes {
             const req = https.request(options, (res) => {
                 // Check the response status and throw error if not okay
                 if (res.statusCode < 200 || res.statusCode >= 300) {
-                    throw new Error('Failed to send email');
+                    console.error('Failed to send email');
                 }
             });
 
