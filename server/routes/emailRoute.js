@@ -17,8 +17,8 @@ class emailRoutes {
         this.#app = app;
         //call method per route for the users entity
         // this.#getEmailAndName()
-        const minutes = "51" // Specified on which minute
-        const hours = "23" // Specified on which hour
+        const minutes = "38" // Specified on which minute
+        const hours = "00" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -117,32 +117,32 @@ class emailRoutes {
 
     async #formatEmail() {
         const userData = await this.#returnEmailAndName();
-        const subject = "Reminder"; // Subject should be the same for every user
-        Console.log("begin format email")
+        const subject = "Daily Reminder"; // Subject should be the same for every user
+        console.log("begin format email");
+
         for (let i = 0; i < userData.length; i++) { // Loops for every user
-            try{
-            Console.log("User ID: " + userData[i].id)
-            const userGoalsData = await this.#returnUserGoals(userData[i].id);
-            if (userGoalsData != null) { // Check if userGoalsData is not null or empty
-                // Create an empty array to store the string parts
-                let stringBuilder = [];
-                stringBuilder.push("Uw doelen voor vandaag zijn: ");
+            try {
+                console.log("User ID: " + userData[i].id);
+                const userGoalsData = await this.#returnUserGoals(userData[i].id);
 
-                for (let j = 0; j < userGoalsData.length; j++) {
-                    stringBuilder.push(`${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} ${userGoalsData[j].name}, `)
-                } // Example output: "peulvruchten eten: 50 gram"
+                if (userGoalsData != null) { // Check if userGoalsData is not null or empty
+                    let body = `<body><p>Beste ${userData[i].firstname} ${userData[i].surname},</p><p>We wilden je even laten weten dat je fantastisch bezig bent! Blijf volhouden en blijf werken aan je persoonlijke doelen.</p><p>Voor vandaag hebben we de volgende doelen voor je:</p><ul>`;
 
-                let result = stringBuilder.join(""); // Join the array elements into a single string
-                Console.log(result)
-                Console.log("sending email");
-                await this.#sendEmail(userData[i].firstname, userData[i].surname, userData[i].emailAddress, subject, result);
+                    for (let j = 0; j < userGoalsData.length; j++) {
+                        body += `<li>${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} ${userGoalsData[j].name}</li>`;
+                    } // Example output: "<li>peulvruchten eten: 50 gram</li>"
+
+                    body += `</ul><p>Blijf gemotiveerd en ga ervoor!</p><p>Met vriendelijke groet Fountain Of Fit</p></body>`;
+
+                    console.log(body);
+                    console.log("sending email");
+                    await this.#sendEmail(userData[i].firstname, userData[i].surname, userData[i].emailAddress, subject, body);
+                }
+            } catch (e) {
+                console.log(e);
             }
-        } catch (e){
-            console.log(e)
         }
     }
-}
-
 
     async #sendEmail(firstname, surname, email, subject, body) {
         try {
@@ -153,7 +153,7 @@ class emailRoutes {
                 },
                 "to": [
                     {
-                        "name": firstname + " " + surname,
+                        "name": `${firstname} ${surname}`,
                         "address": email
                     }
                 ],
@@ -175,7 +175,7 @@ class emailRoutes {
             };
 
             const req = https.request(options, (res) => {
-                // Check the response status and throw error if not okay
+                // Check the response status and throw an error if not okay
                 if (res.statusCode < 200 || res.statusCode >= 300) {
                     console.error('Failed to send email');
                 }
@@ -193,4 +193,4 @@ class emailRoutes {
     }
 }
 
-module.exports = emailRoutes
+    module.exports = emailRoutes
