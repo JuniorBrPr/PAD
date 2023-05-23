@@ -16,9 +16,8 @@ class emailRoutes {
         this.#app = app;
         //call method per route for the users entity
         // this.#getEmailAndName()
-        // this.#getUserGoals()
         const minutes = "00" // Specified on which minute
-        const hours = "7" // Specified on which hour
+        const hours = "12" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -137,7 +136,7 @@ class emailRoutes {
                 } // Example output: "peulvruchten eten: 50 gram"
                 let result = stringBuilder.join(""); // Join the array elements into a single string
                 Console.log("sending email");
-                await this.#sendEmail(data.data[i].firstname, data.data[i].surname, data.data[i].emailAddress, subject, result);
+                await this.#sendEmail(data[i].firstname, data[i].surname, data[i].emailAddress, subject, result);
             }
         }
     }
