@@ -16,11 +16,12 @@ class emailRoutes {
         this.#app = app;
         //call method per route for the users entity
         // this.#getEmailAndName()
-        const minutes = "00" // Specified on which minute
-        const hours = "12" // Specified on which hour
+        const minutes = "33" // Specified on which minute
+        const hours = "13" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
+            // await this.#sendEmail("Joey", "Van Der Poel", "Joeywognum@gmail.com","TEST", "Dit is een test")
         })
     }
 
@@ -82,6 +83,8 @@ class emailRoutes {
             if (data.length >= 1) {
                 Console.log("return userdata");
                 return data;
+            } else {
+                return null
             }
         } catch (e) {
             throw new Error(e);
@@ -91,20 +94,22 @@ class emailRoutes {
     async #returnUserGoals(userId) {
         try {
             const data = await this.#databaseHelper.handleQuery({
-                query: `SELECT usergoal.valueChosenByUser,
+                query: `SELECT usergoal.userId,
+                               usergoal.valueChosenByUser,
                                activity.unit,
                                activity.name
                         FROM usergoal
                                  INNER JOIN activity ON usergoal.activityId = activity.id
-                                 INNER JOIN goal ON usergoal.id = goal.activityID
                         WHERE usergoal.userId = ?
                           AND dayOfTheWeek = ?
-                          AND completed = ?`,
-                values: [userId, new Date().getDay(), 0]
+                `,
+                values: [userId, new Date().getDay()]
             });
 
             if (data.length >= 1) {
                 return data;
+            } else {
+                return null
             }
         } catch (e) {
             throw new Error(e);
@@ -112,31 +117,34 @@ class emailRoutes {
     }
 
     async #formatEmail() {
-        const data = await this.#returnEmailAndName();
+        const userData = await this.#returnEmailAndName();
         const subject = "Reminder"; // Subject should be the same for every user
-        Console.log(("begin format email"))
-        for (let i = 0; i < data.length; i++) { // Sends email to every registered email
-            const userGoalsData = await this.#returnUserGoals(data[i].id);
-            if (userGoalsData.length >= 1) { // If the user has at least 1 goal the email procedure will continue
+        Console.log("begin format email")
+        for (let i = 0; i < userData.length; i++) { // Loops for every user
+            Console.log("User ID: " + userData[i].id)
+            const userGoalsData = await this.#returnUserGoals(userData[i].id);
 
+            if (userGoalsData.length > 0) { // Check if userGoalsData is not null or empty
+                let unCompletedCounter = 0 // If uncompleted counter stays 0 no email will be sent
                 // Create an empty array to store the string parts
                 let stringBuilder = [];
-                stringBuilder.push("Uw doelen voor vandaag zijn: ");
-                stringBuilder.push("\n"); // Empty line
+                stringBuilder.push("Uw doelen voor vandaag zijn: \n");
 
                 for (let i = 0; i < userGoalsData.length; i++) {
-                    Console.log("Add goals to list");
-                    // Append strings using push()
-                    stringBuilder.push(userGoalsData[i].name);
-                    stringBuilder.push(": ");
-                    stringBuilder.push(userGoalsData[i].valueChosenByUser);
-                    stringBuilder.push(" ");
-                    stringBuilder.push(userGoalsData[i].unit);
-                    stringBuilder.push("\n"); // Empty line
+                    // When goal hasn't been made yet (goal undefined) the value will be set to 0
+                    let completed = userGoalsData.data[i]?.completed || 0;
+
+                    if (completed === 0) { // If the goal has not been completed
+                        unCompletedCounter ++ // UnCompletedCounter will get higher when a goal has not been completed
+                        stringBuilder.push(`${userGoalsData[i].name}: ${userGoalsData[i].valueChosenByUser} ${userGoalsData[i].unit}\n`)
+                    }
                 } // Example output: "peulvruchten eten: 50 gram"
+
                 let result = stringBuilder.join(""); // Join the array elements into a single string
                 Console.log("sending email");
-                await this.#sendEmail(data[i].firstname, data[i].surname, data[i].emailAddress, subject, result);
+                if (unCompletedCounter > 0){
+                await this.#sendEmail(userData[i].firstname, userData[i].surname, userData[i].emailAddress, subject, result);
+                }
             }
         }
     }

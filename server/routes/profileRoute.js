@@ -94,9 +94,9 @@ class profileRoutes {
                                    goal.completed,
                                    goal.value,
                                    goal.userID,
-                                   goal.activityID AS usergoalID
+                                   goal.usergoalID AS usergoalID
                             FROM goal
-                                     INNER JOIN usergoal ON goal.activityID = usergoal.id
+                                     INNER JOIN usergoal ON goal.usergoalID = usergoal.id
                             WHERE goal.userID = ?
                               AND usergoal.dayOfTheWeek = ?
                     `,
@@ -113,7 +113,7 @@ class profileRoutes {
         this.#app.post("/profile/insertGoal/:usergoalID", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `INSERT INTO goal(activityID, userID, completed, value, date)
+                    query: `INSERT INTO goal(usergoalID, userID, completed, value, date)
                         VALUES (?, ?, 0, ?, ?)`,
                     values: [req.params.usergoalID, req.user.userId, req.query.value, new Date()]
                 })
@@ -131,7 +131,7 @@ class profileRoutes {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `UPDATE goal
                             SET completed = 1
-                            WHERE activityID = ?`,
+                            WHERE usergoalID = ?`,
                     values: [req.params.usergoalID]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
@@ -146,16 +146,16 @@ class profileRoutes {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
-                                   NULL                                  AS activityID
+                                   NULL                                  AS usergoalID
                             FROM usergoal
-                                     LEFT JOIN goal on usergoal.id = goal.activityID
+                                     LEFT JOIN goal on usergoal.id = goal.usergoalID
                             WHERE usergoal.userId = ?
                               AND usergoal.dayOfTheWeek = ?
                             UNION
                             SELECT usergoal.id,
-                                   goal.activityID
+                                   goal.usergoalID
                             FROM usergoal
-                                     RIGHT JOIN goal on usergoal.id = goal.activityID
+                                     RIGHT JOIN goal on usergoal.id = goal.usergoalID
                             WHERE usergoal.id IS NULL
                               AND goal.userId = ?
                               AND usergoal.dayOfTheWeek = ?;
@@ -174,15 +174,15 @@ class profileRoutes {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT (SUM(completed = 1) / COUNT(*)) * 100 AS percentage,
-                                   NULL                                  AS activityID
+                                   NULL                                  AS usergoalID
                             FROM usergoal
-                                     LEFT JOIN goal on usergoal.id = goal.activityID
+                                     LEFT JOIN goal on usergoal.id = goal.usergoalID
                             WHERE usergoal.userId = ?
                             UNION
                             SELECT usergoal.id,
-                                   goal.activityID
+                                   goal.usergoalID
                             FROM usergoal
-                                     RIGHT JOIN goal on usergoal.id = goal.activityID
+                                     RIGHT JOIN goal on usergoal.id = goal.usergoalID
                             WHERE usergoal.id IS NULL
                               AND goal.userId = ?
                     `,
