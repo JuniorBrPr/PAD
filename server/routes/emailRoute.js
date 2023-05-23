@@ -17,7 +17,7 @@ class emailRoutes {
         this.#app = app;
         //call method per route for the users entity
         // this.#getEmailAndName()
-        const minutes = "07" // Specified on which minute
+        const minutes = "11" // Specified on which minute
         const hours = "15" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
@@ -94,14 +94,13 @@ class emailRoutes {
     async #returnUserGoals(userId) {
         try {
             const data = await this.#databaseHelper.handleQuery({
-                query: `SELECT usergoal.userId,
-                               usergoal.valueChosenByUser,
-                               activity.unit,
-                               activity.name
+                query: `SELECT usergoal.userId, usergoal.valueChosenByUser, activity.unit, activity.name
                         FROM usergoal
                                  INNER JOIN activity ON usergoal.activityId = activity.id
+                                 LEFT JOIN goal ON goal.usergoalID = usergoal.id
                         WHERE usergoal.userId = ?
                           AND dayOfTheWeek = ?
+                          AND (goal.usergoalID IS NULL OR goal.completed = 0)
                 `,
                 values: [userId, new Date().getDay()]
             });
@@ -129,9 +128,7 @@ class emailRoutes {
                 stringBuilder.push("Uw doelen voor vandaag zijn: ");
 
                 for (let j = 0; j < userGoalsData.length; j++) {
-                    // When goal hasn't been made yet (goal undefined) the value will be set to 0
-                    // let completed = userGoalsData.data[j]?.completed || 0;
-                    stringBuilder.push(`${userGoalsData[j].name}: ${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit}, `)
+                    stringBuilder.push(`${userGoalsData[j].name}: ${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} `)
                 } // Example output: "peulvruchten eten: 50 gram"
 
                 let result = stringBuilder.join(""); // Join the array elements into a single string
