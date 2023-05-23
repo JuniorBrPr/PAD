@@ -27,7 +27,6 @@ export class SurveyRepository {
      * @async
      * @public
      * @function getUnansweredSurveys
-     * @param {number} userId - The id of the user
      * @returns {Promise<*>} - The response from the server
      * @author Junior Javier Brito Perez
      */
@@ -53,7 +52,6 @@ export class SurveyRepository {
      * Get all the questions in the nutrition survey.
      * @async
      * @public
-     * @param userId
      * @returns {Promise<*>}
      * @author Junior Javier Brito Perez
      */
@@ -94,8 +92,7 @@ export class SurveyRepository {
      * Get all the questions in the physical activity survey.
      * @async
      * @public
-     * @param {[Object]} data - The questions to get the options for.
-     * @param {number} userId - The id of the user
+     * @param {{surveyId: number, data: {id: number, options: {text: string, open: boolean}[]}[]}} data - The questions to get the options for.
      * @returns {Promise<*>} - The response from the server
      */
     async putSurveyResult(data) {

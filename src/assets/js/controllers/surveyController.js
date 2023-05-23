@@ -47,7 +47,6 @@ export class SurveyController extends Controller {
         if (unansweredSurveys.length === 0) {
             await this.#surveyRepository.setSurveyComplete(App.sessionManager.get('user_id'));
             App.loadController("welcome", {});
-
         } else {
             for (const survey of unansweredSurveys) {
                 switch (survey.id) {
@@ -64,7 +63,7 @@ export class SurveyController extends Controller {
             window.addEventListener("beforeunload", async (e) => {
                 if (this.#questionsAnswered !== 0) {
                     e.preventDefault();
-                    await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false));
                     window.removeEventListener("beforeunload", () => {
                     });
                 }
@@ -73,7 +72,7 @@ export class SurveyController extends Controller {
             //TODO: Remove hardcoded userId
             window.addEventListener("click", async (e) => {
                 if (e.target.classList.contains("nav-link")) {
-                    await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false), 1);
+                    await this.#surveyRepository.putSurveyResult(this.#getSurveyResponseData(false));
                     window.removeEventListener("click", () => {
                     });
                 }
@@ -84,11 +83,10 @@ export class SurveyController extends Controller {
                 this.#surveyView.querySelector(".survey-welcome").style.display = "none";
             });
 
-            this.#surveyView.querySelector("#beweging-survey-btn")
-                .addEventListener("click", () => {
-                    this.#fetchSurvey(2);
-                    this.#surveyView.querySelector(".survey-welcome").style.display = "none";
-                });
+            exerciseSurveyBtn.addEventListener("click", () => {
+                this.#fetchSurvey(2);
+                this.#surveyView.querySelector(".survey-welcome").style.display = "none";
+            });
 
             this.#surveyView.querySelector(".next").addEventListener("click", () => {
                 this.#nextPrev(1);
@@ -113,7 +111,7 @@ export class SurveyController extends Controller {
 
     async #fetchUnansweredSurveys() {
         //TODO: Replace hardcoded id with actual id or remove id parameter.
-        return await this.#surveyRepository.getUnansweredSurveys(1);
+        return await this.#surveyRepository.getUnansweredSurveys();
     }
 
     /**
@@ -123,7 +121,7 @@ export class SurveyController extends Controller {
     async #fetchSurvey(surveyId) {
         // TODO: Replace hardcoded id with actual id or remove id parameter.
         // TODO: Remove filter, just for testing purposes.
-        this.#data = await this.#surveyRepository.getQuestions(1, surveyId)
+        this.#data = await this.#surveyRepository.getQuestions(surveyId)
 
         this.#displayQuestions();
         this.#surveyView.querySelector(".survey-form").style.display = "block";
@@ -152,42 +150,52 @@ export class SurveyController extends Controller {
         const leisureActivityQuestions = this.#data.filter(question => question.type === "leisureActivity");
         const sportActivityQuestions = this.#data.filter(question => question.type === "sportActivity");
 
-        this.#createExerciseQuestionTab(
-            "backAndForthActivityTable",
-            weeklyRecurringActivityQuestions,
-            "Vervoer ten behoeve van terugkerende, geplande activiteiten (heen en terug).",
-            "Geef aan hoe vaak je per week naar een activiteit gaat en hoe lang je er over doet om er te " +
-            "komen en weer terug te gaan.Bijvoorbeeld mantel-zorg, oppassen, vrijwilligerswerk, cursus volgen etc."
-        );
+        if (weeklyRecurringActivityQuestions.length > 0) {
+            this.#createExerciseQuestionTab(
+                "backAndForthActivityTable",
+                weeklyRecurringActivityQuestions,
+                "Vervoer ten behoeve van terugkerende, geplande activiteiten (heen en terug).",
+                "Geef aan hoe vaak je per week naar een activiteit gaat en hoe lang je er over doet om er te " +
+                "komen en weer terug te gaan.Bijvoorbeeld mantel-zorg, oppassen, vrijwilligerswerk, cursus volgen etc."
+            );
+        }
 
-        this.#createExerciseQuestionTab(
-            "recurringPhysicalActivityTable",
-            recurringPhysicalActivityQuestions,
-            "Lichamelijke activiteit op de vorige terugkerende bezigheden of vrijwilligerswerk, indien van" +
-            " toepassing (niet zijnde huishoudelijk werk en vrijetijdsbestedingen)",
-            ""
-        );
+        if (recurringPhysicalActivityQuestions.length > 0) {
+            this.#createExerciseQuestionTab(
+                "recurringPhysicalActivityTable",
+                recurringPhysicalActivityQuestions,
+                "Lichamelijke activiteit op de vorige terugkerende bezigheden of vrijwilligerswerk, indien van" +
+                " toepassing (niet zijnde huishoudelijk werk en vrijetijdsbestedingen)",
+                ""
+            );
+        }
 
-        this.#createExerciseQuestionTab(
-            "householdActivityTable",
-            householdActivityQuestions,
-            "Huishoudelijke activiteiten",
-            "Geef aan hoe vaak je per week huishoudelijke activiteiten doet en hoe lang je er over doet. "
-        );
+        if (householdActivityQuestions.length > 0) {
+            this.#createExerciseQuestionTab(
+                "householdActivityTable",
+                householdActivityQuestions,
+                "Huishoudelijke activiteiten",
+                "Geef aan hoe vaak je per week huishoudelijke activiteiten doet en hoe lang je er over doet. "
+            );
+        }
 
-        this.#createExerciseQuestionTab(
-            "backAndForthActivityTable",
-            leisureActivityQuestions,
-            "Vrijetijdsbesteding",
-            "Activiteiten voor eigen plezier."
-        );
+        if (leisureActivityQuestions.length > 0) {
+            this.#createExerciseQuestionTab(
+                "backAndForthActivityTable",
+                leisureActivityQuestions,
+                "Vrijetijdsbesteding",
+                "Activiteiten voor eigen plezier."
+            );
+        }
 
-        // this.#createExerciseQuestionTab(
-        //     "backAndForthActivityTable",
-        //     sportActivityQuestions,
-        //     "Sporten",
-        //     "Sporten voor eigen plezier."
-        // );
+        if (sportActivityQuestions.length > 0) {
+            this.#createExerciseQuestionTab(
+                "backAndForthActivityTable",
+                sportActivityQuestions,
+                "Sporten",
+                "Sporten voor eigen plezier."
+            );
+        }
     }
 
     #createExerciseQuestionTab(templateId, questions, title, subtitle) {
@@ -390,13 +398,8 @@ export class SurveyController extends Controller {
             this.#currentQuestion : this.#questionsAnswered;
 
         if (this.#currentQuestion >= questionTabs.length) {
-            // TODO: remove hardcoded user id
-            if (this.#data[0].surveyId === 2) {
-                await this.#setupView();
-                return;
-            }
             const response = await this.#surveyRepository.putSurveyResult(
-                this.#getSurveyResponseData(this.#data[0].surveyId !== 2), 1);
+                this.#getSurveyResponseData(this.#data[0].surveyId !== 2));
 
             await this.#setupView();
             const alert = this.#surveyView.querySelector(".alert");
@@ -406,7 +409,7 @@ export class SurveyController extends Controller {
                 alert.classList.add("alert-danger");
                 alert.classList.remove("alert-success");
             }
-            alert.innerText = response.message;
+            alert.innerText += response.message + "\n";
 
             this.#surveyView.querySelector(".questionContainer").innerHTML = "";
             this.#questionsAnswered = 0;
@@ -424,62 +427,63 @@ export class SurveyController extends Controller {
         if (this.#currentQuestion >= this.#data.length) return true;
 
         const questionTabs = this.#surveyView.getElementsByClassName("questionTab");
-        let currentQuestionTab;
         let valid = false;
         let alert;
 
         if (this.#data[this.#currentQuestion].surveyId === 1) {
-            const optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
             alert = this.#currentQuestion < questionTabs.length ?
                 questionTabs[this.#currentQuestion].querySelector(".alert") : null;
-            alert.style.display = "none";
-
-            currentQuestionTab = questionTabs[this.#currentQuestion];
-            this.#resetBorderColors(currentQuestionTab)
-
-            switch (this.#data[this.#currentQuestion].type) {
-                case "singleChoice":
-                    valid = this.#validateSingleChoice(optionsCurrentQuestionTab, alert);
-                    break;
-                case "portion":
-                case "numberScale" :
-                    valid = this.#validateNumberScale(questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn"),
-                        alert);
-                    break;
-                case "multipleChoice":
-                    valid = this.#validateMultipleChoice(optionsCurrentQuestionTab, alert);
-                    break;
-                case "weeklyPortions":
-                    valid = this.#validateWeeklyPortions(questionTabs[this.#currentQuestion], alert);
-                    break;
-                case "title":
-                    valid = true;
-                    break;
-                default:
-                    valid = false;
-                    break;
-            }
+            valid = this.#validateNutritionSurvey(questionTabs, alert);
         }
-
         if (this.#data[0].surveyId === 2) {
             for (let i = 0; i < questionTabs.length; i++) {
                 if (questionTabs[i].style.display === "block") {
-                    currentQuestionTab = questionTabs[i];
-                    this.#resetBorderColors(currentQuestionTab);
-
+                    this.#resetBorderColors( questionTabs[i]);
                     alert = questionTabs[i].querySelector(".alert");
-                    alert.style.display = "none";
-
                     valid = this.#validateActivitySurvey(questionTabs[i], alert);
                 }
             }
         }
-
         if (alert !== null) {
             alert.style.display = valid ? "none" : "block";
         }
         return valid;
     }
+
+    #validateNutritionSurvey(questionTabs, alert) {
+        const optionsCurrentQuestionTab = questionTabs[this.#currentQuestion].querySelectorAll(".option");
+        const currentQuestionTab = questionTabs[this.#currentQuestion];
+        let valid;
+
+        this.#resetBorderColors(currentQuestionTab)
+        alert.style.display = "none";
+        alert.innerText = "";
+
+        switch (this.#data[this.#currentQuestion].type) {
+            case "singleChoice":
+                valid = this.#validateSingleChoice(optionsCurrentQuestionTab, alert);
+                break;
+            case "portion":
+            case "numberScale" :
+                valid = this.#validateNumberScale(questionTabs[this.#currentQuestion].querySelectorAll("#radioBtn"),
+                    alert);
+                break;
+            case "multipleChoice":
+                valid = this.#validateMultipleChoice(optionsCurrentQuestionTab, alert);
+                break;
+            case "weeklyPortions":
+                valid = this.#validateWeeklyPortions(questionTabs[this.#currentQuestion], alert);
+                break;
+            case "title":
+                valid = true;
+                break;
+            default:
+                valid = false;
+                break;
+        }
+        return valid;
+    }
+
 
     #resetBorderColors(questionTab) {
         const inputs = questionTab.querySelectorAll("input");
@@ -498,48 +502,74 @@ export class SurveyController extends Controller {
     #validateActivitySurvey(questionTab, alert) {
         const questionsCurrentQuestionTab = questionTab.querySelectorAll(".questionRow");
         const nvtCheckbox = questionTab.querySelector(".nvtCheck");
+        let valid = true;
+        alert.style.display = "none";
+        alert.innerText = "";
 
         if (nvtCheckbox.checked) {
             return true;
         } else {
             if (this.#validateAllZero(questionTab)) {
-                alert.innerText = "Vul minstens één waarde in.";
-                return false;
+                alert.innerText += "\nVul minstens één rij in of kies \"Niet van toepassing\".";
+                valid = false;
             }
-            let valid = true;
             for (let i = 0; i < questionsCurrentQuestionTab.length; i++) {
-                if (!this.#validateQuestion(questionsCurrentQuestionTab[i], alert)) {
+                if (!this.#validateExerciseQuestion(questionsCurrentQuestionTab[i], alert)) {
                     valid = false;
                 }
             }
             return valid;
         }
-
     }
 
-    #validateQuestion(question, alert) {
+    #validateExerciseQuestion(question, alert) {
         if (this.#validateAllZero(question)) {
             return true;
         }
         const inputs = question.querySelectorAll("input");
+        let valid = true;
         for (let i = 0; i < inputs.length; i++) {
             if (inputs[i].type === "number") {
                 if (!this.#validateNumberInput(inputs[i], alert)) {
-                    return false;
+                    valid = false;
                 }
             }
         }
+
+        valid = this.#validateDaysHoursMinutes(question, alert) && valid;
+
         const radios = question.querySelectorAll(".radio");
         if (radios.length > 0) {
-            if (!this.#validateRadiosInput(radios, alert)) {
-                return false;
+            if (!this.#validateRadiosInput(radios, null)) {
+                valid = false;
+                alert.innerText += "\nKies een inspanningsniveau.";
             }
         }
-        return true;
+        return valid;
     }
 
-    #validateAllZero(question) {
-        const inputs = question.querySelectorAll("input[type=number]");
+    #validateDaysHoursMinutes(question, alert) {
+        let valid = true;
+        const daysColumn = question.querySelector(".daysColumn");
+        if (daysColumn !== null) {
+            const hoursAndMinutes = question.querySelector(".hoursMinutesColumn");
+            if (this.#validateAllZero(daysColumn)) {
+                valid = false;
+                alert.innerText += "\nVul minstens één dag in.";
+                daysColumn.querySelector(".days").style.borderColor = "red";
+            }
+            if (this.#validateAllZero(hoursAndMinutes)) {
+                valid = false;
+                alert.innerText += "\nVul minstens één uur of minuut in.";
+                hoursAndMinutes.querySelector(".hours").style.borderColor = "red";
+                hoursAndMinutes.querySelector(".minutes").style.borderColor = "red";
+            }
+        }
+        return valid;
+    }
+
+    #validateAllZero(node) {
+        const inputs = node.querySelectorAll("input[type=number]");
         for (let i = 0; i < inputs.length; i++) {
             if (parseInt(inputs[i].value) !== 0) {
                 return false;
@@ -551,17 +581,17 @@ export class SurveyController extends Controller {
     #validateNumberInput(input, alert) {
         if (input.value === "") {
             input.style.borderColor = "red";
-            alert.innerText = "Gelieve alle velden in te vullen.";
+            alert.innerText += "\nGelieve alle velden in te vullen.";
             return false;
         }
         if (parseInt(input.value) < input.min) {
             input.style.borderColor = "red";
-            alert.innerText = `Gelieve een waarde groter dan ${input.min} in te vullen.`;
+            alert.innerText += `\nGelieve een waarde groter dan ${input.min} in te vullen.`;
             return false;
         }
         if (parseInt(input.value) > input.max) {
             input.style.borderColor = "red";
-            alert.innerText = `Gelieve een waarde kleiner dan ${input.max} in te vullen.`;
+            alert.innerText += `\nGelieve een waarde kleiner dan ${input.max} in te vullen.`;
             return false;
         }
         return true;
@@ -576,7 +606,9 @@ export class SurveyController extends Controller {
             }
         }
         if (checked === 0) {
-            alert.innerText = "Gelieve een antwoord te selecteren.";
+            if (alert !== null){
+                alert.innerText += "\nGelieve een antwoord te selecteren.";
+            }
             for (let i = 0; i < radios.length; i++) {
                 radios[i].style.borderColor = "red";
             }
@@ -598,10 +630,10 @@ export class SurveyController extends Controller {
         if (checked === 1) {
             return true;
         } else if (checked > 1) {
-            alert.innerText = "Gelieve slechts 1 antwoord te selecteren.";
+            alert.innerText += "\nGelieve slechts 1 antwoord te selecteren.";
             return false;
         } else {
-            alert.innerText = "Gelieve een antwoord te selecteren.";
+            alert.innerText = "\nGelieve een antwoord te selecteren.";
             return false;
         }
     }
@@ -612,7 +644,7 @@ export class SurveyController extends Controller {
                 return true;
             }
         }
-        alert.innerText = "Gelieve een antwoord te selecteren.";
+        alert.innerText += "\nGelieve een antwoord te selecteren.";
         return false;
     }
 
@@ -622,7 +654,7 @@ export class SurveyController extends Controller {
                 return true;
             }
         }
-        alert.innerText = "Gelieve een antwoord te selecteren.";
+        alert.innerText = "\nGelieve een antwoord te selecteren.";
         return false;
     }
 
@@ -631,6 +663,7 @@ export class SurveyController extends Controller {
             .querySelectorAll("#radioBtn");
         const portionOptions = currentQuestionTab.querySelector(".portionsOptionContainer")
             .querySelectorAll("#radioBtn");
+        let valid = false;
 
         for (let i = 0; i < dayOptions.length; i++) {
             if (dayOptions[i].checked) {
@@ -646,20 +679,20 @@ export class SurveyController extends Controller {
                             option.checked = false;
                         }
                     });
-                    return true;
+                    valid = true;
                 } else {
                     for (let j = 0; j < portionOptions.length; j++) {
                         if (portionOptions[j].checked) {
                             return true;
                         }
                     }
-                    alert.innerText = "Gelieve aantal porties te selecteren.";
-                    return false;
+                    alert.innerText += "\nGelieve aantal porties te selecteren.";
+                    valid = false;
                 }
             }
         }
-        alert.innerText = "Gelieve een antwoord te selecteren.";
-        return false;
+        alert.innerText += "\nGelieve een antwoord te selecteren.";
+        return valid;
     }
 
 
@@ -671,7 +704,6 @@ export class SurveyController extends Controller {
      */
     #getSurveyResponseData(completed) {
         //TODO: Implement data collection for all types of questions.
-        let responseData;
         const questionTabs = this.#surveyView.querySelectorAll(".questionTab");
         const range = completed ? this.#data.length : this.#questionsAnswered;
 
@@ -682,12 +714,10 @@ export class SurveyController extends Controller {
             surveyData = this.#getExerciseSurveyResponseData(questionTabs, completed, range);
         }
 
-        responseData = {
+        return {
             surveyId: this.#data[0].surveyId,
-            data: surveyData,
+            data: surveyData
         };
-
-        return responseData;
     }
 
     #getNutritionSurveyResponseData(questionTabs, completed, range) {
@@ -759,8 +789,7 @@ export class SurveyController extends Controller {
             .querySelectorAll("#radioBtn");
         const portionOptions = questionTab.querySelector(".portionsOptionContainer")
             .querySelectorAll("#radioBtn");
-
-        let portionsPerWeek = 0;
+        let portionsPerWeek;
 
         if (dayOptions[0].checked) {
             portionsPerWeek = 0;
@@ -797,8 +826,56 @@ export class SurveyController extends Controller {
         };
     }
 
+    #gatherExerciseAnswers(questions, nvt) {
+        let data = [];
+        for (let i = 0; i < questions.length; i++) {
+            const question = questions[i];
+            const questionId = parseInt(question.id);
+            const days = question.querySelector(".days") != null ?
+                parseInt(question.querySelector(".days").value) : 1;
+            const hours = parseInt(question.querySelector(".hours").value);
+            const minutes = parseInt(question.querySelector(".minutes").value);
+            const intensityRadios = question.querySelector(".intensity") != null ?
+                question.querySelectorAll(".intensity") : null;
+            const intensityLabels = question.querySelectorAll(".form-check-label");
+            let intensity = null;
+
+            if (intensityRadios != null) {
+                for (let j = 0; j < intensityRadios.length; j++) {
+                    if (intensityRadios[j].checked) {
+                        intensity = intensityLabels[j].innerText;
+                        break;
+                    }
+                }
+            }
+
+            const intensityInput = intensity != null ?
+                ", intensity: " + intensity : "";
+
+            let minutesCalc =  days * ( hours * 60 + minutes);
+
+            data.push({
+                surveyId: 2,
+                questionId: questionId,
+                answer: nvt || minutesCalc < 1 ? "Niet van toepassing" :
+                    "minutes: " + minutesCalc + intensityInput
+            });
+        }
+        return data;
+    }
+
     #getExerciseSurveyResponseData(questionTabs, completed, range) {
-        return [];
+        const surveyData = [];
+        for (let i = 0; i < range; i++) {
+            const questionTab = questionTabs[i];
+            const nvt = questionTab.querySelector(".nvtCheck").checked;
+            const questions = questionTab.querySelectorAll(".questionRow");
+            const data = this.#gatherExerciseAnswers(questions, nvt)
+            for (let j = 0; j < data.length; j++) {
+                surveyData.push(data[j]);
+            }
+        }
+        return surveyData;
     }
 }
 

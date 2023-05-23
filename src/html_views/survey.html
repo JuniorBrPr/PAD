@@ -135,7 +135,6 @@
             <p class="text-center h6 subtitle"></p>
         </div>
         <div class="alert alert-danger alert-dismissible fade show text-center" style="display: none">
-            Error default text!
         </div>
         <div class="table-responsive">
             <table class="table">
@@ -151,20 +150,20 @@
                 <template class="rowTemplate">
                     <tr class="questionRow">
                         <td class="questionText">qTxt</td>
-                        <td><input class="form-control-sm" type="number" min="0" max="7"/> dagen</td>
-                        <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
-                                class="form-control-sm" type="number" min="0" max="59"/> minuten
+                        <td class="daysColumn"><input class="form-control-sm days" type="number" min="0" max="7"/> dagen</td>
+                        <td class="hoursMinutesColumn"><input class="form-control-sm hours" type="number" min="0" max="23"/> uur en <input
+                                class="form-control-sm minutes" type="number" min="0" max="59"/> minuten
                         </td>
                         <td>
-                            <div class="form-check"><input id="formCheck-4" class="form-check-input radio" type="radio"
+                            <div class="form-check"><input id="formCheck-4" class="form-check-input radio intensity" type="radio"
                                                            name="intensity"/><label class="form-check-label"
                                                                                     for="formCheck-4">Langzaam</label>
                             </div>
-                            <div class="form-check"><input id="formCheck-5" class="form-check-input radio" type="radio"
+                            <div class="form-check"><input id="formCheck-5" class="form-check-input radio intensity" type="radio"
                                                            name="intensity"/><label class="form-check-label"
                                                                                     for="formCheck-5">Gemiddeld</label>
                             </div>
-                            <div class="form-check"><input id="formCheck-6" class="form-check-input radio" type="radio"
+                            <div class="form-check"><input id="formCheck-6" class="form-check-input radio intensity" type="radio"
                                                            name="intensity"/><label class="form-check-label"
                                                                                     for="formCheck-6">Snel</label></div>
                         </td>
@@ -204,8 +203,8 @@
                 <template class="rowTemplate">
                     <tr class="questionRow">
                         <td class="questionText"></td>
-                        <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
-                                class="form-control-sm" type="number" min="0" max="59"/> minuten
+                        <td class="hoursMinutesColumn"><input class="form-control-sm hours" type="number" min="0" max="168"/> uur en <input
+                                class="form-control-sm minutes" type="number" min="0" max="59"/> minuten
                         </td>
                     </tr>
                 </template>
@@ -243,9 +242,9 @@
                 <template class="rowTemplate">
                     <tr class="questionRow">
                         <td class="questionText"></td>
-                        <td><input class="form-control-sm" type="number" min="1" max="7"/> dagen</td>
-                        <td><input class="form-control-sm" type="number" min="0" max="23"/> uur en <input
-                                class="form-control-sm" type="number" min="0" max="59"/> minuten
+                        <td class="daysColumn"><input class="form-control-sm days" type="number" min="0" max="7"/> dagen</td>
+                        <td class="hoursMinutesColumn"><input class="form-control-sm hours" type="number" min="0" max="23"/> uur en <input
+                                class="form-control-sm minutes" type="number" min="0" max="59"/> minuten
                         </td>
                     </tr>
                 </template>
