@@ -2,20 +2,25 @@ const cron = require("node-cron");
 const Console = require("console");
 const https = require('https');
 
-
+/**
+ * Represents the emailRoutes class.
+ * Responsible for sending reminder emails to users.
+ *
+ * @author Joey_Poel
+ */
 class emailRoutes {
     #databaseHelper = require("../framework/utils/databaseHelper")
     #app
 
     /**
-     * Constructor for the profileRoutes class.
+     * Constructor for the emailRoutes class.
      * Initializes the necessary dependencies and sets up the route handlers.
      *
      * @param {Object} app - The Express application instance.
      */
     constructor(app) {
         this.#app = app;
-        const minutes = "38" // Specified on which minute
+        const minutes = "48" // Specified on which minute
         const hours = "00" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
@@ -23,6 +28,13 @@ class emailRoutes {
         })
     }
 
+    /**
+     * Retrieves email and name data from the user table.
+     *
+     * @private
+     * @returns {Promise<Object[] | null>} - Promise resolving to an array of user data or null.
+     * @throws {Error} - If an error occurs while retrieving data.
+     */
     async #returnEmailAndName() {
         Console.log("Haal data op uit user");
         try {
@@ -41,6 +53,14 @@ class emailRoutes {
         }
     }
 
+    /**
+     * Retrieves user goals data based on the given user ID and the current day of the week.
+     *
+     * @private
+     * @param {number} userId - The user ID.
+     * @returns {Promise<Object[] | null>} - Promise resolving to an array of user goals data or null.
+     * @throws {Error} - If an error occurs while retrieving data.
+     */
     async #returnUserGoals(userId) {
         try {
             const data = await this.#databaseHelper.handleQuery({
@@ -65,6 +85,12 @@ class emailRoutes {
         }
     }
 
+    /**
+     * Formats the body of the email and sends all the necessary information to the send email function.
+     *
+     * @private
+     * @returns {Promise<void>} - Promise resolving when the email sending is completed.
+     */
     async #formatEmail() {
         const userData = await this.#returnEmailAndName();
         const subject = "Daily Reminder"; // Subject should be the same for every user
@@ -82,7 +108,7 @@ class emailRoutes {
 
                     for (let j = 0; j < userGoalsData.length; j++) {
                         body += `<li>${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} ${userGoalsData[j].name}</li>`;
-                    } // Example output: "<li>peulvruchten eten: 50 gram</li>"
+                    } // Example output: "<li>50 gram peulvruchten eten</li>"
 
                     body += `</ul><p>Blijf gemotiveerd en ga ervoor!</p><p>Met vriendelijke groet Fountain Of Fit</p></body>`;
 
@@ -96,6 +122,17 @@ class emailRoutes {
         }
     }
 
+    /**
+     * Sends the email with the provided details.
+     *
+     * @private
+     * @param {string} firstname - The user's first name.
+     * @param {string} surname - The user's surname.
+     * @param {string} email - The user's email address.
+     * @param {string} subject - The email subject.
+     * @param {string} body - The email body.
+     * @returns {Promise<void>} - Promise resolving when the email is sent.
+     */
     async #sendEmail(firstname, surname, email, subject, body) {
         try {
             const data = {
@@ -145,4 +182,4 @@ class emailRoutes {
     }
 }
 
-module.exports = emailRoutes
+module.exports = emailRoutes;
