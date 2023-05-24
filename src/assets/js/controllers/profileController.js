@@ -83,7 +83,6 @@ export class profileController extends Controller {
     }
 
     async #setupGoals() {
-        const cardContainer = document.getElementById('card-container');
         document.getElementById('date').innerHTML = new Date().toISOString().split('T')[0];
         document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag'; // Standard text
         try {
@@ -111,7 +110,8 @@ export class profileController extends Controller {
                         const container = document.getElementById('card-container');
                         clone.querySelector("#activity-btn-completed").addEventListener("click", async () => {
                             let checkIfGoalExists = await this.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
-                            if (checkIfGoalExists.data.length === 1) {
+                            console.log(checkIfGoalExists.data[0].goalCount)
+                            if (checkIfGoalExists.data[0].goalCount === 0) {
                                 await this.#profileRepository.insertGoal(usergoal.usergoalID, value);
                             }
                             await this.#profileRepository.updateGoalCompletion(usergoal.usergoalID);

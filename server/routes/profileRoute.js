@@ -200,7 +200,9 @@ class profileRoutes {
         this.#app.get("/profile/checkIfGoalExists", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT userID, completed, value, date, usergoalID FROM goal WHERE usergoalID = ?`,
+                    query: `SELECT COUNT(*) AS goalCount
+                            FROM goal
+                            WHERE usergoalID = ?`,
                     values: [req.params.usergoalID]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
