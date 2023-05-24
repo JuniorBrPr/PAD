@@ -29,6 +29,7 @@ class profileRoutes {
         this.#updateGoalCompletion()
         this.#calculateDailyGoalCompletionPercentage()
         this.#calculateWeeklyGoalCompletionPercentage()
+        this.#checkIfGoalExists()
     }
 
     /**
@@ -187,6 +188,20 @@ class profileRoutes {
                               AND goal.userId = ?
                     `,
                     values: [req.user.userId, req.user.userId]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        })
+    }
+
+    #checkIfGoalExists() {
+        this.#app.get("/profile/checkIfGoalExists", async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `SELECT userID, completed, value, date, usergoalID FROM goal WHERE usergoalID = ?`,
+                    values: [req.params.usergoalID]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {

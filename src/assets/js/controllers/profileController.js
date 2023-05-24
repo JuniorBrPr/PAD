@@ -110,7 +110,8 @@ export class profileController extends Controller {
                         // Insert the cloned instance wherever needed
                         const container = document.getElementById('card-container');
                         clone.querySelector("#activity-btn-completed").addEventListener("click", async () => {
-                            if (typeof goal.data[i] === 'undefined') {
+                            let checkIfGoalExists = await this.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
+                            if (checkIfGoalExists.data.length === 1) {
                                 await this.#profileRepository.insertGoal(usergoal.usergoalID, value);
                             }
                             await this.#profileRepository.updateGoalCompletion(usergoal.usergoalID);

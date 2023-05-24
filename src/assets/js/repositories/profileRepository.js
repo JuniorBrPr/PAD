@@ -55,4 +55,8 @@ export class profileRepository {
     async calculateWeeklyGoalCompletionPercentage() {
         return await this.#networkManager.doRequest(`${this.#route}/weeklyGoalCompletionPercentage`, "GET");
     }
+
+    async checkIfGoalExists(usergoalID) {
+        return await this.#networkManager.doRequest(`${this.#route}/checkIfGoalExists`, "GET", usergoalID);
+    }
 }
