@@ -23,7 +23,7 @@ export class AdminRepository {
      * @returns {Promise<>} - data
      */
 
-    async getData() {
-        return await this.#networkManager.doRequest(`${this.#route}/data`, "GET");
+    async getSurveyCSV() {
+        return await this.#networkManager.doRequest(`${this.#route}/survey_data`, "GET");
     }
 }

@@ -267,7 +267,7 @@ class surveyRoutes {
      */
 
     #getSurveyStatus() {
-        this.#app.get("/survey/status", this.#JWTHelper.verifyJWTToken,  async (req, res) => {
+        this.#app.get("/survey/status", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
 
                 const userId = req.user.userId;
