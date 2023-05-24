@@ -94,7 +94,7 @@ class profileRoutes {
                                    goal.completed,
                                    goal.value,
                                    goal.userID,
-                                   goal.usergoalID AS usergoalID
+                                   goal.usergoalID
                             FROM goal
                                      INNER JOIN usergoal ON goal.usergoalID = usergoal.id
                             WHERE goal.userID = ?

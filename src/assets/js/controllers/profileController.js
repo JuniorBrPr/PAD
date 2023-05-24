@@ -85,16 +85,17 @@ export class profileController extends Controller {
     async #setupGoals() {
         const cardContainer = document.getElementById('card-container');
         document.getElementById('date').innerHTML = new Date().toISOString().split('T')[0];
-        document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
+        document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag'; // Standard text
         try {
             let userGoals = await this.#profileRepository.getUserGoals();
             if (userGoals.data.length >= 1) {
-                document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag' // Update text if goals have been found
+                document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag'; // Update text if goals have been found
                 for (let i = 0; i < userGoals.data.length; i++) {
-                    let usergoal = await this.#profileRepository.getUserGoals();
-                    let goal = await this.#profileRepository.getGoals()
+                    let usergoal = userGoals.data[i]; // Store the current usergoal in a variable
 
-                    // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
+                    let goal = await this.#profileRepository.getGoals();
+
+                    // When goal hasn't been made yet (goal undefined), the value will be set to 0 so it loads the goal
                     let completed = goal.data[i]?.completed || 0;
                     if (completed === 0) {
                         // Clone the template
@@ -102,17 +103,17 @@ export class profileController extends Controller {
                         const clone = template.content.cloneNode(true);
 
                         // Set the values in the cloned template
-                        clone.getElementById('activity-title').innerHTML = usergoal.data[i].name;
-                        let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser
-                        clone.getElementById('activity-amount').innerHTML = value + " " + usergoal.data[i].unit;
+                        clone.getElementById('activity-title').innerHTML = usergoal.name;
+                        let value = goal.data[i]?.value || usergoal.valueChosenByUser;
+                        clone.getElementById('activity-amount').innerHTML = value + " " + usergoal.unit;
 
                         // Insert the cloned instance wherever needed
                         const container = document.getElementById('card-container');
                         clone.querySelector("#activity-btn-completed").addEventListener("click", async () => {
                             if (typeof goal.data[i] === 'undefined') {
-                                await this.#profileRepository.insertGoal(usergoal.data[i].usergoalID, value);
+                                await this.#profileRepository.insertGoal(usergoal.usergoalID, value);
                             }
-                            await this.#profileRepository.updateGoalCompletion(usergoal.data[i].usergoalID);
+                            await this.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
                             await this.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
                             await this.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
                         });
