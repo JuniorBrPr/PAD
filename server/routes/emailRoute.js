@@ -20,8 +20,8 @@ class emailRoutes {
      */
     constructor(app) {
         this.#app = app;
-        const minutes = "48" // Specified on which minute
-        const hours = "00" // Specified on which hour
+        const minutes = "31" // Specified on which minute
+        const hours = "11" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
