@@ -42,10 +42,10 @@ class csvHelper {
         let counter = 1;
 
         jsonData.forEach(record => {
-            if (!userData.hasOwnProperty(record.UserId)) {
-                userData[record.UserId] = counter++;
+            if (!userData.hasOwnProperty(record.User)) {
+                userData[record.User] = counter++;
             }
-            record.UserId = userData[record.UserId];
+            record.User = userData[record.User];
         });
 
         return jsonData;

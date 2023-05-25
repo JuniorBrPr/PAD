@@ -36,7 +36,7 @@ class adminRoute {
 
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT user.id                  AS UserId,
+                    query: `SELECT user.id                  AS User,
                                    DATE(user.date_of_birth) AS Birthdate,
                                    user.height              AS Height,
                                    user.weight              AS Weight,
