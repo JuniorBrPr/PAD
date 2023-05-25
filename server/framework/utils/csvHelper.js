@@ -1,5 +1,5 @@
 /**
- * Helper for generating and verifying JWT tokens
+ * Helper for converting json data to csv format
  * @author Jayden.G
  */
 
@@ -28,6 +28,29 @@ class csvHelper {
             throw new Error(err);
         }
     }
+
+    /**
+     * @author Jayden.G
+     * Function to privatize identifiers in the json data
+     * 
+     * @param jsonData The json data to be privatized
+     * @returns {object} The privatized json data
+     */
+
+    privatizeIdentifiers(jsonData) {
+        let userData = {};
+        let counter = 1;
+
+        jsonData.forEach(record => {
+            if (!userData.hasOwnProperty(record.UserId)) {
+                userData[record.UserId] = counter++;
+            }
+            record.UserId = userData[record.UserId];
+        });
+
+        return jsonData;
+    }
+
 }
 
 //instantiate directly to enforce one instance of this class

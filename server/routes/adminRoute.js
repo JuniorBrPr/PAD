@@ -36,20 +36,24 @@ class adminRoute {
 
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT DATE(user.date_of_birth)    AS Birthdate,
-                                   user.height           AS Height,
-                                   user.weight           AS Weight,
-                                   survey.name             AS Survey,
-                                   question.questionText AS Question,
-                                   answer.answer         AS Answer
+                    query: `SELECT user.id                  AS UserId,
+                                   DATE(user.date_of_birth) AS Birthdate,
+                                   user.height              AS Height,
+                                   user.weight              AS Weight,
+                                   survey.name              AS Survey,
+                                   question.questionText    AS Question,
+                                   answer.answer            AS Answer
                             FROM user
                                      JOIN response ON user.id = response.userId
                                      JOIN answer ON response.id = answer.responseId
                                      JOIN question ON answer.questionId = question.id
-                                     JOIN survey ON question.surveyId = survey.id`
+                                     JOIN survey ON question.surveyId = survey.id
+                            ORDER BY user.id;`
                 });
 
-                const csvData = this.#csvHelper.convertToCSV(data);
+                const privatizedData = this.#csvHelper.privatizeIdentifiers(data)
+
+                const csvData = this.#csvHelper.convertToCSV(privatizedData);
 
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({csvData});
             } catch (e) {
