@@ -231,8 +231,20 @@ export class App {
 
         App.isLoggedIn(
             () => {
+
+                App.isAdmin(
+                    () => {
+                        for (const navElement of navElements) {
+                            if (navElement.classList.contains("logged-out-only")) {
+                                navElement.classList.add("d-none");
+                            } else {
+                                navElement.classList.remove("d-none");
+                            }
+                        }
+                    })
+
                 for (const navElement of navElements) {
-                    if (navElement.classList.contains("logged-out-only")) {
+                    if (navElement.classList.contains("logged-out-only") || navElement.classList.contains("admin-only")) {
                         navElement.classList.add("d-none");
                     } else {
                         navElement.classList.remove("d-none");
@@ -241,7 +253,7 @@ export class App {
             },
             () => {
                 for (const navElement of navElements) {
-                    if (navElement.classList.contains("logged-in-only")) {
+                    if (navElement.classList.contains("logged-in-only") || navElement.classList.contains("admin-only")) {
                         navElement.classList.add("d-none");
                     } else {
                         navElement.classList.remove("d-none");
