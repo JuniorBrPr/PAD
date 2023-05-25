@@ -32,7 +32,6 @@ export class profileController extends Controller {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
-        await this.#setProfileImage()
         await this.#displayWeeklyGoalCompletion(1)
         await this.#setupGoals(1)
         await this.#displayDailyGoalCompletionPercentage(1)
@@ -70,16 +69,6 @@ export class profileController extends Controller {
             age--;
         }
         return age;
-    }
-
-    /**
-     * Sets the profile image for the user from local storage.
-     * @private
-     */
-    async #setProfileImage() {
-        const url = localStorage.getItem("profile-image")
-        const img = document.getElementById("profileImage")
-        img.src = url;
     }
 
     async #setupGoals() {

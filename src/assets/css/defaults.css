@@ -84,10 +84,15 @@ footer {
 }
 
 .divForm {
-    border-radius: 20px;
-    margin-top: 10px;
-    width: 400px;
-}
+    margin-top: 40px;
+    width: 600px;
+    max-width: 910px;
+    background-color: #fff;
+    padding-top: 25px;
+    padding-left: 100px;
+    padding-right: 100px;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);}
 
 .formEditProfile {
     margin-bottom: 50px;
@@ -118,38 +123,12 @@ footer {
     border-bottom-width: 3px;
 }
 
-#imagePreview {
-    min-height: 190px;
-    max-height: 190px;
-    min-width: 190px;
-    max-width: 190px;
-    object-fit: cover;
-    object-position: center center;
-    border-radius: 50%;
-    border: 18px solid #008C93;
-}
-
-#choosePhoto {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 30px;
-    background: #008C93;
-    color: white;
-    width: 190px;
-    text-align: center;
-}
-
-#InputProfileImage {
-    display: none;
-}
-
 .labelInvalid{
     color: red;
     display: none;
 }
 
 .saveProfileBtn{
-    margin-top: 15px;
     padding: 15px;
     border-radius: 30px;
     background: #008C93;
