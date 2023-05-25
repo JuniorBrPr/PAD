@@ -20,8 +20,8 @@ class emailRoutes {
      */
     constructor(app) {
         this.#app = app;
-        const minutes = "48" // Specified on which minute
-        const hours = "00" // Specified on which hour
+        const minutes = "42" // Specified on which minute
+        const hours = "17" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -102,15 +102,15 @@ class emailRoutes {
                 const userGoalsData = await this.#returnUserGoals(userData[i].id);
 
                 if (userGoalsData != null) { // Check if userGoalsData is not null or empty
-                    let body = `<body><p>Beste ${userData[i].firstname} ${userData[i].surname},</p>
-                                <p>We wilden je even laten weten dat je fantastisch bezig bent! Blijf volhouden en blijf werken aan je persoonlijke doelen.</p>
-                                <p>Voor vandaag hebben we de volgende doelen voor je:</p><ul>`;
+                    let body = `<body><p>Beste <span style="color: #008C93;">${userData[i].firstname} ${userData[i].surname}</span>,</p>
+                            <p>We wilden je even laten weten dat je fantastisch bezig bent! Blijf volhouden en blijf werken aan je persoonlijke doelen.</p>
+                            <p>Voor vandaag hebben we de volgende doelen voor je:</p><ul>`;
 
                     for (let j = 0; j < userGoalsData.length; j++) {
                         body += `<li>${userGoalsData[j].valueChosenByUser} ${userGoalsData[j].unit} ${userGoalsData[j].name}</li>`;
                     } // Example output: "<li>50 gram peulvruchten eten</li>"
 
-                    body += `</ul><p>Blijf gemotiveerd en ga ervoor!</p><p>Met vriendelijke groet Fountain Of Fit</p></body>`;
+                    body += `</ul><p>Blijf gemotiveerd en ga ervoor!</p><p>Met vriendelijke groet <span style="color: #008C93;">Fountain Of Fit</span></p></body>`;
 
                     console.log(body);
                     console.log("sending email");
