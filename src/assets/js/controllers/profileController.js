@@ -93,7 +93,7 @@ export class profileController extends Controller {
                     // Handle button click
                     clone.querySelector("#activity-btn-completed").addEventListener("click", async (e) => {
                         let checkIfGoalExists = await self.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
-                        if (checkIfGoalExists.data[0].goalCount = 0) {
+                        if (checkIfGoalExists.data[0].goalCount === 0) {
                             await self.#profileRepository.insertGoal(usergoal.usergoalID, value);
                         }
                         await self.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
