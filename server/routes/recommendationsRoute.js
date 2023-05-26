@@ -12,8 +12,6 @@ class recommendationsRoute {
     #getNutritionRecommendations() {
         this.#app.get("/recommendations/nutrition", this.#JWTHelper.verifyJWTToken, async (req, res) => {
 
-            const userId = req.user.id;
-
             try {
                 const answers = await this.#databaseHelper.handleQuery({
                     query: `SELECT answer.questionId            AS questionId,
@@ -28,7 +26,7 @@ class recommendationsRoute {
                             WHERE activityId IS NOT NULL
                               AND userId = ?;`
                     ,
-                    values: [userId]
+                    values: [req.user.userId]
                 });
 
                 let recommendations = [];
