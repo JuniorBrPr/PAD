@@ -81,42 +81,33 @@ export class profileController extends Controller {
                 for (let i = 0; i < userGoals.data.length; i++) {
                     let usergoal = userGoals.data[i]; // Store the current usergoal in a variable
 
-                    let goal = await this.#profileRepository.getGoals();
+                    // Clone the template
+                    const template = document.getElementById('usergoalTemplate');
+                    const clone = template.content.cloneNode(true);
 
-                    // When goal hasn't been made yet (goal undefined), the value will be set to 0 so it loads the goal
-                    let completed = goal.data[i]?.completed || 0;
-                    if (completed === 0) {
-                        // Clone the template
-                        const template = document.getElementById('usergoalTemplate');
-                        const clone = template.content.cloneNode(true);
+                    // Set the values in the cloned template
+                    clone.getElementById('activity-title').innerHTML = usergoal.name;
+                    let value = usergoal.data[i]?.value || usergoal.valueChosenByUser;
+                    clone.getElementById('activity-amount').innerHTML = value + " " + usergoal.unit;
 
-                        // Set the values in the cloned template
-                        clone.getElementById('activity-title').innerHTML = usergoal.name;
-                        let value = goal.data[i]?.value || usergoal.valueChosenByUser;
-                        clone.getElementById('activity-amount').innerHTML = value + " " + usergoal.unit;
+                    // Handle button click
+                    clone.querySelector("#activity-btn-completed").addEventListener("click", async () => {
+                        let checkIfGoalExists = await this.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
+                        if (checkIfGoalExists.data[0].goalCount === 0) {
+                            await this.#profileRepository.insertGoal(usergoal.usergoalID, value);
+                        }
+                        await this.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
+                        await this.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
+                        await this.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
+                    });
 
-                        // Insert the cloned instance wherever needed
-                        const container = document.getElementById('card-container');
-                        clone.querySelector("#activity-btn-completed").addEventListener("click", async () => {
-                            let checkIfGoalExists = await this.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
-                            // console.log(checkIfGoalExists.data[0].goalCount);
-                            if (checkIfGoalExists.data[0].goalCount === 0) {
-                                await this.#profileRepository.insertGoal(usergoal.usergoalID, value);
-                            }
-                            await this.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
-                            await this.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
-                            await this.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
-                        });
-
-                        container.appendChild(clone);
-                    }
+                    document.getElementById('card-container').appendChild(clone);
                 }
             }
         } catch (e) {
             console.log(e);
         }
     }
-
 
 
     async #displayDailyGoalCompletionPercentage() {

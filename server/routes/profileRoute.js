@@ -70,11 +70,15 @@ class profileRoutes {
                                    usergoal.valueChosenByUser,
                                    activity.unit,
                                    activity.name,
+                                   goal.completed,
+                                   goal.value,
                                    usergoal.id AS usergoalID
                             FROM usergoal
                                      INNER JOIN activity ON usergoal.activityId = activity.id
+                                     LEFT JOIN goal ON usergoal.id = goal.usergoalID
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
+                              AND (goal.usergoalID IS NULL OR goal.completed = 0)
                     `,
                     values: [req.user.userId, new Date().getDay()]
                 });
@@ -115,7 +119,7 @@ class profileRoutes {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO goal(usergoalID, userID, completed, value, date)
-                        VALUES (?, ?, 0, ?, ?)`,
+                            VALUES (?, ?, 0, ?, ?)`,
                     values: [req.params.usergoalID, req.user.userId, req.query.value, new Date()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
