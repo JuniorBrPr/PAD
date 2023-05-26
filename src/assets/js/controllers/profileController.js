@@ -93,12 +93,12 @@ export class profileController extends Controller {
                     // Handle button click
 
                     clone.querySelector("#activity-btn-completed").addEventListener("click", async (e) => {
-                        document.getElementById('card-container').removeChild(e.target.parentElement)
                         let checkIfGoalExists = await self.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
                         if (checkIfGoalExists.data[0].goalCount === 0) {
                             await self.#profileRepository.insertGoal(usergoal.usergoalID, value);
                         }
                         await self.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
+                        document.getElementById('card-container').removeChild(e.target.parentElement)
                         await self.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
                         await self.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
                     });

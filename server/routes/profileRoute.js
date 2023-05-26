@@ -24,7 +24,6 @@ class profileRoutes {
         //call method per route for the users entity
         this.#getData()
         this.#getUserGoals()
-        this.#getGoals()
         this.#insertGoal()
         this.#updateGoalCompletion()
         this.#calculateDailyGoalCompletionPercentage()
@@ -89,29 +88,6 @@ class profileRoutes {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
-    }
-
-    #getGoals() {
-        this.#app.get("/profile/goals", this.#JWTHelper.verifyJWTToken, async (req, res) => {
-            try {
-                const data = await this.#databaseHelper.handleQuery({
-                    query: `SELECT usergoal.dayOfTheWeek,
-                                   goal.completed,
-                                   goal.value,
-                                   goal.userID,
-                                   goal.usergoalID
-                            FROM goal
-                                     INNER JOIN usergoal ON goal.usergoalID = usergoal.id
-                            WHERE goal.userID = ?
-                              AND usergoal.dayOfTheWeek = ?
-                    `,
-                    values: [req.user.userId, new Date().getDay()]
-                })
-                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-            } catch (e) {
-                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-            }
-        })
     }
 
     #insertGoal() {

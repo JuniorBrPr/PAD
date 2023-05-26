@@ -33,10 +33,6 @@ export class profileRepository {
         return await this.#networkManager.doRequest(`${this.#route}/userGoals`, "GET");
     }
 
-    async getGoals() {
-        return await this.#networkManager.doRequest(`${this.#route}/goals`, "GET");
-    }
-
     async insertGoal(userGoalID, value) {
         return await this.#networkManager.doRequest(`/profile/insertGoal/${userGoalID}?&value=${value}`, "POST", {
             "usergoalID": userGoalID,
