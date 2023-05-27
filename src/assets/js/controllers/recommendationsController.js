@@ -83,7 +83,6 @@ export class RecommendationsController extends Controller {
         let goals = [];
         for (const day of days) {
             goals.push({
-                userId: 3,
                 activityId: card.dataset.id,
                 dateMade: new Date().toISOString().slice(0, 10).replace('T', ' '),
                 valueChosenByUser: card.dataset.chosenValue,
