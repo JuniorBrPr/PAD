@@ -14,15 +14,36 @@ export class WeekPlanningRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async dataWeekPlanning() {
+    // async dataWeekPlanning() {
+    //     return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
+    // }
+
+
+    /**
+     * Retrieves the user goals for the current user.
+     *
+     * @returns {Promise<*>} A promise resolving to the user's goals.
+     */
+    async userActivities() {
         return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
+
     }
 
-    userWeekPlanning(selectedDate, cloneButtonComplete, cloneButtonDelete) {
-        return this.#networkManager.doRequest(`${this.#route}`, "POST", {
-            date: selectedDate,
-            done: cloneButtonComplete,
-            notDone: cloneButtonDelete
-        });
-    }
+
+
+
+
+
+
+
+
+
+
+    // userWeekPlanning(selectedDate, cloneButtonComplete, cloneButtonDelete) {
+    //     return this.#networkManager.doRequest(`${this.#route}`, "POST", {
+    //         date: selectedDate,
+    //         done: cloneButtonComplete,
+    //         notDone: cloneButtonDelete
+    //     });
+    // }
 }

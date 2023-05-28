@@ -40,12 +40,13 @@ export class RegisterController extends Controller {
         const errorBox = this.#registerView.querySelector(".error")
         const validBox = this.#registerView.querySelector(".valid-feedback");
         const invalidBox = this.#registerView.querySelector(".invalid-feedback");
+        const validated = this.#registerView.querySelector(".was-validated");
 
         if (firstname.length === 0 || surname.length === 0 || emailAddress.length === 0 || password.length === 0 || confirmPassword.length === 0) {
             invalidBox.innerHTML = "Vul dit veld in!";
            errorBox.innerHTML = "U moet eerst uw gegevens invullen";
         } else if (mailFormat.test(emailAddress) == false ) {
-           errorBox.innerHTML = "Email klopt niet"
+          errorBox.innerHTML = "Email klopt niet"
 
         } else if (password !== confirmPassword) {
           errorBox.innerHTML = "wachtwoorden komen niet overeen!";

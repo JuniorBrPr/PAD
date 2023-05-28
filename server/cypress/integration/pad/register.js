@@ -22,4 +22,5 @@ describe("Register", () => {
         cy.get("#inputConfirmPassword").type('hello')
         cy.get('.btn').click()
     });
+
 })

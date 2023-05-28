@@ -4,18 +4,14 @@
  */
 
 import {Controller} from "./controller.js";
-
 import {App} from "../app.js";
 import {WeekPlanningRepository} from "../repositories/weekPlanningRepository.js";
 
-
 export class WeekPlanningController extends Controller {
-
     #planningView
     #weekPlanningRepository
     #data
     #app
-
 
     constructor() {
         super();
@@ -31,155 +27,204 @@ export class WeekPlanningController extends Controller {
         this.#planningView.querySelector(".completeButtonPlanning").addEventListener("click",
             (event) => this.#handleWeekplanning(event));
 
+
         //this.#planningView.addEventListener("click", event => this.#handleWeekplanning(event));
         this.#handleWeekplanning();
+
     }
 
     /**
-     * @author Hanan Ouardi
+     * Doel:
      * @returns {Promise<void>}
      */
-    async #handleWeekplanning(id, event, datePlanningDiv) {
+    async #handleWeekplanning(id, event, datePlanningDiv, dayOfTheWeek) {
 
-        const validBox = this.#planningView.querySelector(".valid-feedback");
-        const invalidBox = this.#planningView.querySelector(".invalid-feedback");
-
+        // const queryResult = await this.#weekPlanningRepository.getUserGoals();
         // event.preventDefault();
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
 
-        // let newContainerTest = document.querySelector(".newContainerTest");
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
 
-        //Loopt door alle dagen van de week
-        for (let i = 0; i < 7; i++) {
-            //  const validBox = this.#planningView.querySelector(".valid-feedback");
-            //Boxen aangemaakt
-            let dayBoxesOfTheWeek = document.createElement('div');
-            dayBoxesOfTheWeek.classList.add('containerDiv');
-
-            let dayActivity = document.createElement('div');
-            dayActivity.classList.add('dayActivity');
-
-            //For each dataToDotoday another activity
-            const data = await this.#weekPlanningRepository.dataWeekPlanning(id)
-            // if (i === 0) {
-            //     dayActivity.innerHTML = data[0].name;
-            // } else if (i === 1) {
-            //     dayActivity.innerHTML = data[1].name;
-            // } else if (i === 2) {
-            //     dayActivity.innerHTML = data[2].name;
-            // } else if (i === 3) {
-            //     dayActivity.innerHTML = data[3].name;
-            // } else if (i === 4) {
-            //     dayActivity.innerHTML = data[4].name;
-            // } else if (i === 5) {
-            //     dayActivity.innerHTML = data[5].name;
-            // } else if (i === 6) {
-            //     dayActivity.innerHTML = data[6].name;
-            // }
-            dayActivity.innerHTML = data[i].name;
 
 
-            //Box toegevoegd
-            containerDayBox.appendChild(dayBoxesOfTheWeek);
-            //Datums geformatteerd
-            let date = new Date(dateToday);
-            date.setDate(dateToday.getDate() + i);
-            let datePlanningDiv = document.createElement("div");
-            datePlanningDiv.classList.add('dateplanningDiv');
-            const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-            if (date.toDateString() === today.toDateString()) { // check if date is today
-                datePlanningDiv.innerHTML = '<strong>' + date.toLocaleDateString('nl', options) + '</strong>';
-            } else {
-                datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options);
+
+            //Loopt door alle dagen van de week
+            for (let i = 0; i < 7; i++) {
+                const data = await this.#weekPlanningRepository.userActivities();
+
+                const dataArray = Array.isArray(data.data) ? data.data : [data.data];
+                //Boxen aangemaakt
+                let dayBoxesOfTheWeek = this.#creatElement('containerDiv');
+
+                let dayActivity = document.createElement('div');
+                dayActivity.classList.add('dayActivity');
+
+                //For each dataToDotoday another activity
+                // const data = await this.#weekPlanningRepository.dataWeekPlanning(id)
+                // dayActivity.innerHTML = data[i].name;
+
+
+
+                // const goal = dataArray.find(item => item.dayOfTheWeek === i + 1);
+                const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
+                // Controleer of er een overeenkomend item in de fetched data is gevonden
+                if (goals.length > 0) {
+                    console.log("hiii")
+                    // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
+                    dayActivity.innerHTML = goals.dayOfTheWeek;
+                    const activities = goals.map(goal => `${goal.name} - ${goal.valueChosenByUser}`).join(",");
+                    dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${activities}`;
+                    // Of, als je de waarde van valueChosenByUser wilt koppelen:
+                    //dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${goal.name} - ${goal.valueChosenByUser}`;
+                } else {
+                    // If no goal is found, display "No activity today"
+                    dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - Geen activiteit vandaag`;
+
+                }
+                    //console.log(`Index: ${i}, dayBoxesOfTheWeek:`, dayBoxesOfTheWeek);
+
+
+                console.log("Data:", data)
+
+
+
+
+
+
+                    //Box toegevoegd
+                containerDayBox.appendChild(dayBoxesOfTheWeek);
+
+                //Buttons
+                let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+                let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+
+                //Verwijdert de orinal html button
+                deleteButtonPlanning.remove();
+                completeButtonPlanning.remove();
+
+                //Datums aan box toegevoegd
+                dayBoxesOfTheWeek.appendChild(this.#formatDate(dateToday, i, today));
+
+                //data aan box toegevoegd
+                dayBoxesOfTheWeek.appendChild(dayActivity);
+
+                //Buttons in box toegevoegd
+                dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
+                dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
+
+                const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
+
+
+                let nextWeek = document.querySelector("#nextWeekPlanning");
+                let lastWeek = document.querySelector("#lastWeekPlanning");
+                nextWeek.addEventListener("click", () => {
+                    i++;
+                    this.#weekFunction(i, options)
+                });
+                lastWeek.addEventListener('click', () => {
+                    i--;
+                    this.#weekFunction(i, options)
+                });
             }
-            document.body.appendChild(datePlanningDiv);
-
-            // datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options); //toont de dagen
-
-            //Buttons
-            let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-            let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-            //Verwijdert de orinal html button
-            deleteButtonPlanning.remove();
-            completeButtonPlanning.remove();
-            //Datums aan box toegevoegd
-            dayBoxesOfTheWeek.appendChild(datePlanningDiv)//Voegt de datums in de boxen
-            /**data aan box toegevoegd*/
-            dayBoxesOfTheWeek.appendChild(dayActivity);
-            //Buttons in box toegevoegd*/
-            dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
-            dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
-
-
-            //Next week Button
-            let nextWeek = document.querySelector("#nextWeekPlanning");
-            nextWeek.addEventListener("click", function () {
-                //Alle data elements
-                let dateElements = document.querySelectorAll(".dateplanningDiv");
-                i++;
-                // datum van volgende week
-                let today = new Date();
-                // numbers van de weken in de toekomst
-                let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1 + (7 * i) - 49);
-                dateToday.setDate(dateToday.getDate() + 7);
-                //loop door alle data elements en updates het met de data van volgende week.
-                dateElements.forEach(function (dateElement, index) {
-                    let date = new Date(dateToday);
-                    date.setDate(date.getDate() + index);
-                    //const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-                    dateElement.innerHTML = date.toLocaleDateString('nl', options);
-                });
-            });
-            //Last week button
-            let lastWeek = document.querySelector("#lastWeekPlanning");
-            lastWeek.addEventListener("click", function () {
-                let dateElements = document.querySelectorAll(".dateplanningDiv");
-                i--;
-                let today = new Date();
-                let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1 + (7 * i) - 49);
-                dateToday.setDate(dateToday.getDate() + 7);
-
-                dateElements.forEach(function (dateElement, index) {
-                    let date = new Date(dateToday);
-                    date.setDate(date.getDate() + index);
-                    const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-                    dateElement.innerHTML = date.toLocaleDateString('nl', options);
-                });
-            });
-            //Put the data if the user completed it with the date
-            let selectedDate = date.toLocaleDateString();
-            cloneButtonComplete.addEventListener("click", async function () {
-                try {
-                    const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, true, false);
-                    console.log(data);
-                    // validBox.innerText = "U heeft de activiteit succesvol afgerond";
-                    window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
-                } catch (e) {
-                    window.alert("Er is iets misgegaan, probeer het opnieuw!");
-                    console.log(e)
-                }
-            }.bind(this));
-            cloneButtonDelete.addEventListener("click", async function () {
-                try {
-                    const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, false, true);
-                    console.log(data);
-                    // validBox.innerText = "U heeft de activiteit succesvol afgerond";
-                    window.alert("U heeft de activiteit niet afgerond van: " + selectedDate);
-                } catch (e) {
-                    window.alert("Er is iets misgegaan, probeer het opnieuw!");
-                    console.log(e)
-                }
-            }.bind(this));
-
-
         }
 
+
+
+
+    /**
+     * Doel: Makes the date of today strong
+     * @author Hanan Ouardi
+     * @param dateObj
+     * @param index
+     * @param today
+     */
+    #formatDate(dateObj, index, today) {
+        // Datums geformatteerd
+        let date = new Date(dateObj);
+        date.setDate(dateObj.getDate() + index);
+        let datePlanningDiv = this.#creatElement('dateplanningDiv')
+        const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
+        if (date.toDateString() === today.toDateString()) { // check if date is today
+            datePlanningDiv.innerHTML = `<strong>${date.toLocaleDateString('nl', options)}</strong>`;
+        } else {
+            datePlanningDiv.innerHTML = date.toLocaleDateString('nl', options);
+        }
+        return datePlanningDiv;
     }
+
+    /**
+     * Doel: Create a div that can be re-used
+     * @author Hanan Ouardi
+     * @param divName
+     * @param type
+     * @returns {HTMLDivElement}
+     */
+    #creatElement(divName) {
+        let element = document.createElement("div");
+        element.classList.add(divName);
+        return element;
+    }
+
+    /**
+     * Doel: returns the date of last and next weeks
+     * @author Hanan Ouardi
+     * @param i
+     * @param options
+     */
+    #weekFunction(i, options) {
+        let dateElements = document.querySelectorAll(".dateplanningDiv");
+        let today = new Date();
+        // numbers van de weken in de toekomst
+        let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1 + (7 * i) - 49);
+        dateToday.setDate(dateToday.getDate() + 7);
+        //loop door alle data elements en updates het met de data van volgende week.
+        dateElements.forEach(function (dateElement, index) {
+            let date = new Date(dateToday);
+            date.setDate(date.getDate() + index);
+            dateElement.innerHTML = date.toLocaleDateString('nl', options);
+        });
+    }
+
+
+    /**
+     * Functie: om naar database te sturen als het (on)afgerond met datum.
+     */
+    // #sendFinished(deleteButtonPlanning, completeButtonPlanning, date) {
+    //     //Buttons
+    //     let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+    //     let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+    //
+    //     //Put the data if the user completed it with the date
+    //     let selectedDate = date.toLocaleDateString();
+    //     cloneButtonComplete.addEventListener("click", async function () {
+    //         try {
+    //             const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, true, false);
+    //             console.log(data);
+    //             window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
+    //         } catch (e) {
+    //             window.alert("Er is iets misgegaan, probeer het opnieuw!");
+    //             console.log(e)
+    //         }
+    //     }.bind(this));
+    //     cloneButtonDelete.addEventListener("click", async function () {
+    //         try {
+    //             const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, false, true);
+    //             console.log(data);
+    //             window.alert("U heeft de activiteit niet afgerond van: " + selectedDate);
+    //         } catch (e) {
+    //             window.alert("Er is iets misgegaan, probeer het opnieuw!");
+    //             console.log(e)
+    //         }
+    //     }.bind(this));
+    // }
+
+
 }
+
+
 
 

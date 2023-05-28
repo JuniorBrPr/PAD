@@ -1,4 +1,7 @@
 
+.was-validated{
+    display: none;
+}
 
 .register-form-signup {
     margin: 0 auto;

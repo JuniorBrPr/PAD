@@ -1,11 +1,13 @@
 
-.planningSection{
-    /*background-color: #dadada;*/
+#titlePlanning{
+    position: relative;
+    left: 320px;
+
 }
 
 #lastWeekPlanning, #nextWeekPlanning{
     border-radius: 30px;
-    background-color: #008E8A;
+    background-color:#008E8A;
     color: white;
     width: 200px;
 }
@@ -24,7 +26,6 @@
 .dateplanningDiv{
    text-align: center;
 }
-
 
 .deleteButtonPlanning{
     position: relative;
