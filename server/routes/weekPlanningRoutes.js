@@ -40,7 +40,7 @@ class WeekPlanningRoutes {
 
 
     #userActivities() {
-        this.#app.get("/planning",  async (req, res) => {
+        this.#app.get("/planning" , this.#JWTHelper.verifyJWTToken, async (req, res) => {
              try {
                  const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.userId,
@@ -50,24 +50,20 @@ class WeekPlanningRoutes {
                                    activity.unit,
                                    activity.name                            
                             FROM usergoal
-                                     INNER JOIN activity ON usergoal.activityId = activity.id
-                             WHERE usergoal.userId = 1
-                             AND usergoal.dayOfTheWeek IN (1,5)
-                    `, values: []
+                                     INNER JOIN activity ON activity.id = usergoal.activityId
+                             WHERE usergoal.userId = ?;
+                    `,
+                     values:  [req.user.userId]
                 });
-
                  if (!Array.isArray(data)) {
                      throw new Error("Invalid data received from the repository");
                  }
-
                    res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
     }
-
-
 
 
 

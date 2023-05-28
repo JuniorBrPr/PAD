@@ -1,10 +1,12 @@
 
 #titlePlanning{
     position: relative;
-    left: 320px;
-
+    left: 700px;
 }
-
+#textInfoPlanning{
+    position: relative;
+    left: 550px;
+}
 #lastWeekPlanning, #nextWeekPlanning{
     border-radius: 30px;
     background-color:#008E8A;
@@ -19,7 +21,7 @@
     border-radius: 50px;
     margin: 20px;
     width: 400px;
-    height: 200px;
+    height: 250px;
     border: 1px solid #6c6969;
 
     background-color: #96D2D3;

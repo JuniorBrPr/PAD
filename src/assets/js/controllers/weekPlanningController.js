@@ -37,9 +37,7 @@ export class WeekPlanningController extends Controller {
      * Doel:
      * @returns {Promise<void>}
      */
-    async #handleWeekplanning(id, event, datePlanningDiv, dayOfTheWeek) {
-
-        // const queryResult = await this.#weekPlanningRepository.getUserGoals();
+    async #handleWeekplanning() {
         // event.preventDefault();
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
@@ -48,91 +46,71 @@ export class WeekPlanningController extends Controller {
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
+        //Loopt door alle dagen van de week
+        for (let i = 0; i < 7; i++) {
+            const data = await this.#weekPlanningRepository.userActivities();
+            const dataArray = Array.isArray(data.data) ? data.data : [data.data];
+            //Boxen aangemaakt
+            let dayBoxesOfTheWeek = this.#creatElement('containerDiv');
+            let dayActivity = document.createElement('div');
+            dayActivity.classList.add('dayActivity');
 
-
-
-
-            //Loopt door alle dagen van de week
-            for (let i = 0; i < 7; i++) {
-                const data = await this.#weekPlanningRepository.userActivities();
-
-                const dataArray = Array.isArray(data.data) ? data.data : [data.data];
-                //Boxen aangemaakt
-                let dayBoxesOfTheWeek = this.#creatElement('containerDiv');
-
-                let dayActivity = document.createElement('div');
-                dayActivity.classList.add('dayActivity');
-
-                //For each dataToDotoday another activity
-                // const data = await this.#weekPlanningRepository.dataWeekPlanning(id)
-                // dayActivity.innerHTML = data[i].name;
-
-
-
-                // const goal = dataArray.find(item => item.dayOfTheWeek === i + 1);
-                const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
-                // Controleer of er een overeenkomend item in de fetched data is gevonden
-                if (goals.length > 0) {
-                    console.log("hiii")
-                    // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
-                    dayActivity.innerHTML = goals.dayOfTheWeek;
-                    const activities = goals.map(goal => `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`).join("<br>");
-                    dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${activities}`;
-                    // Of, als je de waarde van valueChosenByUser wilt koppelen:
-                    //dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${goal.name} - ${goal.valueChosenByUser}`;
-                } else {
-                    // If no goal is found, display "No activity today"
-                    dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit vandaag`;
-
-                }
-                    //console.log(`Index: ${i}, dayBoxesOfTheWeek:`, dayBoxesOfTheWeek);
-
-
-                console.log("Data:", data)
-
-
-
-
-
-
-                    //Box toegevoegd
-                containerDayBox.appendChild(dayBoxesOfTheWeek);
-
-                //Buttons
-                let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-                let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-
-                //Verwijdert de orinal html button
-                deleteButtonPlanning.remove();
-                completeButtonPlanning.remove();
-
-                //Datums aan box toegevoegd
-                dayBoxesOfTheWeek.appendChild(this.#formatDate(dateToday, i, today));
-
-                //data aan box toegevoegd
-                dayBoxesOfTheWeek.appendChild(dayActivity);
-
-                //Buttons in box toegevoegd
-                dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
-                dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
-
-                const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
-
-
-                let nextWeek = document.querySelector("#nextWeekPlanning");
-                let lastWeek = document.querySelector("#lastWeekPlanning");
-                nextWeek.addEventListener("click", () => {
-                    i++;
-                    this.#weekFunction(i, options)
-                });
-                lastWeek.addEventListener('click', () => {
-                    i--;
-                    this.#weekFunction(i, options)
-                });
+            const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
+            // Controleer of er een overeenkomend item in de fetched data is gevonden
+            if (goals.length > 0) {
+                console.log("hiii")
+                // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
+                dayActivity.innerHTML = goals.dayOfTheWeek;
+                const activities = goals.map(goal => `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`).join("<br>");
+                dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${activities}`;
+            } else {
+                // If no goal is found, display "No activity today"
+                dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit voor vandaag`
             }
+
+            //Box toegevoegd
+            containerDayBox.appendChild(dayBoxesOfTheWeek);
+
+            //Buttons
+            let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+            let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+
+            //Verwijdert de orinal html button
+            deleteButtonPlanning.remove();
+            completeButtonPlanning.remove();
+
+            //Datums aan box toegevoegd
+            dayBoxesOfTheWeek.appendChild(this.#formatDate(dateToday, i, today));
+
+            //data aan box toegevoegd
+            dayBoxesOfTheWeek.appendChild(dayActivity);
+
+            //Buttons in box toegevoegd
+            dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
+            dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
+
+
+
+
+
+
+
+
+
+            const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
+
+            let nextWeek = document.querySelector("#nextWeekPlanning");
+            let lastWeek = document.querySelector("#lastWeekPlanning");
+            nextWeek.addEventListener("click", () => {
+                i++;
+                this.#weekFunction(i, options)
+            });
+            lastWeek.addEventListener('click', () => {
+                i--;
+                this.#weekFunction(i, options)
+            });
         }
-
-
+    }
 
 
     /**
