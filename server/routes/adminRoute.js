@@ -10,6 +10,8 @@ class adminRoute {
     #databaseHelper = require("../framework/utils/databaseHelper")
     #JWTHelper = require("../framework/utils/JWTHelper");
     #csvHelper = require('../framework/utils/csvHelper');
+    #nutritionId
+    #exerciseId
     #app
 
     /**
@@ -22,8 +24,12 @@ class adminRoute {
     constructor(app) {
         this.#app = app;
 
+        this.#nutritionId = 1
+        this.#exerciseId = 1
+
         this.getSurveyResults();
-        this.getSurveyContent();
+        this.getNutritionSurveyContent();
+        this.getExerciseSurveyContent();
     }
 
     getSurveyResults() {
@@ -63,8 +69,8 @@ class adminRoute {
         });
     }
 
-    getSurveyContent() {
-        this.#app.get("/admin/survey_content", async (req, res) => {
+    getNutritionSurveyContent() {
+        this.#app.get("/admin/survey_content/nutrition", async (req, res) => {
             try {
                 const questions = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
@@ -73,7 +79,42 @@ class adminRoute {
                                    question.surveyId     AS surveyId
                             FROM question
                             INNER JOIN questionType ON question.questionTypeId = questionType.id
-                            ORDER BY question.order;`
+                            WHERE question.surveyId = ?
+                            ORDER BY question.order;`,
+                    values: [this.#nutritionId]
+                });
+
+                for(let i = 0; i < questions.length; i++) {
+                    questions[i].answers = await this.#databaseHelper.handleQuery({
+                        query: `SELECT questionoption.value
+                                FROM questionoption
+                                         JOIN question ON questionoption.questionId = question.id
+                                WHERE question.surveyId = ? AND question.id = ?;`,
+                        values: [questions[i].surveyId, questions[i].id]
+                    });
+                }
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(questions);
+            } catch (e) {
+                console.error(e);
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e.message});
+            }
+        });
+    }
+
+    getExerciseSurveyContent() {
+        this.#app.get("/admin/survey_content/exercise", async (req, res) => {
+            try {
+                const questions = await this.#databaseHelper.handleQuery({
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   questionType.type     AS type,
+                                   question.surveyId     AS surveyId
+                            FROM question
+                            INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            WHERE question.surveyId = ?
+                            ORDER BY question.order;`,
+                    values: [this.#exerciseId]
                 });
 
                 for(let i = 0; i < questions.length; i++) {

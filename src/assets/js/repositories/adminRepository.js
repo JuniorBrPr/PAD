@@ -27,7 +27,11 @@ export class AdminRepository {
         return await this.#networkManager.doRequest(`${this.#route}/survey_data`, "GET");
     }
 
-    async getSurveyContent() {
-        return await this.#networkManager.doRequest(`${this.#route}/survey_content`, "GET")
+    async getNutritionSurveyContent() {
+        return await this.#networkManager.doRequest(`${this.#route}/survey_content/nutrition`, "GET")
+    }
+
+    async getExerciseSurveyContent() {
+        return await this.#networkManager.doRequest(`${this.#route}/survey_content/exercise`, "GET")
     }
 }

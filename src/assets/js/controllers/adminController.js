@@ -31,11 +31,11 @@ export class AdminController extends Controller {
 
         this.#setupDownloadButton();
 
-        await this.#setupSurveyQuestions();
+        await this.#setupSurveyPreview();
     }
 
     #setupDownloadButton() {
-        const downloadButton = document.getElementById("download-csv-btn");
+        const downloadButton = this.#adminView.querySelector('#download-csv-btn');
         downloadButton.addEventListener("click", async () => {
             try {
                 const response = await this.#adminRepository.getSurveyResults();
@@ -59,8 +59,35 @@ export class AdminController extends Controller {
         });
     }
 
-    async #setupSurveyQuestions() {
-        const data = await this.#adminRepository.getSurveyContent();
-        const questionTemplate = document.querySelector("#questionTemplate").content;
+    async #setupSurveyPreview() {
+        this.#adminView.querySelector('#voeding-survey-btn').addEventListener('click', async () => {
+            const data = await this.#adminRepository.getNutritionSurveyContent();
+
+            this.#displaySurveyPreview(data);
+        });
+
+        this.#adminView.querySelector('#beweging-survey-btn').addEventListener('click', async () => {
+            const data = await this.#adminRepository.getExerciseSurveyContent();
+
+            this.#displaySurveyPreview(data);
+        });
+    }
+
+    #displaySurveyPreview(surveyData) {
+
+        if (surveyData === undefined) {
+            return;
+        }
+
+        const buttonBox = this.#adminView.querySelector('#button-box');
+        const previewBox = this.#adminView.querySelector('#preview-box');
+
+        buttonBox.classList.add('d-none'); // Corrected here
+        previewBox.classList.remove('d-none')
+
+
+        for (const question of surveyData) {
+            console.log(question);
+        }
     }
 }
