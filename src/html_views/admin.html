@@ -7,7 +7,7 @@
             <button class="nav-link active" id="data-tab" data-bs-toggle="tab" data-bs-target="#export-data" type="button" role="tab" aria-controls="export-data" aria-selected="true">Export data</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="question-tab" data-bs-toggle="tab" data-bs-target="#question-edit" type="button" role="tab" aria-controls="question-edit" aria-selected="false">Wijzig Vragen</button>
+            <button class="nav-link" id="survey-tab" data-bs-toggle="tab" data-bs-target="#survey-view" type="button" role="tab" aria-controls="survey-view" aria-selected="false">Survey View</button>
         </li>
     </ul>
     <div class="tab-content" id="myTabContent">
@@ -17,8 +17,14 @@
                 <button class="btn btn-primary" id="download-csv-btn">Download CSV Data</button>
             </div>
         </div>
-        <div class="tab-pane fade" id="question-edit" role="tabpanel" aria-labelledby="question-edit-tab">
-            ...
+
+        <div class="tab-pane fade" id="survey-view" role="tabpanel" aria-labelledby="survey-tab">
+            <div class="container survey-welcome">
+                <div class="row d-flex">
+                    <h1 class="text-center">Intake vragenlijst</h1>
+                </div>
+            </div>
+            <!-- Rest of the survey view -->
         </div>
     </div>
 </div>

@@ -30,13 +30,15 @@ export class AdminController extends Controller {
         this.#adminView = await super.loadHtmlIntoContent("html_views/admin.html");
 
         this.#setupDownloadButton();
+
+        await this.#setupSurveyQuestions();
     }
 
     #setupDownloadButton() {
         const downloadButton = document.getElementById("download-csv-btn");
         downloadButton.addEventListener("click", async () => {
             try {
-                const response = await this.#adminRepository.getSurveyCSV();
+                const response = await this.#adminRepository.getSurveyResults();
 
                 const csvData = response.csvData; // Extract the actual CSV data
 
@@ -55,5 +57,10 @@ export class AdminController extends Controller {
                 // TODO: Handle error, show a notification to the user.
             }
         });
+    }
+
+    async #setupSurveyQuestions() {
+        const data = await this.#adminRepository.getSurveyContent();
+        const questionTemplate = document.querySelector("#questionTemplate").content;
     }
 }

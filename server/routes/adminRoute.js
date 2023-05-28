@@ -22,10 +22,11 @@ class adminRoute {
     constructor(app) {
         this.#app = app;
 
-        this.retrieveSurveyResults();
+        this.getSurveyResults();
+        this.getSurveyContent();
     }
 
-    retrieveSurveyResults() {
+    getSurveyResults() {
         this.#app.get("/admin/survey_data", this.#JWTHelper.verifyJWTToken, async (req, res) => {
 
             if (!req.user.role) {
@@ -58,6 +59,37 @@ class adminRoute {
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({csvData});
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    getSurveyContent() {
+        this.#app.get("/admin/survey_content", async (req, res) => {
+            try {
+                const questions = await this.#databaseHelper.handleQuery({
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   questionType.type     AS type,
+                                   question.surveyId     AS surveyId
+                            FROM question
+                            INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            ORDER BY question.order;`
+                });
+
+                for(let i = 0; i < questions.length; i++) {
+                    questions[i].answers = await this.#databaseHelper.handleQuery({
+                        query: `SELECT questionoption.value
+                                FROM questionoption
+                                         JOIN question ON questionoption.questionId = question.id
+                                WHERE question.surveyId = ? AND question.id = ?;`,
+                        values: [questions[i].surveyId, questions[i].id]
+                    });
+                }
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(questions);
+            } catch (e) {
+                console.error(e);
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e.message});
             }
         });
     }
