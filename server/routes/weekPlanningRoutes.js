@@ -40,7 +40,7 @@ class WeekPlanningRoutes {
 
 
     #userActivities() {
-        this.#app.get("/planning", this.#JWTHelper.verifyJWTToken(), async (req, res) => {
+        this.#app.get("/planning",  async (req, res) => {
              try {
                  const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT usergoal.userId,
@@ -52,8 +52,8 @@ class WeekPlanningRoutes {
                             FROM usergoal
                                      INNER JOIN activity ON usergoal.activityId = activity.id
                              WHERE usergoal.userId = 1
-                             AND usergoal.dayOfTheWeek = 5
-                    `, values: [req.user.userId]
+                             AND usergoal.dayOfTheWeek IN (1,5)
+                    `, values: []
                 });
 
                  if (!Array.isArray(data)) {

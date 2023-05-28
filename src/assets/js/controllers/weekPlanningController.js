@@ -76,13 +76,13 @@ export class WeekPlanningController extends Controller {
                     console.log("hiii")
                     // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
                     dayActivity.innerHTML = goals.dayOfTheWeek;
-                    const activities = goals.map(goal => `${goal.name} - ${goal.valueChosenByUser}`).join(",");
+                    const activities = goals.map(goal => `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`).join("<br>");
                     dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${activities}`;
                     // Of, als je de waarde van valueChosenByUser wilt koppelen:
                     //dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${goal.name} - ${goal.valueChosenByUser}`;
                 } else {
                     // If no goal is found, display "No activity today"
-                    dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - Geen activiteit vandaag`;
+                    dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit vandaag`;
 
                 }
                     //console.log(`Index: ${i}, dayBoxesOfTheWeek:`, dayBoxesOfTheWeek);
