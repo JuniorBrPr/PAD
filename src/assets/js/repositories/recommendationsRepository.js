@@ -13,4 +13,9 @@ export class recommendationsRepository {
         return await this.#networkManager
             .doRequest(`${this.#route}nutrition`, "GET", {});
     }
+
+    async getExerciseRecommendations() {
+        return await this.#networkManager
+            .doRequest(`${this.#route}exercise`, "GET", {});
+    }
 }

@@ -7,6 +7,7 @@ class recommendationsRoute {
     constructor(app) {
         this.#app = app
         this.#getNutritionRecommendations();
+        this.#getExerciseRecommendations();
     }
 
     #getNutritionRecommendations() {
@@ -55,7 +56,52 @@ class recommendationsRoute {
     }
 
     #getExerciseRecommendations() {
+        this.#app.get("/recommendations/exercise", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+                const activeMinutes = await this.#databaseHelper.handleQuery({
+                    query: `SELECT answer.questionId,
+                                   answer.answer,
+                                   a.id as activityId
+                            FROM answer
+                                     INNER JOIN response r on answer.responseId = r.id
+                                     INNER JOIN question q on answer.questionId = q.id
+                                     LEFT JOIN activity a on q.activityId = a.id
+                            WHERE r.surveyId = 2
+                              AND userId = ?
+                              AND answer.answer NOT LIKE 'Niet van toepassing'
+                              AND answer.answer REGEXP '^minutes: ';`,
+                    values: [req.user.userId]
+                });
+                let totalModeratelyActiveMinutes = 0;
+                activeMinutes.forEach((answer) => {
+                    if (answer.answer.includes("Gemiddeld") || answer.answer.includes("Snel")
+                        || answer.activityId === 51) {
+                        totalModeratelyActiveMinutes += parseInt(answer.answer.split(": ")[1]);
+                    }
+                });
 
+                let recommendedActivities = [];
+
+                if (totalModeratelyActiveMinutes < 150) {
+                    recommendedActivities.push(await this.#databaseHelper.handleQuery({
+                        query: `SELECT activity.id,
+                                       activity.name,
+                                       activity.description,
+                                       activity.unit,
+                                       30 AS recommendedValue
+                                FROM activity
+                                WHERE activity.id IN (11, 13, 14)
+                                  AND activity.id NOT IN (SELECT usergoal.activityId
+                                                          FROM usergoal
+                                                          WHERE usergoal.userId = ?);`,
+                        values: [req.user.userId]
+                    }));
+                }
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(recommendedActivities.flat());
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
     }
 }
 

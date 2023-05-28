@@ -37,7 +37,9 @@ export class RecommendationsController extends Controller {
         const data = await this.#fetchRecommendations();
         const goalTemplate = this.#activityView.querySelector("#goalTemplate").cloneNode(true);
 
+        console.log(data);
         for (const goal of data) {
+            console.log(goal);
             const card = goalTemplate.content.querySelector(".card").cloneNode(true);
             card.querySelector(".card-title").innerText = `${goal.recommendedValue} ${goal.unit} ${goal.name}`;
             card.querySelector(".card-text").innerText = goal.description;
@@ -109,6 +111,8 @@ export class RecommendationsController extends Controller {
     }
 
     async #fetchRecommendations() {
-        return await this.#recommendationsRepository.getNutritionRecommendations(1);
+        const exercise = await this.#recommendationsRepository.getExerciseRecommendations();
+        const nutrition = await this.#recommendationsRepository.getNutritionRecommendations();
+        return exercise.concat(nutrition);
     }
 }
