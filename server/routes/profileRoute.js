@@ -95,7 +95,7 @@ class profileRoutes {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO goal(usergoalID, userID, completed, value, date)
-                            VALUES (?, ?, 0, ?, ?)`,
+                            VALUES (?, ?, 1, ?, ?)`,
                     values: [req.params.usergoalID, req.user.userId, req.query.value, new Date()]
                 })
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
