@@ -18,4 +18,9 @@ export class recommendationsRepository {
         return await this.#networkManager
             .doRequest(`${this.#route}exercise`, "GET", {});
     }
+
+    async postGoals(goals) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}`, "POST", goals);
+    }
 }

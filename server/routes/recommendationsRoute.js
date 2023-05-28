@@ -8,6 +8,7 @@ class recommendationsRoute {
         this.#app = app
         this.#getNutritionRecommendations();
         this.#getExerciseRecommendations();
+        this.#postUserGoal();
     }
 
     #getNutritionRecommendations() {
@@ -101,6 +102,25 @@ class recommendationsRoute {
                     }));
                 }
                 res.status(this.#errorCodes.HTTP_OK_CODE).json(recommendedActivities.flat());
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    #postUserGoal() {
+        this.#app.post("/recommendations", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+                const goals = req.body;
+                goals.forEach((goal) => {
+                    goal.push(req.user.userId);
+                });
+                await this.#databaseHelper.handleQuery({
+                    query: `INSERT INTO usergoal (activityId, dateMade, valueChosenByUser, dayOfTheWeek, userId)
+                            VALUES ?;`,
+                    values: [goals]
+                });
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({message: "Recommendation added"});
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }

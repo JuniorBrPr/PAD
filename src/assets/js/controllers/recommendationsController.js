@@ -3,19 +3,16 @@
  * @author Jayden.G
  */
 
-import {activityRepository} from "../repositories/activityRepository.js";
 import {Controller} from "./controller.js";
 import {recommendationsRepository} from "../repositories/recommendationsRepository.js";
 
 export class RecommendationsController extends Controller {
 
     #activityView
-    #activityRepository
     #recommendationsRepository
 
     constructor() {
         super();
-        this.#activityRepository = new activityRepository
         this.#recommendationsRepository = new recommendationsRepository();
         this.#setupView();
     }
@@ -84,18 +81,18 @@ export class RecommendationsController extends Controller {
     #getGoalData(card, days){
         let goals = [];
         for (const day of days) {
-            goals.push({
-                activityId: card.dataset.id,
-                dateMade: new Date().toISOString().slice(0, 10).replace('T', ' '),
-                valueChosenByUser: card.dataset.chosenValue,
-                dayOfTheWeek: day
-            })
+            goals.push([
+                parseInt(card.dataset.id),
+                new Date().toISOString().slice(0, 10).replace('T', ' '),
+                parseInt(card.dataset.chosenValue),
+                parseInt(day)
+            ])
         }
         return goals;
     }
 
     async #saveGoal(goal) {
-        // await this.#activityRepository.createGoals(goal);
+        await this.#recommendationsRepository.postGoals(goal);
         alert("Doel opgeslagen!");
         return true;
     }
