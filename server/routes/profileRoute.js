@@ -60,6 +60,11 @@ class profileRoutes {
         });
     }
 
+    /**
+     * Retrieves user goals for a given user ID and day of the week.
+     *
+     * @private
+     */
     #getUserGoals() {
         this.#app.get("/profile/userGoals", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -90,6 +95,11 @@ class profileRoutes {
         });
     }
 
+    /**
+     * Inserts a goal for a given user goal ID and value.
+     *
+     * @private
+     */
     #insertGoal() {
         this.#app.post("/profile/insertGoal/:usergoalID", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -105,7 +115,11 @@ class profileRoutes {
         })
     }
 
-
+    /**
+     * Updates the completion status of a user goal.
+     *
+     * @private
+     */
     #updateGoalCompletion() {
         this.#app.put("/profile/goalCompletion/:usergoalID", async (req, res) => {
             try {
@@ -122,6 +136,11 @@ class profileRoutes {
         })
     }
 
+    /**
+     * Calculates the daily goal completion percentage.
+     *
+     * @private
+     */
     #calculateDailyGoalCompletionPercentage() {
         this.#app.get("/profile/dailyGoalCompletionPercentage", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -150,6 +169,11 @@ class profileRoutes {
         })
     }
 
+    /**
+     * Calculates the weekly goal completion percentage.
+     *
+     * @private
+     */
     #calculateWeeklyGoalCompletionPercentage() {
         this.#app.get("/profile/weeklyGoalCompletionPercentage", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -176,8 +200,13 @@ class profileRoutes {
         })
     }
 
+    /**
+     * Checks if a goal exists for a given user goal ID.
+     *
+     * @private
+     */
     #checkIfGoalExists() {
-        this.#app.get("/profile/checkIfGoalExists", async (req, res) => {
+        this.#app.get("/profile/checkIfGoalExists/:usergoalID", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT COUNT(*) AS goalCount

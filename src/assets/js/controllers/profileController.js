@@ -71,6 +71,11 @@ export class profileController extends Controller {
         return age;
     }
 
+    /**
+     * Sets up the goals by performing various operations such as updating the date, retrieving user goals,
+     * populating the template with goal data, handling button clicks for goal completion, and updating
+     * the daily and weekly goal completion percentages.
+     */
     async #setupGoals() {
         document.getElementById('date').innerHTML = new Date().toISOString().split('T')[0];
         document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag'; // Standard text
@@ -92,16 +97,22 @@ export class profileController extends Controller {
 
                     // Handle button click
                     clone.querySelector("#activity-btn-completed").addEventListener("click", async (e) => {
-                        let checkIfGoalExists = await self.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
-                        if (checkIfGoalExists.data[0].goalCount === 0) {
-                            await self.#profileRepository.insertGoal(usergoal.usergoalID, value);
-                            document.getElementById('card-container').removeChild(e.target.parentElement)
-                        } else{
-                            await self.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
-                            document.getElementById('card-container').removeChild(e.target.parentElement)
+                        try {
+                            const checkIfGoalExists = await self.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
+                            console.log(checkIfGoalExists);
+
+                            if (checkIfGoalExists.data[0].goalCount === 0) {
+                                await self.#profileRepository.insertGoal(usergoal.usergoalID, value);
+                            } else {
+                                await self.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
+                            }
+
+                            document.getElementById('card-container').removeChild(e.target.parentElement);
+                            await self.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
+                            await self.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
+                        } catch (error) {
+                            console.error('Error occurred while posting / updating goal:', error);
                         }
-                        await self.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
-                        await self.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
                     });
 
                     document.getElementById('card-container').appendChild(clone);
@@ -112,8 +123,10 @@ export class profileController extends Controller {
         }
     }
 
-
-
+    /**
+     * Updates the daily goal completion percentage by retrieving the calculated percentage from the profile repository
+     * and updating the UI elements accordingly.
+     */
     async #displayDailyGoalCompletionPercentage() {
         let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage();
         const percentageText = document.getElementById('percentage');
@@ -146,6 +159,10 @@ export class profileController extends Controller {
         updatePercentageBar();
     }
 
+    /**
+     * Updates the weekly goal completion percentage by retrieving the calculated percentage from the profile repository
+     * and updating the UI elements accordingly.
+     */
     async #displayWeeklyGoalCompletion() {
         let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage();
         let percentageWeeklyGoalCompletion = parseInt(data.data[0].percentage);
