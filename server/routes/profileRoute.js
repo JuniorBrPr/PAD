@@ -89,6 +89,7 @@ class profileRoutes {
                                      LEFT JOIN goal ON usergoal.id = goal.usergoalID
                             WHERE usergoal.userId = ?
                               AND dayOfTheWeek = ?
+                            
                               AND (goal.usergoalID IS NULL OR goal.completed = 0)
                     `,
                     values: [userId, new Date().getDay()]

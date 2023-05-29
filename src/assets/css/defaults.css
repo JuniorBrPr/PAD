@@ -216,14 +216,25 @@ hr {
     font-weight: 300;
 }
 
-.jumbotron .container {
-    max-width: 40rem;
-}
 
 .box-shadow {
     box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
+/* First Text */
+.firstText{
+    display: flex;
+    flex-direction: row;
+}
+
+.welcomeText{
+    align-self: center;
+}
+
+.welcomeImage{
+    width: 700px;
+    height: 700px;
+}
 /* Marketing */
 .marketing .col-lg-4 {
     margin-bottom: 1.5rem;
