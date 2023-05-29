@@ -176,7 +176,6 @@ class surveyRoutes {
                     answers.push([null, responseId, question.questionId, question.answer]);
                 }
 
-                console.log(data.surveyId);
                 if (data.surveyId === 1) {
                     let questionIds = [];
                     for (const question of data.data) {
