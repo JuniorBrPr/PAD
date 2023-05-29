@@ -54,21 +54,23 @@
 /*}*/
 
 .deleteButtonPlanning {
-    position: relative; /* Change position to relative */
+    position: absolute;
+    bottom: 1px;
     display: inline-block; /* Display buttons inline */
     border-radius: 40px;
     width: 150px;
-    height: 45px;
-    margin-right: 10px; /* Add margin to create spacing */
+    height: 50px;
+    left: 150px; /* Add margin to create spacing */
 }
 
 .completeButtonPlanning {
-    position: relative; /* Change position to relative */
+    position: absolute;
+    bottom: 1px;
     display: inline-block; /* Display buttons inline */
     border-radius: 40px;
     width: 150px;
-    height: 45px;
-    margin-left: 50px; /* Add margin to create spacing */
+    height: 50px;
+    left: 300px; /* Add margin to create spacing */
 }
 
 .dayActivity{

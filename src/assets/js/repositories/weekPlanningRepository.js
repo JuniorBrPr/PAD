@@ -13,8 +13,6 @@ export class WeekPlanningRepository {
         this.#route = "/planning"
         this.#networkManager = new NetworkManager();
     }
-
-
     /**
      * Retrieves the user goals for the current user.
      *
