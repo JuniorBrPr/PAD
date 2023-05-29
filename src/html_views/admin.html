@@ -1,24 +1,124 @@
 <div class="container-md mt-md-3">
+
     <div class="row d-flex">
-        <h1 class="text-center">Moderator pagina</h1>
+        <h1 class="my-3 text-center">Moderator pagina</h1>
     </div>
+
     <ul class="nav nav-tabs" id="myTab" role="tablist">
+
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="data-tab" data-bs-toggle="tab" data-bs-target="#export-data" type="button" role="tab" aria-controls="export-data" aria-selected="true">Export data</button>
+            <button class="nav-link active" id="data-tab" data-bs-toggle="tab" data-bs-target="#export-data"
+                    type="button" role="tab" aria-controls="export-data" aria-selected="true">Export data
+            </button>
         </li>
+
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="question-tab" data-bs-toggle="tab" data-bs-target="#question-edit" type="button" role="tab" aria-controls="question-edit" aria-selected="false">Wijzig Vragen</button>
+            <button class="nav-link" id="survey-tab" data-bs-toggle="tab" data-bs-target="#survey-view" type="button"
+                    role="tab" aria-controls="survey-view" aria-selected="false">Survey View
+            </button>
         </li>
+
     </ul>
     <div class="tab-content" id="myTabContent">
+
         <div class="tab-pane fade show active" id="export-data" role="tabpanel" aria-labelledby="export-data-tab">
+
             <p class="text-center my-3">Exporteer alle survey antwoorden van de gebruikers</p>
+
             <div class="d-flex justify-content-center">
                 <button class="btn btn-primary" id="download-csv-btn">Download CSV Data</button>
             </div>
+
         </div>
-        <div class="tab-pane fade" id="question-edit" role="tabpanel" aria-labelledby="question-edit-tab">
-            ...
+
+        <div class="tab-pane fade" id="survey-view" role="tabpanel" aria-labelledby="survey-tab">
+
+            <div class="container survey-welcome">
+                <div class="my-3 row d-flex">
+
+                    <h4 class="text-center">Vragenlijst preview</h4>
+
+                    <div id="button-box" class="row d-flex mt-4">
+                        <div class="col flex-fill">
+
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-8 d-flex justify-content-center">
+                                    <button id="voeding-survey-btn"
+                                            class="btn btn-primary btn-lg fs-2 flex-fill"
+                                            type="button">Voeding
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-8 d-flex justify-content-center mt-5">
+                                    <button id="beweging-survey-btn"
+                                            class="btn btn-primary btn-lg fs-2 flex-fill"
+                                            type="button">Beweging
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="preview-box" class="survey-container d-none">
+
+                        <!-- Each question will be a survey-tab div -->
+                        <!-- Each tab would be populated with questions from your JS -->
+                        <div class="survey-tab">
+                            <!-- This div will be populated by the first question from your survey data -->
+                        </div>
+
+                        <div class="survey-tab">
+                            <!-- This div will be populated by the second question from your survey data -->
+                        </div>
+
+                        <!-- Repeat above div structure for as many questions as you have -->
+
+                        <!-- Navigation Buttons -->
+                        <div class="survey-navigation">
+
+                            <div id="question-container" class="list-group">
+
+                            </div>
+
+                            <div id="cycle-btn-list" class="m-3" >
+
+                                <div id="question-cycle-btn-list" class="d-flex justify-content-center">
+                                    <button id="backBtn" class="btn btn-primary m-2">Terug</button>
+                                    <button id="prevBtn" class="btn btn-primary m-2">Vorige</button>
+                                    <button id="nextBtn" class="btn btn-primary  m-2">Volgende</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex" style="height: 5rem;">
+                                <div class="vr"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
+
+<template id="question-template">
+    <div class="card text-center mt-2 mx-auto w-100">
+        <div class="card-body">
+
+            <h4 class="question-title"></h4>
+
+            <p class="question-type"></p>
+
+            <div class="row mt-3 mb-4">
+                <ul id="options-container" class="list-group">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>

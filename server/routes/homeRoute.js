@@ -8,11 +8,11 @@
 
 class HomeRoute {
     #errorCodes = require("../framework/utils/httpErrorCodes");
+    #constant = require("../framework/utils/constantSheet")
     #databaseHelper = require("../framework/utils/databaseHelper");
 
     constructor(app) {
         this.app = app;
-        this.ACTIVE_HOME_CONFIG = 1;
 
         this.#registerRoutes(); // Register the routes with the Express app
     }
@@ -24,7 +24,7 @@ class HomeRoute {
                     query: `SELECT video, board_message
                             FROM home
                             WHERE id = ?;`,
-                    values: [this.ACTIVE_HOME_CONFIG],
+                    values: [this.#constant.HOME_PAGE.ACTIVE_CONFIG],
                 });
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({
                     "video": data[0].video,

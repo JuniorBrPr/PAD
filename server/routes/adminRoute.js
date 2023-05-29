@@ -2,30 +2,43 @@
  * This class contains ExpressJS routes specific for the admin entity
  * this file is automatically loaded in app.js
  *
+ * @class
  * @author Jayden.G
  */
 
 class adminRoute {
     #errorCodes = require("../framework/utils/httpErrorCodes")
+    #constant = require("../framework/utils/constantSheet")
     #databaseHelper = require("../framework/utils/databaseHelper")
     #JWTHelper = require("../framework/utils/JWTHelper");
     #csvHelper = require('../framework/utils/csvHelper');
+
     #app
 
     /**
-     * Initializes a new instance of the ProfileRoutes class.
+     * @author Jayden.G
+     * Initializes a new instance of the adminRoute class.
      *
      * @constructor
-     * @param {object} app - The Express application instance.
+     * @param {Object} app - The Express application instance.
      */
 
     constructor(app) {
         this.#app = app;
 
-        this.retrieveSurveyResults();
+        this.getSurveyResults();
+        this.getNutritionSurveyContent();
+        this.getExerciseSurveyContent();
     }
 
-    retrieveSurveyResults() {
+    /**
+     * @author Jayden.G
+     * Route for getting survey results.
+     *
+     * Access is restricted to authenticated users.
+     */
+
+    getSurveyResults() {
         this.#app.get("/admin/survey_data", this.#JWTHelper.verifyJWTToken, async (req, res) => {
 
             if (!req.user.role) {
@@ -58,6 +71,88 @@ class adminRoute {
                 res.status(this.#errorCodes.HTTP_OK_CODE).json({csvData});
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    /**
+     * @author Jayden.G
+     * Route for getting content of the nutrition survey.
+     *
+     * Access is restricted to authenticated users.
+     */
+
+    getNutritionSurveyContent() {
+        this.#app.get("/admin/survey_content/nutrition", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+                const questions = await this.#databaseHelper.handleQuery({
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   questionTypeId        AS typeId,
+                                   questionType.type     AS type,
+                                   question.surveyId     AS surveyId
+                            FROM question
+                            INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            WHERE question.surveyId = ?
+                            ORDER BY question.order;`,
+                    values: [this.#constant.SURVEY_TYPE.Nutrition]
+                });
+
+                for(let i = 0; i < questions.length; i++) {
+                    questions[i].answers = await this.#databaseHelper.handleQuery({
+                        query: `SELECT questionoption.value
+                                FROM questionoption
+                                         JOIN question ON questionoption.questionId = question.id
+                                WHERE question.surveyId = ? AND question.id = ?;`,
+                        values: [questions[i].surveyId, questions[i].id]
+                    });
+                }
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(questions);
+            } catch (e) {
+                console.error(e);
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e.message});
+            }
+        });
+    }
+
+    /**
+     * @author Jayden.G
+     * Route for getting content of the exercise survey.
+     *
+     * Access is restricted to authenticated users.
+     */
+
+    getExerciseSurveyContent() {
+        this.#app.get("/admin/survey_content/exercise", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+                const questions = await this.#databaseHelper.handleQuery({
+                    query: `SELECT question.id           AS id,
+                                   question.questionText AS text,
+                                   questionTypeId        AS typeId,
+                                   questionType.type     AS type,
+                                   question.surveyId     AS surveyId
+                            FROM question
+                            INNER JOIN questionType ON question.questionTypeId = questionType.id
+                            WHERE question.surveyId = ?
+                            ORDER BY question.order;`,
+                    values: [this.#constant.SURVEY_TYPE.Exercise]
+                });
+
+                for(let i = 0; i < questions.length; i++) {
+                    questions[i].answers = await this.#databaseHelper.handleQuery({
+                        query: `SELECT questionoption.value
+                                FROM questionoption
+                                         JOIN question ON questionoption.questionId = question.id
+                                WHERE question.surveyId = ? AND question.id = ?;`,
+                        values: [questions[i].surveyId, questions[i].id]
+                    });
+                }
+
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(questions);
+            } catch (e) {
+                console.error(e);
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e.message});
             }
         });
     }
