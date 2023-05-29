@@ -13,9 +13,9 @@ export class RegisterRepository {
         this.#networkManager = new NetworkManager();
     }
 
-     checkEmailExists(emailAddress) {
-        const result = this.#networkManager.doRequest(this.#route, "GET", {emailAddress: emailAddress});
-        return result.reason === "Email already exits";
+    async checkEmailExists(emailAddress) {
+        return await this.#networkManager.doRequest(this.#route + '/check-email',"POST", {emailAddress});
+      //  return result
     }
 
     createRegister(firstname, surname, emailAddress, password) {

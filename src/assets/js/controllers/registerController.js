@@ -49,15 +49,14 @@ export class RegisterController extends Controller {
             errorBox.innerHTML = "Email klopt niet";
         } else if (password !== confirmPassword) {
             errorBox.innerHTML = "wachtwoorden komen niet overeen!";
+
         } else {
             try {
 
-                const emailExists = this.#registerRepository.checkEmailExists(emailAddress)
-
+                const emailExists = await this.#registerRepository.checkEmailExists(emailAddress)
                     //await this.#registerRepository.checkEmailExists(emailAddress);
                 if (emailExists) {
                     errorBox.innerHTML = "Het opgegeven e-mailadres bestaat al.";
-
                 } else {
                     const data = await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
                     console.log(data);
