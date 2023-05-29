@@ -126,6 +126,8 @@ class recommendationsRoute {
             }
         });
     }
+
+
 }
 
 module.exports = recommendationsRoute

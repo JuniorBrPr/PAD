@@ -68,7 +68,15 @@ export class RecommendationsController extends Controller {
             card.querySelector(".saveGoal").addEventListener("click", () => {
                 const days = this.#retrieveSelectedDays(card);
                 if (days.length === 0) {
-                    alert("Geen dagen geselecteerd!");
+                    this.#showAlert("Selecteer minstens 1 dag.", false);
+                    return;
+                }
+                if (card.querySelector(".userChosenValue").value === "") {
+                    this.#showAlert("Vul een waarde in.", false);
+                    return;
+                }
+                if (card.querySelector(".userChosenValue").value <= 0) {
+                    this.#showAlert("Vul een positieve waarde in.", false);
                     return;
                 }
                 this.#saveGoal(this.#getGoalData(card, days));
@@ -94,7 +102,7 @@ export class RecommendationsController extends Controller {
 
     async #saveGoal(goal) {
         await this.#recommendationsRepository.postGoals(goal);
-        alert("Doel opgeslagen!");
+        this.#showAlert("Success! Uw doel is opgeslagen.", true);
         return true;
     }
 
@@ -106,6 +114,17 @@ export class RecommendationsController extends Controller {
             }
         });
         return days;
+    }
+
+    #showAlert(message, succes) {
+        const alert = this.#activityView.querySelector("#alert").content.cloneNode(true);
+        if (succes) {
+            alert.querySelector(".alert").classList.add("alert-success");
+        } else {
+            alert.querySelector(".alert").classList.add("alert-danger");
+        }
+        alert.querySelector(".alert-text").innerText = message;
+        this.#activityView.querySelector(".alert-container").appendChild(alert);
     }
 
     async #fetchRecommendations() {
