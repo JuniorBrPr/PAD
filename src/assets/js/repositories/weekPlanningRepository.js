@@ -43,4 +43,10 @@ export class WeekPlanningRepository {
        });
         return Promise.all(testPromise);
     }
+
+    // async userWeekPlanningUpdate(userGoalID) {
+    //     return await this.#networkManager.doRequest(`${this.#route}`, "PUT", userGoalID);
+    // }
+
+
 }
