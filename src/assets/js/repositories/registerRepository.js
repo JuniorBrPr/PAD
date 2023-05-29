@@ -18,8 +18,8 @@ export class RegisterRepository {
       //  return result
     }
 
-    createRegister(firstname, surname, emailAddress, password) {
-        return this.#networkManager.doRequest(this.#route, "POST",
+    async createRegister(firstname, surname, emailAddress, password) {
+        return await this.#networkManager.doRequest(this.#route, "POST",
             {firstname: firstname, surname: surname, emailAddress: emailAddress, password: password})
     }
 

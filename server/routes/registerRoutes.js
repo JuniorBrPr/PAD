@@ -13,7 +13,7 @@ class RegisterRoutes{
 
 
         this.#createRegister();
-     //  this.#getEmailExists();
+        this.#getEmailExists();
     }
 
     // #createRegister() {
@@ -49,31 +49,37 @@ class RegisterRoutes{
 
 
 
-   // #getEmailExists() {
-   //     this.#app.post("/register", async (req, res) => {
-   //          try {
-   //              const emailExists = await this.#databaseHelper.handleQuery({
-   //                  query: "SELECT * FROM user WHERE emailAddress = ?",
-   //                  values: [req.body.emailAddress]
-   //              });
-   //
-   //              if (emailExists.length > 0) {
-   //                  res.status(this.#httpErrorCodes.BAD_REQUEST_CODE).json({reason: "Email already exists"});
-   //                  return;
-   //              }
-   //
-   //          } catch (e) {
-   //              res.status(this.#httpErrorCodes.BAD_REQUEST_CODE).json({reason: e});
-   //          }
-   //      });
-   //
-   //  }
+    #getEmailExists() {
+        this.#app.post("/register/check-email", async (req, res) => {
+            try {
+                const emailExists = await this.#databaseHelper.handleQuery({
+                    query: "SELECT * FROM user WHERE emailAddress = ?",
+                    values: [req.body.emailAddress],
+                });
+
+                console.log(emailExists)
+                console.log(emailExists.length)
+                console.log(emailExists.length > 0)
+                console.log(emailExists.length === 1)
+
+                if (emailExists.length === 1) {
+                    res.status(this.#httpErrorCodes.BAD_REQUEST_CODE).json({ reason: "Email already exists" });
+                    return;
+                }
+
+                res.status(this.#httpErrorCodes.HTTP_OK_CODE).json({ reason: 'Everything is gucci' })
+            } catch (e) {
+                res.status(this.#httpErrorCodes.BAD_REQUEST_CODE).json({ reason: e });
+            }
+        });
+
+    }
 
     #createRegister() {
         this.#app.post("/register", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "INSERT INTO user( firstname, surname, emailAddress, password) VALUES ( ?, ?, ?, ?)",
+                    query: "INSERT INTO user(firstname, surname, emailAddress, password) VALUES ( ?, ?, ?, ?)",
                     values: [req.body.firstname, req.body.surname, req.body.emailAddress, req.body.password],
                 });
 

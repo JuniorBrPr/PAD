@@ -55,7 +55,10 @@ export class RegisterController extends Controller {
 
                 const emailExists = await this.#registerRepository.checkEmailExists(emailAddress)
                     //await this.#registerRepository.checkEmailExists(emailAddress);
-                if (emailExists) {
+
+                console.log(emailExists)
+
+                if (emailExists.code === 400) {
                     errorBox.innerHTML = "Het opgegeven e-mailadres bestaat al.";
                 } else {
                     const data = await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
@@ -66,10 +69,12 @@ export class RegisterController extends Controller {
 
                 }
             } catch (e) {
-                errorBox.innerHTML = "Er is iets fout gegaan!"
+
+                errorBox.innerHTML = e.reason
                 console.log(e)
             }
         }
+
         function validateEmail(email) {
             const emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
             return emailFormat.test(email);
