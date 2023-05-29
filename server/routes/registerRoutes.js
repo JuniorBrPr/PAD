@@ -19,8 +19,8 @@ class RegisterRoutes{
             try{
 
              const data = await this.#databaseHelper.handleQuery({
-                    query: "INSERT INTO user(id, firstname, surname, emailAddress, password) VALUES (?, ?, ?, ?, ?)",//id moet aangepast worden in db
-                    values: [103, req.body.firstname, req.body.surname, req.body.emailAddress, req.body.password],
+                    query: "INSERT INTO user( firstname, surname, emailAddress, password) VALUES ( ?, ?, ?, ?)",//id moet aangepast worden in db
+                    values: [ req.body.firstname, req.body.surname, req.body.emailAddress, req.body.password],
                 });
 
              if(data.insertId){
