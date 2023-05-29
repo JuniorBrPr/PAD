@@ -20,7 +20,7 @@ class recommendationsRoute {
                                    activity.name,
                                    activity.description,
                                    activity.unit,
-                                   nutrition_category.recommended_weekly_intake AS recommendedValue
+                                   FLOOR(nutrition_category.recommended_weekly_intake / 7) AS recommendedValue
                             FROM activity
                                      INNER JOIN nutrition_activity_attribute naa
                                                 ON activity.id = naa.activityId

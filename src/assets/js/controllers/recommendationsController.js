@@ -40,11 +40,12 @@ export class RecommendationsController extends Controller {
             const card = goalTemplate.content.querySelector(".card").cloneNode(true);
             card.querySelector(".card-title").innerText = `${goal.recommendedValue} ${goal.unit} ${goal.name}`;
             card.querySelector(".card-text").innerText = goal.description;
+            card.querySelector(".userChosenValueLbl").innerText += goal.unit;
+            card.querySelector(".userChosenValue").value = goal.recommendedValue;
 
             const daysContainer = card.querySelector(".daysContainer");
 
             card.dataset.id = goal.id;
-            card.dataset.chosenValue = goal.recommendedValue;
 
             card.querySelector(".selectGoal").addEventListener("click", () => {
                 if (daysContainer.style.display === "none") {
@@ -84,7 +85,7 @@ export class RecommendationsController extends Controller {
             goals.push([
                 parseInt(card.dataset.id),
                 new Date().toISOString().slice(0, 10).replace('T', ' '),
-                parseInt(card.dataset.chosenValue),
+                parseInt(card.querySelector(".userChosenValue").value),
                 parseInt(day)
             ])
         }
