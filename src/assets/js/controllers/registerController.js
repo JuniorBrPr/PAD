@@ -20,12 +20,13 @@ export class RegisterController extends Controller {
     async #setupView() {
         this.#registerView = await super.loadHtmlIntoContent("html_views/register.html")
 
-        this.#registerView.querySelector(".btn").addEventListener("click",
-            (event) => this.#saveRegister(event));
-
+        this.#registerView.querySelector(".btn").addEventListener("click", async (event) => {
+            event.preventDefault();
+            await this.#saveRegister();
+        });
     }
     async #saveRegister(event) {
-        event.preventDefault();
+        // event.preventDefault();
 
         const errorBox = this.#registerView.querySelector(".error")
         const validBox = this.#registerView.querySelector(".valid-feedback");
@@ -40,6 +41,8 @@ export class RegisterController extends Controller {
         errorBox.innerHTML = "";
         invalidBox.innerHTML = "";
 
+
+
         if (!firstname || !surname || !emailAddress || !password || !confirmPassword) {
             errorBox.innerHTML = "U moet eerst uw gegevens invullen";
         } else if (!validateEmail(emailAddress)) {
@@ -48,11 +51,21 @@ export class RegisterController extends Controller {
             errorBox.innerHTML = "wachtwoorden komen niet overeen!";
         } else {
             try {
-                const data = await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
-                console.log(data);
-                validBox.innerHTML = "U hebt succesvol geregistreerd, u wordt zo omgeleid naar de vragenlijst";
-                console.log(firstname + surname + emailAddress + password + confirmPassword);
-                App.loadController(App.CONTROLLER_SURVEY);
+
+                const emailExists = this.#registerRepository.checkEmailExists(emailAddress)
+
+                    //await this.#registerRepository.checkEmailExists(emailAddress);
+                if (emailExists) {
+                    errorBox.innerHTML = "Het opgegeven e-mailadres bestaat al.";
+
+                } else {
+                    const data = await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
+                    console.log(data);
+                    validBox.innerHTML = "U hebt succesvol geregistreerd, u wordt zo omgeleid naar de vragenlijst";
+                    console.log(firstname + surname + emailAddress + password + confirmPassword);
+                    App.loadController(App.CONTROLLER_SURVEY);
+
+                }
             } catch (e) {
                 errorBox.innerHTML = "Er is iets fout gegaan!"
                 console.log(e)

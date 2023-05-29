@@ -4,17 +4,24 @@
  */
 import {NetworkManager} from "../framework/utils/networkManager.js";
 
-export class RegisterRepository{
+export class RegisterRepository {
     #networkManager;
     #route;
 
-    constructor(){
+    constructor() {
         this.#route = "/register";
         this.#networkManager = new NetworkManager();
     }
 
-    createRegister(firstname, surname, emailAddress, password) {
-       return this.#networkManager.doRequest(this.#route, "POST",
-            {firstname: firstname, surname: surname, emailAddress: emailAddress , password: password})
+     checkEmailExists(emailAddress) {
+        const result = this.#networkManager.doRequest(this.#route, "GET", {emailAddress: emailAddress});
+        return result.reason === "Email already exits";
     }
+
+    createRegister(firstname, surname, emailAddress, password) {
+        return this.#networkManager.doRequest(this.#route, "POST",
+            {firstname: firstname, surname: surname, emailAddress: emailAddress, password: password})
+    }
+
+
 }
