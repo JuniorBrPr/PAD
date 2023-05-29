@@ -1,40 +1,32 @@
-/**
- * Controller responsible for all events in activity view
- * @author Jayden.G
- */
-
 import {Controller} from "./controller.js";
 import {recommendationsRepository} from "../repositories/recommendationsRepository.js";
+import {SurveyRepository} from "../repositories/surveyRepository.js";
 
 export class RecommendationsController extends Controller {
 
     #activityView
     #recommendationsRepository
+    #surveyRepository
 
     constructor() {
         super();
         this.#recommendationsRepository = new recommendationsRepository();
+        this.#surveyRepository = new SurveyRepository();
         this.#setupView();
     }
 
-    /**
-     * @author Jayden.G
-     * Loads contents of desired HTML file into content class
-     *
-     * @returns {Promise<void>}
-     * @private
-     */
     async #setupView() {
         this.#activityView = await super.loadHtmlIntoContent("html_views/selectGoal.html");
 
-        await this.#loadRecommendedGoals();
+        if (await this.#checkSurveysCompleted()) {
+            await this.#loadRecommendedGoals();
+        }
     }
 
     async #loadRecommendedGoals() {
         const data = await this.#fetchRecommendations();
         const goalTemplate = this.#activityView.querySelector("#goalTemplate").cloneNode(true);
 
-        console.log(data);
         for (const goal of data) {
             console.log(goal);
             const card = goalTemplate.content.querySelector(".card").cloneNode(true);
@@ -87,7 +79,7 @@ export class RecommendationsController extends Controller {
         }
     }
 
-    #getGoalData(card, days){
+    #getGoalData(card, days) {
         let goals = [];
         for (const day of days) {
             goals.push([
@@ -103,6 +95,19 @@ export class RecommendationsController extends Controller {
     async #saveGoal(goal) {
         await this.#recommendationsRepository.postGoals(goal);
         this.#showAlert("Success! Uw doel is opgeslagen.", true);
+        return true;
+    }
+
+    async #checkSurveysCompleted() {
+        const surveyStatus = await this.#surveyRepository.getSurveyStatus();
+        console.log(surveyStatus);
+        if (surveyStatus.survey_status !== 1) {
+            this.#showAlert(
+                "U heeft nog geen vragenlijst ingevuld. Ga naar de vragenlijst om deze in te vullen.",
+                false);
+            this.#activityView.querySelector(".templatesContainer").style.display = "none";
+            return false;
+        }
         return true;
     }
 
