@@ -1,21 +1,31 @@
 
-.planningSection{
-    /*background-color: #dadada;*/
+#titlePlanning{
+    position: relative;
+    left: 700px;
+}
+
+#textInfoPlanning{
+    position: relative;
+    left: 550px;
 }
 
 #lastWeekPlanning, #nextWeekPlanning{
     border-radius: 30px;
-    background-color: #008E8A;
+    background-color:#008E8A;
     color: white;
+    font-size: 1.1em;
     width: 200px;
+    height: 50px;
 }
 
 .containerDiv{
+    position: relative;
     border-radius: 50px;
-    margin: 20px;
-    width: 400px;
-    height: 200px;
+    margin: 30px;
+    width: 600px;
+    height: 250px;
     border: 1px solid #6c6969;
+    right: 130px;
 
     background-color: #96D2D3;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
@@ -25,23 +35,42 @@
    text-align: center;
 }
 
+/*.deleteButtonPlanning{*/
+/*    position: absolute;*/
+/*    border-radius: 40px;*/
+/*    width: 150px;*/
+/*    left: 50px;*/
+/*    bottom: 0;*/
+/*    height: 45px;*/
+/*}*/
 
-.deleteButtonPlanning{
-    position: relative;
+/*.completeButtonPlanning{*/
+/*    position: absolute;*/
+/*    border-radius: 40px;*/
+/*    width: 150px;*/
+/*    left: 200px;*/
+/*    bottom: 0;*/
+/*    height: 45px;*/
+/*}*/
+
+.deleteButtonPlanning {
+    position: absolute;
+    bottom: 1px;
+    display: inline-block; /* Display buttons inline */
     border-radius: 40px;
     width: 150px;
-    display: grid;
-    top: 67px;
-    left: 40px;
+    height: 50px;
+    left: 150px; /* Add margin to create spacing */
 }
 
-.completeButtonPlanning{
-    position: relative;
+.completeButtonPlanning {
+    position: absolute;
+    bottom: 1px;
+    display: inline-block; /* Display buttons inline */
     border-radius: 40px;
     width: 150px;
-    display: grid;
-    top: 30px;
-    left: 200px;
+    height: 50px;
+    left: 300px; /* Add margin to create spacing */
 }
 
 .dayActivity{
@@ -50,4 +79,30 @@
     font-size: 20px;
     display: flow;
 }
+
+/*.bulletText{*/
+/*    float: left;*/
+/*    margin-right: 10px;*/
+
+/*}*/
+
+/*.bullet {*/
+/*    width: 50px;*/
+/*    height: 50px;*/
+/*    background-color: #008E8A;*/
+/*    color: #fff;*/
+/*    border-radius: 50%;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    font-weight: bold;*/
+/*    float: left;*/
+/*    margin-right: 50px;*/
+/*}*/
+
+/*.step-container::after{*/
+/*    content: "";*/
+/*    display: table;*/
+/*    clear: both;*/
+/*}*/
 

@@ -13,16 +13,40 @@ export class WeekPlanningRepository {
         this.#route = "/planning"
         this.#networkManager = new NetworkManager();
     }
-
-    async dataWeekPlanning() {
+    /**
+     * Retrieves the user goals for the current user.
+     *
+     * @returns {Promise<*>} A promise resolving to the user's goals.
+     */
+    async userActivities() {
         return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
+
     }
 
-    userWeekPlanning(selectedDate, cloneButtonComplete, cloneButtonDelete) {
+    /**
+     *
+     * @param selectedDate
+     * @param cloneButtonComplete
+     * @param cloneButtonDelete
+     * @returns {Promise<*>}
+     */
+
+   async userCompletedActivity(userId, completed, selectedDate, userActivityId ) {
+       const testPromise = userActivityId.map(userActivityId => {
         return this.#networkManager.doRequest(`${this.#route}`, "POST", {
-            date: selectedDate,
-            done: cloneButtonComplete,
-            notDone: cloneButtonDelete
+           "userId": userId,
+            "completed": completed,
+            "date": selectedDate,
+            "usergoalID": userActivityId
+
         });
+       });
+        return Promise.all(testPromise);
     }
+
+    // async userWeekPlanningUpdate(userGoalID) {
+    //     return await this.#networkManager.doRequest(`${this.#route}`, "PUT", userGoalID);
+    // }
+
+
 }
