@@ -28,7 +28,6 @@ export class RecommendationsController extends Controller {
         const goalTemplate = this.#activityView.querySelector("#goalTemplate").cloneNode(true);
 
         for (const goal of data) {
-            console.log(goal);
             const card = goalTemplate.content.querySelector(".card").cloneNode(true);
             card.querySelector(".card-title").innerText = `${goal.recommendedValue} ${goal.unit} ${goal.name}`;
             card.querySelector(".card-text").innerText = goal.description;
@@ -100,7 +99,6 @@ export class RecommendationsController extends Controller {
 
     async #checkSurveysCompleted() {
         const surveyStatus = await this.#surveyRepository.getSurveyStatus();
-        console.log(surveyStatus);
         if (surveyStatus.survey_status !== 1) {
             this.#showAlert(
                 "U heeft nog geen vragenlijst ingevuld. Ga naar de vragenlijst om deze in te vullen.",

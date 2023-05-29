@@ -175,6 +175,34 @@ class surveyRoutes {
                 for (const question of data.data) {
                     answers.push([null, responseId, question.questionId, question.answer]);
                 }
+
+                if (data.surveyId === 1) {
+                    let questionIds = [];
+                    for (const question of data.data) {
+                        questionIds.push([question.questionId]);
+                    }
+                    const s = await this.#databaseHelper.handleQuery({
+                        query: `SELECT question.id      AS id,
+                                       naa.portion_size AS portionSize,
+                                       a.unit           AS unit
+                                FROM question
+                                         INNER JOIN activity a on a.id = question.activityId
+                                         INNER JOIN nutrition_activity_attribute naa on a.id = naa.activityId
+                                         INNER JOIN nutrition_category nc on nc.id = naa.category_id
+                                WHERE question.id IN (?)
+                                GROUP BY question.id;`,
+                        values: [questionIds]
+                    });
+
+                    for (let i = 0; i < s.length; i++) {
+                        for (let j = 0; j < answers.length; j++) {
+                            if (s[i].id === answers[j][2]) {
+                                answers[j][3] = (answers[j][3] * s[i].portionSize) + " " + s[i].unit + " per week";
+                            }
+                        }
+                    }
+                }
+
                 await this.#databaseHelper.handleQuery({
                     query: `INSERT INTO answer (id, responseId, questionId, answer)
                             VALUES ?`,
@@ -296,6 +324,7 @@ class surveyRoutes {
             }
         });
     }
+
 }
 
 module.exports = surveyRoutes;
