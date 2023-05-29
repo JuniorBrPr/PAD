@@ -92,7 +92,18 @@ footer {
     padding-left: 100px;
     padding-right: 100px;
     border-radius: 5px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);}
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    position: relative;
+}
+
+.backToProfile {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--main-color);
+    border: none;
+    color: white;
+]}
 
 .formEditProfile {
     margin-bottom: 50px;

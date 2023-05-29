@@ -27,6 +27,7 @@ export class editProfileController extends Controller {
     async #setupView() {
         this.#createProfileEditView = await super.loadHtmlIntoContent("html_views/editProfile.html")
         document.getElementById("saveProfileBtn").addEventListener("click", (event) => this.#validateForm());
+        document.getElementById("backToProfile").addEventListener("click", (event) => App.loadController(App.CONTROLLER_PROFILE));
 
         // Load all existing data of the user as standard values
         let data = await this.#editProfileRepository.getData(1);
