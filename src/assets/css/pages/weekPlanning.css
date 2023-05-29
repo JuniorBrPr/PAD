@@ -21,10 +21,11 @@
 .containerDiv{
     position: relative;
     border-radius: 50px;
-    margin: 20px;
-    width: 400px;
+    margin: 30px;
+    width: 600px;
     height: 250px;
     border: 1px solid #6c6969;
+    right: 130px;
 
     background-color: #96D2D3;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
@@ -34,22 +35,40 @@
    text-align: center;
 }
 
-.deleteButtonPlanning{
-    position: absolute;
+/*.deleteButtonPlanning{*/
+/*    position: absolute;*/
+/*    border-radius: 40px;*/
+/*    width: 150px;*/
+/*    left: 50px;*/
+/*    bottom: 0;*/
+/*    height: 45px;*/
+/*}*/
+
+/*.completeButtonPlanning{*/
+/*    position: absolute;*/
+/*    border-radius: 40px;*/
+/*    width: 150px;*/
+/*    left: 200px;*/
+/*    bottom: 0;*/
+/*    height: 45px;*/
+/*}*/
+
+.deleteButtonPlanning {
+    position: relative; /* Change position to relative */
+    display: inline-block; /* Display buttons inline */
     border-radius: 40px;
     width: 150px;
-    left: 50px;
-    bottom: 0;
     height: 45px;
+    margin-right: 10px; /* Add margin to create spacing */
 }
 
-.completeButtonPlanning{
-    position: absolute;
+.completeButtonPlanning {
+    position: relative; /* Change position to relative */
+    display: inline-block; /* Display buttons inline */
     border-radius: 40px;
     width: 150px;
-    left: 200px;
-    bottom: 0;
     height: 45px;
+    margin-left: 50px; /* Add margin to create spacing */
 }
 
 .dayActivity{
@@ -58,4 +77,30 @@
     font-size: 20px;
     display: flow;
 }
+
+/*.bulletText{*/
+/*    float: left;*/
+/*    margin-right: 10px;*/
+
+/*}*/
+
+/*.bullet {*/
+/*    width: 50px;*/
+/*    height: 50px;*/
+/*    background-color: #008E8A;*/
+/*    color: #fff;*/
+/*    border-radius: 50%;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    font-weight: bold;*/
+/*    float: left;*/
+/*    margin-right: 50px;*/
+/*}*/
+
+/*.step-container::after{*/
+/*    content: "";*/
+/*    display: table;*/
+/*    clear: both;*/
+/*}*/
 

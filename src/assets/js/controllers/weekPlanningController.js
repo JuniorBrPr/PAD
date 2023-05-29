@@ -46,6 +46,8 @@ export class WeekPlanningController extends Controller {
         let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
+
+
         //Loopt door alle dagen van de week
         for (let i = 0; i < 7; i++) {
             const data = await this.#weekPlanningRepository.userActivities();
@@ -87,23 +89,22 @@ export class WeekPlanningController extends Controller {
             dayBoxesOfTheWeek.appendChild(dayActivity);
 
 
-            //Buttons in box toegevoegd
-            dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
-            dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
+                //Buttons in box toegevoegd
+                dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
+                dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
 
 
-
-            //#sendFinished(deleteButtonPlanning, completeButtonPlanning, date) {
-                //Buttons
-                // let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-                // let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+                //#sendFinished(deleteButtonPlanning, completeButtonPlanning, date) {
+            //    Buttons
+            //     let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+            //     let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
                 //Put the data if the user completed it with the date
-               // let selectedDate = date.toLocaleDateString();
+                // let selectedDate = date.toLocaleDateString();
 
 
                 cloneButtonComplete.addEventListener("click", async function () {
 
-                  //  this.#formatDate(dateObj, i, today);
+                    //  this.#formatDate(dateObj, i, today);
                     try {
                         const dataTest = await this.#weekPlanningRepository.userActivities();
                         console.log(dataTest)
@@ -127,10 +128,10 @@ export class WeekPlanningController extends Controller {
                         const selectedDate = `${year}-${month}-${day}`;
                         console.log(selectedDate)
 
-                         const resp = await this.#weekPlanningRepository.userCompletedActivity(userId, completed, selectedDate, userActivityId);
-                         console.log(resp)
+                        const resp = await this.#weekPlanningRepository.userCompletedActivity(userId, completed, selectedDate, userActivityId);
+                        console.log(resp)
 
-                       // await this.#weekPlanningRepository.userCompletedActivity(userGoalID, selectedDate, completed)
+                        // await this.#weekPlanningRepository.userCompletedActivity(userGoalID, selectedDate, completed)
 
                         window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
                     } catch (e) {
@@ -139,10 +140,11 @@ export class WeekPlanningController extends Controller {
                     }
                 }.bind(this));
 
-            function getDateOfSelectedDay(dayIndex) {
-                const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
-                return selectedDate;
-            }
+
+                function getDateOfSelectedDay(dayIndex) {
+                    const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
+                    return selectedDate;
+                }
 
                 cloneButtonDelete.addEventListener("click", async function () {
                     window.alert("Niet afgemaakt!");

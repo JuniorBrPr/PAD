@@ -14,10 +14,6 @@ export class WeekPlanningRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    // async dataWeekPlanning() {
-    //     return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
-    // }
-
 
     /**
      * Retrieves the user goals for the current user.
