@@ -40,23 +40,13 @@ export class profileRepository {
     }
 
     /**
-     * Retrieves all goals from the API.
-     *
-     * @returns {Promise<*>} A promise resolving to all goals.
-     */
-    async getGoals() {
-        return await this.#networkManager.doRequest(`${this.#route}/goals`, "GET");
-    }
-
-    /**
-     * Inserts a new user goal into the API.
-     *
-     * @param {number} userGoalID - The ID of the user's goal.
-     * @param {number} value - The value of the user's goal.
-     * @returns {Promise<*>} A promise resolving to the new user goal data.
+     * Inserts a goal for a given user goal ID and value.
+     * @param {string} userGoalID - The ID of the user goal.
+     * @param {string} value - The value of the user goal.
+     * @returns {Promise<*>} A promise resolving to the result of the insertion.
      */
     async insertGoal(userGoalID, value) {
-        return await this.#networkManager.doRequest(`/profile/insertGoal/${userGoalID}?&value=${value}`, "POST", {
+        return await this.#networkManager.doRequest(`${this.#route}/insertGoal/${userGoalID}?&value=${value}`, "POST", {
             "usergoalID": userGoalID,
             "value": value
         });
@@ -89,4 +79,14 @@ export class profileRepository {
     async calculateWeeklyGoalCompletionPercentage() {
         return await this.#networkManager.doRequest(`${this.#route}/weeklyGoalCompletionPercentage`, "GET");
     }
+
+    /**
+     * Checks if a goal exists for a given user goal ID.
+     * @param {string} usergoalID - The ID of the user goal to check.
+     * @returns {Promise<*>} A promise resolving to the result of the existence check.
+     */
+    async checkIfGoalExists(usergoalID) {
+        return await this.#networkManager.doRequest(`${this.#route}/checkIfGoalExists/${usergoalID}`, "GET");
+    }
+
 }

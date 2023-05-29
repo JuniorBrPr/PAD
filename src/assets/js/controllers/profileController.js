@@ -32,7 +32,6 @@ export class profileController extends Controller {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
         await this.#fetchUserData(1);
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
-        await this.#setProfileImage()
         await this.#displayWeeklyGoalCompletion(1)
         await this.#setupGoals(1)
         await this.#displayDailyGoalCompletionPercentage(1)
@@ -73,74 +72,52 @@ export class profileController extends Controller {
     }
 
     /**
-     * Sets the profile image for the user from local storage.
-     * @private
+     * Sets up the goals by performing various operations such as updating the date, retrieving user goals,
+     * populating the template with goal data, handling button clicks for goal completion, and updating
+     * the daily and weekly goal completion percentages.
      */
-    async #setProfileImage() {
-        const url = localStorage.getItem("profile-image")
-        const img = document.getElementById("profileImage")
-        img.src = url;
-    }
-
     async #setupGoals() {
-        const cardContainer = document.getElementById('card-container');
-        let date = new Date().toISOString().split('T')[0];
-        document.getElementById('date').innerHTML = date;
-        document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag' // Standard text
+        document.getElementById('date').innerHTML = new Date().toISOString().split('T')[0];
+        document.getElementById("titleDoelen").innerHTML = 'U heeft geen doelen vandaag'; // Standard text
         try {
             let userGoals = await this.#profileRepository.getUserGoals();
             if (userGoals.data.length >= 1) {
-                document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag' // Update text if goals have been found
-                for (let i = 0; i < userGoals.data.length; i++) {
-                    let usergoal = await this.#profileRepository.getUserGoals();
-                    let goal = await this.#profileRepository.getGoals()
-                    // Constants we are gonna use
-                    let goalTitle = usergoal.data[i].name;
-                    let unit = usergoal.data[i].unit;
-                    let usergoalID = usergoal.data[i].usergoalID;
+                document.getElementById("titleDoelen").innerHTML = 'Uw doelen van vandaag'; // Update text if goals have been found
+                const self = this; // Store the correct 'this' context
 
-                    // When goal hasnt been made yet (goal undefined) the value will be set to 0 so it loads the goal
-                    let completed = goal.data[i]?.completed || 0;
+                userGoals.data.forEach(usergoal => { // Use 'userGoals.data.forEach' to loop through the goals array
+                    // Clone the template
+                    const template = document.getElementById('usergoalTemplate');
+                    const clone = template.content.cloneNode(true);
 
-                    // When goal hasnt been made yet (goal undefined) the value will be set to the value
-                    // which was chosen by user and is from usergoal
-                    let value = goal.data[i]?.value || usergoal.data[i].valueChosenByUser;
-                    if (completed === 0) {
-                        // This is the layout of every card, it will be filled with the constants of the parameters
-                        let card = document.createElement('div');
-                        card.classList.add('activityCard');
-                        card.innerHTML = `
-                <div class="mx-auto my-4">
-                  <div class="activity-body justify-content-center text-center">
-                    <h5 id="activity-title" class="card-title">${goalTitle}</h5>
-                    <h6 id="activity-amount" class="card-subtitle mb-2">${value} ${unit}</h6>
-                      <button id="activity-btn-completed" class="=w-50">Gehaald</button>
-                  </div>
-                </div>`;
+                    // Set the values in the cloned template
+                    clone.getElementById('activity-title').innerHTML = usergoal.name;
+                    let value = usergoal?.value || usergoal.valueChosenByUser;
+                    clone.getElementById('activity-amount').innerHTML = value + " " + usergoal.unit;
 
-                        // When button is pressed this function will run
-                        card.querySelector('#activity-btn-completed').addEventListener('click', async () => {
-                            if (typeof goal.data[i] === 'undefined') {
-                                await this.#profileRepository.insertGoal(usergoalID, value)
+                    // Handle button click
+                    clone.querySelector("#activity-btn-completed").addEventListener("click", async (e) => {
+                        try {
+                            const checkIfGoalExists = await self.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
+                            if (checkIfGoalExists.data[0].goalCount === 0) {
+                                await self.#profileRepository.insertGoal(usergoal.usergoalID, value);
+                            } else {
+                                await self.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
                             }
 
-                            await this.#profileRepository.updateGoalCompletion(usergoalID);
+                            document.getElementById('card-container').removeChild(e.target.parentElement);
+                            await self.#displayDailyGoalCompletionPercentage(); // Update daily goal completion percentage
+                            await self.#displayWeeklyGoalCompletion(); // Update weekly goal completion percentage
+                        } catch (error) {
+                            console.error('Error occurred while posting / updating goal:', error);
+                        }
+                    });
 
-                            card.style.opacity = '0'; // Set opacity to 0 to start the transition
-                            card.style.transition = 'opacity 0.3s ease-in-out'; // CSS transition for opacity with ease-in-out timing function
-
-                            setTimeout(() => {
-                                cardContainer.removeChild(card); // Remove the element from the DOM after the transition is complete
-                            }, 300); // Use the same duration as the CSS transition (0.3s) for setTimeout
-                            await this.#displayDailyGoalCompletionPercentage() // Update daily goal completion percentage
-                            await this.#displayWeeklyGoalCompletion() // Update weekly goal completion percentage
-                        });
-                        cardContainer.appendChild(card);
-                    }
-                }
+                    document.getElementById('card-container').appendChild(clone);
+                });
             }
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
     }
 
