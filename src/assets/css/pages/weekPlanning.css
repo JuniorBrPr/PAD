@@ -3,10 +3,12 @@
     position: relative;
     left: 700px;
 }
+
 #textInfoPlanning{
     position: relative;
     left: 550px;
 }
+
 #lastWeekPlanning, #nextWeekPlanning{
     border-radius: 30px;
     background-color:#008E8A;

@@ -37,7 +37,7 @@ export class WeekPlanningController extends Controller {
      * Doel:
      * @returns {Promise<void>}
      */
-    async #handleWeekplanning() {
+    async #handleWeekplanning(data) {
         // event.preventDefault();
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
@@ -58,11 +58,12 @@ export class WeekPlanningController extends Controller {
             const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
             // Controleer of er een overeenkomend item in de fetched data is gevonden
             if (goals.length > 0) {
-                console.log("hiii")
                 // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
                 dayActivity.innerHTML = goals.dayOfTheWeek;
                 const activities = goals.map(goal => `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`).join("<br>");
                 dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${activities}`;
+
+
             } else {
                 // If no goal is found, display "No activity today"
                 dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit voor vandaag`
@@ -85,12 +86,67 @@ export class WeekPlanningController extends Controller {
             //data aan box toegevoegd
             dayBoxesOfTheWeek.appendChild(dayActivity);
 
+
             //Buttons in box toegevoegd
             dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
             dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
 
 
 
+            //#sendFinished(deleteButtonPlanning, completeButtonPlanning, date) {
+                //Buttons
+                // let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+                // let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+                //Put the data if the user completed it with the date
+               // let selectedDate = date.toLocaleDateString();
+
+
+                cloneButtonComplete.addEventListener("click", async function () {
+
+                  //  this.#formatDate(dateObj, i, today);
+                    try {
+                        const dataTest = await this.#weekPlanningRepository.userActivities();
+                        console.log(dataTest)
+                        const dataArray = Array.isArray(data.data) ? data.data : [data.data];
+
+                        const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
+
+                        const userId = goals[0].userId; // Assuming userId is the same for all goals on a specific day
+                        console.log(userId);
+
+                        const userActivityId = goals.map(goal => goal.id);
+                        console.log(userActivityId)
+
+                        const completed = true;
+                        console.log(completed)
+
+                        const selectedDateObj = getDateOfSelectedDay(i)
+                        const year = selectedDateObj.getFullYear();
+                        const month = String(selectedDateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with leading zero if necessary
+                        const day = String(selectedDateObj.getDate()).padStart(2, '0'); // Pad with leading zero if necessary
+                        const selectedDate = `${year}-${month}-${day}`;
+                        console.log(selectedDate)
+
+                         const resp = await this.#weekPlanningRepository.userCompletedActivity(userId, completed, selectedDate, userActivityId);
+                         console.log(resp)
+
+                       // await this.#weekPlanningRepository.userCompletedActivity(userGoalID, selectedDate, completed)
+
+                        window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
+                    } catch (e) {
+                        window.alert("Er is iets misgegaan, probeer het opnieuw!");
+                        console.log(e)
+                    }
+                }.bind(this));
+
+            function getDateOfSelectedDay(dayIndex) {
+                const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
+                return selectedDate;
+            }
+
+                cloneButtonDelete.addEventListener("click", async function () {
+                    window.alert("Niet afgemaakt!");
+                });
 
 
 
@@ -109,6 +165,8 @@ export class WeekPlanningController extends Controller {
                 i--;
                 this.#weekFunction(i, options)
             });
+
+
         }
     }
 
@@ -167,38 +225,15 @@ export class WeekPlanningController extends Controller {
         });
     }
 
-
     /**
      * Functie: om naar database te sturen als het (on)afgerond met datum.
      */
-    // #sendFinished(deleteButtonPlanning, completeButtonPlanning, date) {
-    //     //Buttons
-    //     let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-    //     let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-    //
-    //     //Put the data if the user completed it with the date
-    //     let selectedDate = date.toLocaleDateString();
-    //     cloneButtonComplete.addEventListener("click", async function () {
-    //         try {
-    //             const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, true, false);
-    //             console.log(data);
-    //             window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
-    //         } catch (e) {
-    //             window.alert("Er is iets misgegaan, probeer het opnieuw!");
-    //             console.log(e)
-    //         }
-    //     }.bind(this));
-    //     cloneButtonDelete.addEventListener("click", async function () {
-    //         try {
-    //             const data = await this.#weekPlanningRepository.userWeekPlanning(selectedDate, false, true);
-    //             console.log(data);
-    //             window.alert("U heeft de activiteit niet afgerond van: " + selectedDate);
-    //         } catch (e) {
-    //             window.alert("Er is iets misgegaan, probeer het opnieuw!");
-    //             console.log(e)
-    //         }
-    //     }.bind(this));
-    // }
+
+
+
+
+
+
 
 
 }

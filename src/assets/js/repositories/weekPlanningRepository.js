@@ -29,21 +29,24 @@ export class WeekPlanningRepository {
 
     }
 
+    /**
+     *
+     * @param selectedDate
+     * @param cloneButtonComplete
+     * @param cloneButtonDelete
+     * @returns {Promise<*>}
+     */
 
+   async userCompletedActivity(userId, completed, selectedDate, userActivityId ) {
+       const testPromise = userActivityId.map(userActivityId => {
+        return this.#networkManager.doRequest(`${this.#route}`, "POST", {
+           "userId": userId,
+            "completed": completed,
+            "date": selectedDate,
+            "usergoalID": userActivityId
 
-
-
-
-
-
-
-
-
-    // userWeekPlanning(selectedDate, cloneButtonComplete, cloneButtonDelete) {
-    //     return this.#networkManager.doRequest(`${this.#route}`, "POST", {
-    //         date: selectedDate,
-    //         done: cloneButtonComplete,
-    //         notDone: cloneButtonDelete
-    //     });
-    // }
+        });
+       });
+        return Promise.all(testPromise);
+    }
 }

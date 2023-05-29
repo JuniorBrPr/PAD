@@ -13,7 +13,8 @@ class WeekPlanningRoutes {
         this.#app = app;
 
        // this.#dataWeekPlanning();
-       //  this.#userWeekPlanning();
+
+         this.#userWeekPlanning();
         this.#userActivities();
        // this.#getGoals();
     }
@@ -48,6 +49,7 @@ class WeekPlanningRoutes {
                                    usergoal.dayOfTheWeek,
                                    usergoal.id,
                                    activity.unit,
+                                   usergoal.activityId,
                                    activity.name                            
                             FROM usergoal
                                      INNER JOIN activity ON activity.id = usergoal.activityId
@@ -67,26 +69,22 @@ class WeekPlanningRoutes {
 
 
 
+    #userWeekPlanning() {
+        this.#app.post("/planning", this.#JWTHelper.verifyJWTToken ,async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: "INSERT INTO goal(userID, completed, date, usergoalID) VALUES (?, ?, ?, ?)" ,
+                    values: [req.user.userId, 1, req.body.date, req.body.usergoalID],
+                });
+               // console.log(req.body.userActivityId);
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
+            }
+        });
+    }
 
 
-
-
-
-
-
-    // #userWeekPlanning() {
-    //     this.#app.post("/planning", async (req, res) => {
-    //         try {
-    //             const data = await this.#databaseHelper.handleQuery({
-    //                 query: "INSERT INTO weeklytableuser(id, date, done, notDone) VALUES (?, ?, ?, ?)",
-    //                 values: [req.body.id, req.body.date, req.body.done, req.body.notDone],
-    //             });
-    //             res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
-    //         } catch (e) {
-    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e})
-    //         }
-    //     });
-    // }
 }
 
 module.exports = WeekPlanningRoutes;
