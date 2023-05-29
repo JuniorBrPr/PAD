@@ -20,7 +20,9 @@ export class HomeController extends Controller{
     }
 
     /**
+     * @author Jayden.G
      * Loads contents of desired HTML file into the index.html .content div
+     *
      * @returns {Promise<>}
      * @private
      */
@@ -29,6 +31,13 @@ export class HomeController extends Controller{
 
         this.#loadVideo();
     }
+
+    /**
+     * @author Jayden.G
+     * Loads the video into our home page
+     *
+     * @private
+     */
 
     async #loadVideo() {
         const homeData = await this.#homeRepository.getData();

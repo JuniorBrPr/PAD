@@ -2,35 +2,41 @@
  * This class contains ExpressJS routes specific for the admin entity
  * this file is automatically loaded in app.js
  *
+ * @class
  * @author Jayden.G
  */
 
 class adminRoute {
     #errorCodes = require("../framework/utils/httpErrorCodes")
+    #constant = require("../framework/utils/constantSheet")
     #databaseHelper = require("../framework/utils/databaseHelper")
     #JWTHelper = require("../framework/utils/JWTHelper");
     #csvHelper = require('../framework/utils/csvHelper');
-    #nutritionId
-    #exerciseId
+
     #app
 
     /**
-     * Initializes a new instance of the ProfileRoutes class.
+     * @author Jayden.G
+     * Initializes a new instance of the adminRoute class.
      *
      * @constructor
-     * @param {object} app - The Express application instance.
+     * @param {Object} app - The Express application instance.
      */
 
     constructor(app) {
         this.#app = app;
 
-        this.#nutritionId = 1
-        this.#exerciseId = 1
-
         this.getSurveyResults();
         this.getNutritionSurveyContent();
         this.getExerciseSurveyContent();
     }
+
+    /**
+     * @author Jayden.G
+     * Route for getting survey results.
+     *
+     * Access is restricted to authenticated users.
+     */
 
     getSurveyResults() {
         this.#app.get("/admin/survey_data", this.#JWTHelper.verifyJWTToken, async (req, res) => {
@@ -69,19 +75,27 @@ class adminRoute {
         });
     }
 
+    /**
+     * @author Jayden.G
+     * Route for getting content of the nutrition survey.
+     *
+     * Access is restricted to authenticated users.
+     */
+
     getNutritionSurveyContent() {
-        this.#app.get("/admin/survey_content/nutrition", async (req, res) => {
+        this.#app.get("/admin/survey_content/nutrition", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const questions = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
+                                   questionTypeId        AS typeId,
                                    questionType.type     AS type,
                                    question.surveyId     AS surveyId
                             FROM question
                             INNER JOIN questionType ON question.questionTypeId = questionType.id
                             WHERE question.surveyId = ?
                             ORDER BY question.order;`,
-                    values: [this.#nutritionId]
+                    values: [this.#constant.SURVEY_TYPE.Nutrition]
                 });
 
                 for(let i = 0; i < questions.length; i++) {
@@ -102,19 +116,27 @@ class adminRoute {
         });
     }
 
+    /**
+     * @author Jayden.G
+     * Route for getting content of the exercise survey.
+     *
+     * Access is restricted to authenticated users.
+     */
+
     getExerciseSurveyContent() {
-        this.#app.get("/admin/survey_content/exercise", async (req, res) => {
+        this.#app.get("/admin/survey_content/exercise", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
                 const questions = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
+                                   questionTypeId        AS typeId,
                                    questionType.type     AS type,
                                    question.surveyId     AS surveyId
                             FROM question
                             INNER JOIN questionType ON question.questionTypeId = questionType.id
                             WHERE question.surveyId = ?
                             ORDER BY question.order;`,
-                    values: [this.#exerciseId]
+                    values: [this.#constant.SURVEY_TYPE.Exercise]
                 });
 
                 for(let i = 0; i < questions.length; i++) {

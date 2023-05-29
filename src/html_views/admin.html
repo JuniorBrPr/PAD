@@ -78,8 +78,24 @@
 
                         <!-- Navigation Buttons -->
                         <div class="survey-navigation">
-                            <button id="prevBtn" class="btn btn-primary">Previous</button>
-                            <button id="nextBtn" class="btn btn-primary">Next</button>
+
+                            <div id="question-container" class="list-group">
+
+                            </div>
+
+                            <div id="cycle-btn-list" class="m-3" >
+
+                                <div id="question-cycle-btn-list" class="d-flex justify-content-center">
+                                    <button id="backBtn" class="btn btn-primary m-2">Terug</button>
+                                    <button id="prevBtn" class="btn btn-primary m-2">Vorige</button>
+                                    <button id="nextBtn" class="btn btn-primary  m-2">Volgende</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex" style="height: 5rem;">
+                                <div class="vr"></div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -89,3 +105,20 @@
         </div>
     </div>
 </div>
+
+<template id="question-template">
+    <div class="card text-center mt-2 mx-auto w-100">
+        <div class="card-body">
+
+            <h4 class="question-title"></h4>
+
+            <p class="question-type"></p>
+
+            <div class="row mt-3 mb-4">
+                <ul id="options-container" class="list-group">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
