@@ -88,6 +88,21 @@ export class WeekPlanningController extends Controller {
             //data aan box toegevoegd
             dayBoxesOfTheWeek.appendChild(dayActivity);
 
+            // for (const goal of goals) {
+            //     // const cloneButtonDelete = document.createElement('button');
+            //     // cloneButtonDelete.classList.add('deleteButtonPlanning');
+            //     // cloneButtonDelete.textContent = 'Delete';
+            //     //
+            //     // const cloneButtonComplete = document.createElement('button');
+            //     // cloneButtonComplete.classList.add('completeButtonPlanning');
+            //     // cloneButtonComplete.textContent = 'Complete';
+            //
+            //     const activityDiv = document.createElement('div');
+            //     activityDiv.classList.add('activityItem');
+            //     activityDiv.innerHTML = `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`;
+            //     activityDiv.appendChild(cloneButtonDelete);
+            //     activityDiv.appendChild(cloneButtonComplete);
+            //     dayBoxesOfTheWeek.appendChild(activityDiv);
 
                 //Buttons in box toegevoegd
                 dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
@@ -103,7 +118,6 @@ export class WeekPlanningController extends Controller {
 
 
                 cloneButtonComplete.addEventListener("click", async function () {
-
                     //  this.#formatDate(dateObj, i, today);
                     try {
                         const dataTest = await this.#weekPlanningRepository.userActivities();
@@ -126,32 +140,86 @@ export class WeekPlanningController extends Controller {
                         const month = String(selectedDateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with leading zero if necessary
                         const day = String(selectedDateObj.getDate()).padStart(2, '0'); // Pad with leading zero if necessary
                         const selectedDate = `${year}-${month}-${day}`;
+                        const selectedDateForSuccesBox = `${day}-${month}-${year}`;
                         console.log(selectedDate)
 
                         const resp = await this.#weekPlanningRepository.userCompletedActivity(userId, completed, selectedDate, userActivityId);
                         console.log(resp)
 
-                        // await this.#weekPlanningRepository.userCompletedActivity(userGoalID, selectedDate, completed)
+                        const validBox =  document.querySelector("#succesContainer");
+                        const succesAlert = document.createElement('div');
+                        succesAlert.classList.add('alert', 'alert-success');
+                        succesAlert.setAttribute('role', 'alert');
+                        succesAlert.textContent = 'U heeft de activiteiten succesvol afgerond van: ' + "" + selectedDateForSuccesBox;
 
-                        window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
+                        const okButton = document.createElement('button');
+                        okButton.classList.add('btn', 'btn-primary');
+                        okButton.textContent = 'OK';
+                        okButton.addEventListener('click', function() {
+                            validBox.removeChild(succesAlert);
+                        });
+                        succesAlert.appendChild(okButton);
+
+                        validBox.innerHTML = '';
+                        validBox.appendChild(succesAlert);
+                    //    window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
                     } catch (e) {
-                        window.alert("Er is iets misgegaan, probeer het opnieuw!");
-                        console.log(e)
+                       // window.alert("Er is iets misgegaan, probeer het opnieuw!");
+                      //  console.log(e)
+                        const infoBox =  document.querySelector("#infoContainer");
+                        const infoAlert = document.createElement('div');
+                        infoAlert.classList.add('alert', 'alert-dark');
+                        infoAlert.setAttribute('role', 'alert');
+                        infoAlert.textContent = 'U kunt geen activiteiten afronden, als u geen activiteiten heeft';
+
+                        const okButton = document.createElement('button');
+                        okButton.classList.add('btn', 'btn-primary');
+                        okButton.textContent = 'OK';
+                        okButton.addEventListener('click', function() {
+                            infoBox.removeChild(infoAlert);
+                        });
+                        infoAlert.appendChild(okButton);
+
+
+                        infoBox.innerHTML = '';
+                        infoBox.appendChild(infoAlert);
                     }
                 }.bind(this));
 
 
-                function getDateOfSelectedDay(dayIndex) {
-                    const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
-                    return selectedDate;
-                }
 
                 cloneButtonDelete.addEventListener("click", async function () {
-                    window.alert("Niet afgemaakt!");
+
+                    const selectedDateObj = getDateOfSelectedDay(i)
+                    const year = selectedDateObj.getFullYear();
+                    const month = String(selectedDateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with leading zero if necessary
+                    const day = String(selectedDateObj.getDate()).padStart(2, '0'); // Pad with leading zero if necessary
+                    const selectedDate = `${day}-${month}-${year}`;
+
+                   // window.alert("Niet afgemaakt!");
+                    const invalidBox =  document.querySelector("#failContainer");
+                    const failAlert = document.createElement('div');
+                    failAlert.classList.add('alert', 'alert-danger');
+                    failAlert.setAttribute('role', 'alert');
+                    failAlert.textContent = 'U heeft de activiteiten helaas niet afgerond van: ' + "" + selectedDate;
+
+                    const okButton = document.createElement('button');
+                    okButton.classList.add('btn', 'btn-primary');
+                    okButton.textContent = 'OK';
+                    okButton.addEventListener('click', function() {
+                        invalidBox.removeChild(failAlert);
+                    });
+                    failAlert.appendChild(okButton);
+
+                    invalidBox.innerHTML = '';
+                    invalidBox.appendChild(failAlert);
                 });
 
 
-
+            function getDateOfSelectedDay(dayIndex) {
+                const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
+                return selectedDate;
+            }
 
 
 
