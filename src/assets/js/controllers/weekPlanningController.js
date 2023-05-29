@@ -47,7 +47,6 @@ export class WeekPlanningController extends Controller {
         let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
 
-
         //Loopt door alle dagen van de week
         for (let i = 0; i < 7; i++) {
             const data = await this.#weekPlanningRepository.userActivities();
@@ -59,6 +58,15 @@ export class WeekPlanningController extends Controller {
 
             const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
             // Controleer of er een overeenkomend item in de fetched data is gevonden
+
+
+            let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+            let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+
+            //Verwijdert de orinal html button
+            deleteButtonPlanning.remove();
+            completeButtonPlanning.remove();
+
             if (goals.length > 0) {
                 // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
                 dayActivity.innerHTML = goals.dayOfTheWeek;
@@ -68,15 +76,22 @@ export class WeekPlanningController extends Controller {
 
             } else {
                 // If no goal is found, display "No activity today"
-                dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit voor vandaag`
+                dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit voor vandaag`;
+                cloneButtonComplete.style.display = "none";
+                cloneButtonDelete.style.display = "none";
+               //  cloneButtonComplete.disbled = true;
+               // cloneButtonDelete.disabled = true;
+
+
             }
+
 
             //Box toegevoegd
             containerDayBox.appendChild(dayBoxesOfTheWeek);
 
             //Buttons
-            let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-            let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+            // let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+            // let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
 
             //Verwijdert de orinal html button
             deleteButtonPlanning.remove();
@@ -88,33 +103,11 @@ export class WeekPlanningController extends Controller {
             //data aan box toegevoegd
             dayBoxesOfTheWeek.appendChild(dayActivity);
 
-            // for (const goal of goals) {
-            //     // const cloneButtonDelete = document.createElement('button');
-            //     // cloneButtonDelete.classList.add('deleteButtonPlanning');
-            //     // cloneButtonDelete.textContent = 'Delete';
-            //     //
-            //     // const cloneButtonComplete = document.createElement('button');
-            //     // cloneButtonComplete.classList.add('completeButtonPlanning');
-            //     // cloneButtonComplete.textContent = 'Complete';
-            //
-            //     const activityDiv = document.createElement('div');
-            //     activityDiv.classList.add('activityItem');
-            //     activityDiv.innerHTML = `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`;
-            //     activityDiv.appendChild(cloneButtonDelete);
-            //     activityDiv.appendChild(cloneButtonComplete);
-            //     dayBoxesOfTheWeek.appendChild(activityDiv);
-
                 //Buttons in box toegevoegd
                 dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
                 dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
 
 
-                //#sendFinished(deleteButtonPlanning, completeButtonPlanning, date) {
-            //    Buttons
-            //     let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-            //     let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-                //Put the data if the user completed it with the date
-                // let selectedDate = date.toLocaleDateString();
 
 
                 cloneButtonComplete.addEventListener("click", async function () {
@@ -146,7 +139,7 @@ export class WeekPlanningController extends Controller {
                         const resp = await this.#weekPlanningRepository.userCompletedActivity(userId, completed, selectedDate, userActivityId);
                         console.log(resp)
 
-                        const validBox =  document.querySelector("#succesContainer");
+                        const validBox = document.querySelector("#succesContainer");
                         const succesAlert = document.createElement('div');
                         succesAlert.classList.add('alert', 'alert-success');
                         succesAlert.setAttribute('role', 'alert');
@@ -155,27 +148,26 @@ export class WeekPlanningController extends Controller {
                         const okButton = document.createElement('button');
                         okButton.classList.add('btn', 'btn-primary');
                         okButton.textContent = 'OK';
-                        okButton.addEventListener('click', function() {
+                        okButton.addEventListener('click', function () {
                             validBox.removeChild(succesAlert);
                         });
                         succesAlert.appendChild(okButton);
 
                         validBox.innerHTML = '';
                         validBox.appendChild(succesAlert);
-                    //    window.alert("U heeft de activiteit succesvol afgerond van: " + selectedDate);
+
                     } catch (e) {
-                       // window.alert("Er is iets misgegaan, probeer het opnieuw!");
-                      //  console.log(e)
-                        const infoBox =  document.querySelector("#infoContainer");
+
+                        const infoBox = document.querySelector("#infoContainer");
                         const infoAlert = document.createElement('div');
                         infoAlert.classList.add('alert', 'alert-dark');
                         infoAlert.setAttribute('role', 'alert');
-                        infoAlert.textContent = 'U kunt geen activiteiten afronden, als u geen activiteiten heeft';
+                        infoAlert.textContent = 'Er is iets mis gegaan! U kunt het opnieuw proberen';
 
                         const okButton = document.createElement('button');
                         okButton.classList.add('btn', 'btn-primary');
                         okButton.textContent = 'OK';
-                        okButton.addEventListener('click', function() {
+                        okButton.addEventListener('click', function () {
                             infoBox.removeChild(infoAlert);
                         });
                         infoAlert.appendChild(okButton);
@@ -187,7 +179,6 @@ export class WeekPlanningController extends Controller {
                 }.bind(this));
 
 
-
                 cloneButtonDelete.addEventListener("click", async function () {
 
                     const selectedDateObj = getDateOfSelectedDay(i)
@@ -196,8 +187,8 @@ export class WeekPlanningController extends Controller {
                     const day = String(selectedDateObj.getDate()).padStart(2, '0'); // Pad with leading zero if necessary
                     const selectedDate = `${day}-${month}-${year}`;
 
-                   // window.alert("Niet afgemaakt!");
-                    const invalidBox =  document.querySelector("#failContainer");
+                    // window.alert("Niet afgemaakt!");
+                    const invalidBox = document.querySelector("#failContainer");
                     const failAlert = document.createElement('div');
                     failAlert.classList.add('alert', 'alert-danger');
                     failAlert.setAttribute('role', 'alert');
@@ -206,7 +197,7 @@ export class WeekPlanningController extends Controller {
                     const okButton = document.createElement('button');
                     okButton.classList.add('btn', 'btn-primary');
                     okButton.textContent = 'OK';
-                    okButton.addEventListener('click', function() {
+                    okButton.addEventListener('click', function () {
                         invalidBox.removeChild(failAlert);
                     });
                     failAlert.appendChild(okButton);
@@ -215,12 +206,11 @@ export class WeekPlanningController extends Controller {
                     invalidBox.appendChild(failAlert);
                 });
 
-
+            }
             function getDateOfSelectedDay(dayIndex) {
                 const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
                 return selectedDate;
             }
-
 
 
             const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
@@ -236,8 +226,6 @@ export class WeekPlanningController extends Controller {
                 this.#weekFunction(i, options)
             });
 
-
-        }
     }
 
 
@@ -298,12 +286,6 @@ export class WeekPlanningController extends Controller {
     /**
      * Functie: om naar database te sturen als het (on)afgerond met datum.
      */
-
-
-
-
-
-
 
 
 }
