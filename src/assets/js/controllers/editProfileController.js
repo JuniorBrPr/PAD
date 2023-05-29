@@ -26,9 +26,8 @@ export class editProfileController extends Controller {
      */
     async #setupView() {
         this.#createProfileEditView = await super.loadHtmlIntoContent("html_views/editProfile.html")
-        await this.#setStandardProfileImage();
         document.getElementById("saveProfileBtn").addEventListener("click", (event) => this.#validateForm());
-        document.getElementById("InputProfileImage").addEventListener("change", () => this.#setProfileImage())
+        document.getElementById("backToProfile").addEventListener("click", (event) => App.loadController(App.CONTROLLER_PROFILE));
 
         // Load all existing data of the user as standard values
         let data = await this.#editProfileRepository.getData(1);
@@ -69,7 +68,6 @@ export class editProfileController extends Controller {
                 checkHeightValueResult === true &&
                 checkEmailValueResult === true
             ) {
-                await this.#saveProfileImage();
                 await this.#sendData(firstname, surname, email, height, weight, age, 1);
                 App.loadController(App.CONTROLLER_PROFILE);
             } else {
@@ -208,36 +206,6 @@ export class editProfileController extends Controller {
     }
 
     /**
-     * Sets the profile image based on the input.
-     * @private
-     */
-    async #setProfileImage() {
-        let profileImage = document.getElementById("InputProfileImage")
-        const reader = new FileReader();
-        reader.addEventListener("load", () => {
-            document.getElementById("imagePreview").setAttribute("src", reader.result);
-        })
-        reader.readAsDataURL(profileImage.files[0]);
-    }
-
-    /**
-     * Sets the profile image based on the input.
-     * @private
-     */
-    async #saveProfileImage() {
-        let profileImage = document.getElementById("InputProfileImage")
-        const reader = new FileReader();
-        if (profileImage.files[0] != null) {
-            reader.addEventListener("load", () => {
-                localStorage.setItem("profile-image", reader.result);
-                console.log(localStorage.getItem("profile-image"))
-                document.getElementById("imagePreview").setAttribute("src", localStorage.getItem("profile-image"));
-            })
-            reader.readAsDataURL(profileImage.files[0]);
-        }
-    }
-
-    /**
      * Sends the updated profile data to the repository.
      * @private
      * @param {string} firstname - The user's first name.
@@ -253,16 +221,5 @@ export class editProfileController extends Controller {
         } catch (e) {
             console.log("Er is iets fout gegaan", e)
         }
-    }
-
-    /**
-     * Sets the profile image to a standard image.
-     *
-     * @returns {Promise<void>}
-     */
-    async #setStandardProfileImage() {
-        const url = localStorage.getItem("profile-image")
-        const img = document.getElementById("imagePreview")
-        img.src = url;
     }
 }
