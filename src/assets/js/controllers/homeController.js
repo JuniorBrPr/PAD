@@ -27,19 +27,7 @@ export class HomeController extends Controller{
     async #setupView() {
         this.#welcomeView = await super.loadHtmlIntoContent("html_views/home.html");
 
-        this.#loadFeatureImage();
-        this.#loadTeamImage();
         this.#loadVideo();
-    }
-
-    #loadFeatureImage() {
-        const featureImage = document.getElementById("feature-image");
-        featureImage.src = "../src/assets/images/home/feature.webp";
-    }
-
-    #loadTeamImage() {
-        const teamImage = document.getElementById("team-image");
-        teamImage.src = "../src/assets/images/home/people.webp";
     }
 
     async #loadVideo() {

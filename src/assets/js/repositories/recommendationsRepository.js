@@ -9,8 +9,8 @@ export class recommendationsRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async getNutritionRecommendations(userId) {
+    async getNutritionRecommendations() {
         return await this.#networkManager
-            .doRequest(`${this.#route}nutrition/${userId}`, "GET", {});
+            .doRequest(`${this.#route}nutrition`, "GET", {});
     }
 }

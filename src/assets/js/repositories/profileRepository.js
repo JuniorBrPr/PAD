@@ -13,8 +13,8 @@ export class profileRepository {
     #networkManager
 
     /**
-     * ProfileRepository constructor.
-     * Initializes route and network manager.
+     * Constructs a new ProfileRepository object.
+     * Initializes the route and network manager.
      */
     constructor() {
         this.#route = "/profile";
@@ -22,7 +22,8 @@ export class profileRepository {
     }
 
     /**
-     * Retrieves profile data for a given user ID.
+     * Retrieves profile data for a given user.
+     *
      * @returns {Promise<*>} A promise resolving to the user profile data.
      */
     async getData() {
@@ -30,8 +31,9 @@ export class profileRepository {
     }
 
     /**
-     * Retrieves user goals for a given user ID.
-     * @returns {Promise<*>} A promise resolving to the user goals data.
+     * Retrieves the user goals for the current user.
+     *
+     * @returns {Promise<*>} A promise resolving to the user's goals.
      */
     async getUserGoals() {
         return await this.#networkManager.doRequest(`${this.#route}/userGoals`, "GET");
@@ -51,16 +53,18 @@ export class profileRepository {
     }
 
     /**
-     * Updates the completion status of a user goal.
-     * @param {string} userGoalID - The ID of the user goal to update.
-     * @returns {Promise<*>} A promise resolving to the result of the update.
+     * Updates a user's goal completion status in the API.
+     *
+     * @param {number} userGoalID - The ID of the user's goal.
+     * @returns {Promise<*>} A promise resolving to the updated user goal data.
      */
     async updateGoalCompletion(userGoalID) {
         return await this.#networkManager.doRequest(`${this.#route}/goalCompletion/${userGoalID}`, "PUT", userGoalID);
     }
 
     /**
-     * Calculates the daily goal completion percentage.
+     * Calculates the daily goal completion percentage for the current user.
+     *
      * @returns {Promise<*>} A promise resolving to the daily goal completion percentage.
      */
     async calculateDailyGoalCompletionPercentage() {
@@ -68,7 +72,8 @@ export class profileRepository {
     }
 
     /**
-     * Calculates the weekly goal completion percentage.
+     * Calculates the weekly goal completion percentage for the current user.
+     *
      * @returns {Promise<*>} A promise resolving to the weekly goal completion percentage.
      */
     async calculateWeeklyGoalCompletionPercentage() {

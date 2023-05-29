@@ -27,13 +27,12 @@ export class SurveyRepository {
      * @async
      * @public
      * @function getUnansweredSurveys
-     * @param {number} userId - The id of the user
      * @returns {Promise<*>} - The response from the server
      * @author Junior Javier Brito Perez
      */
-    async getUnansweredSurveys(userId) {
+    async getUnansweredSurveys() {
         return await this.#networkManager
-            .doRequest(`${this.#route}answered/${userId}`, "GET", {});
+            .doRequest(`${this.#route}answered`, "GET");
     }
 
     /**
@@ -46,20 +45,19 @@ export class SurveyRepository {
      */
     async getAll() {
         return await this.#networkManager
-            .doRequest(`${this.#route}all`, "GET", {});
+            .doRequest(`${this.#route}all`, "GET");
     }
 
     /**
      * Get all the questions in the nutrition survey.
      * @async
      * @public
-     * @param userId
      * @returns {Promise<*>}
      * @author Junior Javier Brito Perez
      */
-    async getNutritionSurvey(userId) {
+    async getNutritionSurvey() {
         const data = await this.#networkManager
-            .doRequest(`${this.#route}nutrition/${userId}`, "GET", {});
+            .doRequest(`${this.#route}nutrition`, "GET");
 
         return await this.getOptions(data);
     }
@@ -85,22 +83,21 @@ export class SurveyRepository {
         return data;
     }
 
-    async getQuestions(userId, surveyId) {
+    async getQuestions(surveyId) {
         return await this.#networkManager
-            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId, userId: userId});
+            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId});
     }
 
     /**
      * Get all the questions in the physical activity survey.
      * @async
      * @public
-     * @param {[Object]} data - The questions to get the options for.
-     * @param {number} userId - The id of the user
+     * @param {{surveyId: number, data: {id: number, options: {text: string, open: boolean}[]}[]}} data - The questions to get the options for.
      * @returns {Promise<*>} - The response from the server
      */
-    async putSurveyResult(data, userId) {
+    async putSurveyResult(data) {
         return await this.#networkManager
-            .doRequest(`${this.#route}response/${userId}`, "PUT", data);
+            .doRequest(`${this.#route}response`, "PUT", data);
     }
 
 

@@ -19,6 +19,7 @@ class UsersRoutes {
 
         //call method per route for the users entity
         this.#login()
+        this.#isAdmin()
     }
 
     /**
@@ -61,6 +62,24 @@ class UsersRoutes {
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Wrong username or password"});
                     console.log(`User ${emailAddress} tried to login but failed`)
                 }
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
+
+    #isAdmin() {
+        this.#app.get("/users/isAdmin", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+
+                const adminStatus = req.user.role;
+
+                if (adminStatus === 1) {
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({isAdmin: true});
+                } else {
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({isAdmin: false});
+                }
+
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }

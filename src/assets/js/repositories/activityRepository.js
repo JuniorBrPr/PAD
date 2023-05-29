@@ -20,12 +20,11 @@ export class activityRepository {
     /**
      * @author Jayden.G
      * Get goals for a user by their ID
-     * @param {number|string} userid - User ID
      * @returns {Promise<>} - Goals data
      */
 
-    async getGoals(userid) {
-        return await this.#networkManager.doRequest(`${this.#route}/goals/${userid}`, "GET");
+    async getGoals() {
+        return await this.#networkManager.doRequest(`${this.#route}/goals`, "GET");
     }
 
     /**
@@ -35,8 +34,8 @@ export class activityRepository {
      * @returns {Promise<>} - Total score
      */
 
-    async getScore(userid) {
-        return await this.#networkManager.doRequest(`${this.#route}/score/${userid}`, "GET");
+    async getScore() {
+        return await this.#networkManager.doRequest(`${this.#route}/score`, "GET");
     }
 
     /**

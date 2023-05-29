@@ -122,8 +122,11 @@ export class profileController extends Controller {
     }
 
     /**
-     * Updates the daily goal completion percentage by retrieving the calculated percentage from the profile repository
-     * and updating the UI elements accordingly.
+     Displays the daily goal completion percentage on the webpage.
+     Calls the #profileRepository.calculateDailyGoalCompletionPercentage function to get the percentage.
+     If there is already a goal, the function presents the percentage.
+     If no goals exist, the function sets the innertext to 0%.
+     Calls the updatePercentageBar function initially to set the initial percentage value.
      */
     async #displayDailyGoalCompletionPercentage() {
         let calculateDailyGoalCompletionPercentage = await this.#profileRepository.calculateDailyGoalCompletionPercentage();
@@ -158,8 +161,10 @@ export class profileController extends Controller {
     }
 
     /**
-     * Updates the weekly goal completion percentage by retrieving the calculated percentage from the profile repository
-     * and updating the UI elements accordingly.
+     Updates the percentage bar based on the percentageGoalCompletion value.
+     Calculates the circumference of the circle element and sets the strokeDasharray and strokeDashoffset properties
+     to display the progress bar. If the percentageGoalCompletion is 100, the function changes the text of the
+     "titleDoelen" element to indicate that the daily goal has been achieved.
      */
     async #displayWeeklyGoalCompletion() {
         let data = await this.#profileRepository.calculateWeeklyGoalCompletionPercentage();
