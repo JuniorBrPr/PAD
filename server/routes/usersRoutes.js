@@ -8,6 +8,7 @@ class UsersRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
     #JWTHelper = require("../framework/utils/JWTHelper");
+    #cryptoHelper = require("../framework/utils/cryptoHelper");
     #app
 
     /**
@@ -28,38 +29,40 @@ class UsersRoutes {
     #login() {
         this.#app.post("/users/login", async (req, res) => {
             const emailAddress = req.body.emailAddress;
-
             //TODO: You shouldn't save a password unencrypted!! Improve this by using this.#cryptoHelper functions :)
-            const password = req.body.password;
-
-            //want to implement this when we have a register form
-            //const hashedPassword = this.#cryptoHelper.getHashedPassword(password)
-
+            const enteredpassword = req.body.password;
             try {
                 const data = await this.#databaseHelper.handleQuery({
-                    query: "SELECT id, firstname, role FROM user WHERE emailAddress = ? AND password = ?",
-                    values: [emailAddress, password]
+                    query: "SELECT id, firstname, password, role FROM user WHERE emailAddress = ? ",
+                    values: [emailAddress]
                 });
                 if (data.length === 1) {
+                    const storedHashedPassword = data[0].password;
+                    const enteredHashedPassword = this.#cryptoHelper.getHashedPassword(enteredpassword);
 
-                    const payload = {
-                        userId: data[0].id,
-                        firstname: data[0].firstname,
-                        role: data[0].role,
-                    };
+                    if (storedHashedPassword === enteredHashedPassword) {
+                        const payload = {
+                            userId: data[0].id,
+                            firstname: data[0].firstname,
+                            role: data[0].role,
+                        };
 
-                    const accessToken = this.#JWTHelper.createJWTToken(payload);
+                        const accessToken = this.#JWTHelper.createJWTToken(payload);
 
-                    console.log(accessToken)
+                        console.log(accessToken)
 
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json({
-                        accessToken: accessToken,
-                    });
+                        res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                            accessToken: accessToken,
+                        });
 
-                    console.log(`User ${data[0].firstname} logged in`);
+                        console.log(`User ${data[0].firstname} logged in`);
+                    } else {
+                        res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Wrong username or password"});
+                        console.log(`User ${emailAddress} tried to login but failed`)
+                    }
                 } else {
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Wrong username or password"});
-                    console.log(`User ${emailAddress} tried to login but failed`)
+                    console.log(`User ${emailAddress} tried to login but failed`);
                 }
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
