@@ -43,8 +43,8 @@ export class WeekPlanningController extends Controller {
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
 
-        // let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
-        // let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
+        let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
+        let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
 
         //Loopt door alle dagen van de week
@@ -95,14 +95,14 @@ export class WeekPlanningController extends Controller {
             // let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
 
             //Verwijdert de orinal html button
-            // deleteButtonPlanning.remove();
-            // completeButtonPlanning.remove();
+            deleteButtonPlanning.remove();
+            completeButtonPlanning.remove();
 
             //Datums aan box toegevoegd
             dayBoxesOfTheWeek.appendChild(this.#formatDate(dateToday, i, today));
 
             //data aan box toegevoegd
-            // dayBoxesOfTheWeek.appendChild(dayActivity);
+            dayBoxesOfTheWeek.appendChild(dayActivity);
             //
             // //Buttons in box toegevoegd
             // dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
