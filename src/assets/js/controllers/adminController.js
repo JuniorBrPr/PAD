@@ -69,7 +69,6 @@ export class AdminController extends Controller {
                 document.body.removeChild(link);
             } catch (e) {
                 console.error(e);
-                // TODO: Handle error, show a notification to the user.
             }
         });
     }

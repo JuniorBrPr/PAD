@@ -56,6 +56,9 @@ export class LoginController extends Controller{
             //let the session manager know we are logged in by setting the username, never set the password in localstorage
             App.sessionManager.set("token", user.accessToken);
 
+            console.log(user.toString());
+            console.log(App.sessionManager.get("token"));
+
             App.loadController(App.CONTROLLER_HOME);
 
             window.location.reload();

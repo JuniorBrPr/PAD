@@ -1,7 +1,8 @@
 // Context: Navbar
-describe("Navbar", () => {
-    const endpoint = "/users/login";
+const mockedResponseLogin = {"token": "test"};
+const mockedSurveyStatus = {"survey_status": 1};
 
+describe("Navbar", () => {
     // Run before each test in this context
     beforeEach(() => {
         // Go to the specified URL
@@ -25,10 +26,7 @@ describe("Navbar", () => {
         // Start a fake server
         cy.server();
 
-        const mockedResponseLogin = {
-            "user_id": 2,
-            "role": 1
-        };
+
 
         // Intercept the request to get our user data and respond with mocked data
         cy.intercept('POST', '/users/login', {
@@ -36,9 +34,7 @@ describe("Navbar", () => {
             body: mockedResponseLogin,
         }).as('login');
 
-        const mockedSurveyStatus = {
-            "survey_status": 1
-        };
+
 
         // Intercept the request to get survey status and respond with mocked data
         cy.intercept("GET", "/survey/status/*", {
@@ -60,7 +56,7 @@ describe("Navbar", () => {
         cy.wait("@login");
 
         // After a successful login, the URL should now contain #welcome.
-        cy.url().should("contain", "#welcome");
+        cy.url().should("contain", "#home");
 
         // isLoggedIn function test
         cy.get(".logged-in-only").should("not.have.class", "d-none");

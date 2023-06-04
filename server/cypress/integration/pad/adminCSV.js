@@ -25,7 +25,7 @@ describe("Login", () => {
         //Start a fake server
         cy.server();
 
-        const mockedResponse = {"accessToken": "test"};
+        const mockedResponse = {"email": "test"};
 
         //Add a stub with the URL /users/login as a POST
         //Respond with a JSON-object when requested
@@ -59,7 +59,7 @@ describe("Login", () => {
         });
 
         //After a successful login, the URL should now contain #profile.
-        cy.url().should("contain", "#home");
+        cy.url().should("contain", "#profile");
     });
 
     //Test: Failed login

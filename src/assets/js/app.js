@@ -232,6 +232,14 @@ export class App {
         App.isLoggedIn(
             () => {
 
+                for (const navElement of navElements) {
+                    if (navElement.classList.contains("logged-out-only") || navElement.classList.contains("admin-only")) {
+                        navElement.classList.add("d-none");
+                    } else {
+                        navElement.classList.remove("d-none");
+                    }
+                }
+
                 App.isAdmin(
                     () => {
                         for (const navElement of navElements) {
@@ -242,14 +250,6 @@ export class App {
                             }
                         }
                     })
-
-                for (const navElement of navElements) {
-                    if (navElement.classList.contains("logged-out-only") || navElement.classList.contains("admin-only")) {
-                        navElement.classList.add("d-none");
-                    } else {
-                        navElement.classList.remove("d-none");
-                    }
-                }
             },
             () => {
                 for (const navElement of navElements) {
@@ -286,6 +286,7 @@ export class App {
      */
 
     static async isAdmin(whenYes, whenNo) {
+        console.log("checking admin status")
         if (await this.adminStatusChecker()) {
             whenYes();
         } else {
