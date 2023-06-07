@@ -2,13 +2,23 @@
 describe("Edit Profile", () => {
     const endpoint = "/editProfile/:userId";
 
-    //Run before each test in this context
+    // Run before each test in this context
     beforeEach(() => {
+        //Start a fake server
+        cy.server();
 
-        cy.visit("http://localhost:8080/#login");
+        const mockedResponse = {"accessToken": "test"};
+
+        //Add a stub with the URL /users/login as a POST
+        //Respond with a JSON-object when requested
+        //Give the stub the alias: @login
+        cy.intercept('POST', '/users/login', {
+            statusCode: 200,
+            body: mockedResponse,
+        }).as('login');
 
         //Find the field for the email and type the text "test".
-        cy.get("#InputEmailAddress").type("test@gmail.com");
+        cy.get("#InputEmailAddress").type("test");
 
         //Find the field for the password and type the text "test".
         cy.get("#InputPassword").type("test");
@@ -16,6 +26,19 @@ describe("Edit Profile", () => {
         //Find the button to login and click it
         console.log(cy.get(".login-form button"));
         cy.get(".login-form button").click();
+
+        //Wait for the @login-stub to be called by the click-event.
+        cy.wait("@login");
+
+        //The @login-stub is called, check the contents of the incoming request.
+        cy.get("@login").should((xhr) => {
+            //The email should match what we typed earlier
+            const body = xhr.request.body;
+            expect(body.emailAddress).equals("test@gmail.com");
+
+            //The password should match what we typed earlier
+            expect(body.password).equals("test");
+        });
 
         // Visit the Profile page
         cy.visit("http://localhost:8080/#editProfile");
