@@ -8,15 +8,17 @@ describe("Profile", () => {
         cy.server();
 
         const mockedResponse = {"accessToken": "test"};
-
-        //Add a stub with the URL /users/login as a POST
-        //Respond with a JSON-object when requested
-        //Give the stub the alias: @login
         cy.intercept('POST', '/users/login', {
             statusCode: 200,
             body: mockedResponse,
         }).as('login');
 
+        cy.intercept('POST', '/users/admin', {
+            statusCode: 200,
+            body: false,
+        }).as('isAdmin');
+
+        cy.visit('http://localhost:8080/#login')
         //Find the field for the email and type the text "test".
         cy.get("#InputEmailAddress").type("test");
 
@@ -34,7 +36,7 @@ describe("Profile", () => {
         cy.get("@login").should((xhr) => {
             //The email should match what we typed earlier
             const body = xhr.request.body;
-            expect(body.emailAddress).equals("test@gmail.com");
+            expect(body.emailAddress).equals("test");
 
             //The password should match what we typed earlier
             expect(body.password).equals("test");
