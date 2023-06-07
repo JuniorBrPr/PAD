@@ -20,8 +20,8 @@ class emailRoutes {
      */
     constructor(app) {
         this.#app = app;
-        const minutes = "12" // Specified on which minute
-        const hours = "00" // Specified on which hour
+        const minutes = "00" // Specified on which minute
+        const hours = "12" // Specified on which hour
         // Sends an email every day at specific time
         cron.schedule(`${minutes} ${hours} * * *`, async () => {
             await this.#formatEmail()
@@ -36,7 +36,6 @@ class emailRoutes {
      * @throws {Error} - If an error occurs while retrieving data.
      */
     async #returnEmailAndName() {
-        Console.log("Haal data op uit user");
         try {
             const data = await this.#databaseHelper.handleQuery({
                 query: `SELECT emailAddress, firstname, surname, id
@@ -94,11 +93,9 @@ class emailRoutes {
     async #formatEmail() {
         const userData = await this.#returnEmailAndName();
         const subject = "Daily Reminder"; // Subject should be the same for every user
-        console.log("begin format email");
 
         for (let i = 0; i < userData.length; i++) { // Loops for every user
             try {
-                console.log("User ID: " + userData[i].id);
                 const userGoalsData = await this.#returnUserGoals(userData[i].id);
 
                 if (userGoalsData != null) { // Check if userGoalsData is not null or empty
@@ -113,7 +110,6 @@ class emailRoutes {
                     body += `</ul><p>Blijf gemotiveerd en ga ervoor!</p><p>Met vriendelijke groet <span style="color: #008C93;">Fountain Of Fit</span></p></body>`;
 
                     console.log(body);
-                    console.log("sending email");
                     await this.#sendEmail(userData[i].firstname, userData[i].surname, userData[i].emailAddress, subject, body);
                 }
             } catch (e) {

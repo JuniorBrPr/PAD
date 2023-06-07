@@ -30,11 +30,11 @@ export class profileController extends Controller {
      */
     async #setupView() {
         this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
-        await this.#fetchUserData(1);
+        await this.#fetchUserData();
         document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
-        await this.#displayWeeklyGoalCompletion(1)
-        await this.#setupGoals(1)
-        await this.#displayDailyGoalCompletionPercentage(1)
+        await this.#displayWeeklyGoalCompletion()
+        await this.#setupGoals()
+        await this.#displayDailyGoalCompletionPercentage()
     }
 
     /**

@@ -30,7 +30,7 @@ export class editProfileController extends Controller {
         document.getElementById("backToProfile").addEventListener("click", (event) => App.loadController(App.CONTROLLER_PROFILE));
 
         // Load all existing data of the user as standard values
-        let data = await this.#editProfileRepository.getData(1);
+        let data = await this.#editProfileRepository.getData(0);
         document.getElementById("InputFirstname").value = data.data[0].firstname
         document.getElementById("InputSurname").value = data.data[0].surname
         document.getElementById("InputEmail").value = data.data[0].emailAddress
@@ -217,7 +217,7 @@ export class editProfileController extends Controller {
      */
     async #sendData(firstname, surname, email, height, weight, age) {
         try {
-            const data = await this.#editProfileRepository.sendData(firstname, surname, email, weight, height, age)
+            await this.#editProfileRepository.sendData(firstname, surname, email, weight, height, age)
         } catch (e) {
             console.log("Er is iets fout gegaan", e)
         }
