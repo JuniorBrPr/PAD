@@ -4,14 +4,11 @@
  */
 
 import {Controller} from "./controller.js";
-import {App} from "../app.js";
 import {WeekPlanningRepository} from "../repositories/weekPlanningRepository.js";
 
 export class WeekPlanningController extends Controller {
     #planningView
     #weekPlanningRepository
-    #data
-    #app
 
     constructor() {
         super();
@@ -19,6 +16,12 @@ export class WeekPlanningController extends Controller {
         this.#setupViewPlanning()
     }
 
+    /**
+     * Sets up the view for week planning by loading the HTML content, attaching event listeners to relevant elements,
+     * and calling the appropriate handler functions.
+     *
+     * @author Hanan Ouardi
+     */
     async #setupViewPlanning() {
         this.#planningView = await super.loadHtmlIntoContent("html_views/weekPlanning.html")
 
@@ -27,16 +30,18 @@ export class WeekPlanningController extends Controller {
         this.#planningView.querySelector(".completeButtonPlanning").addEventListener("click",
             (event) => this.#handleWeekplanning(event));
 
-
-        //this.#planningView.addEventListener("click", event => this.#handleWeekplanning(event));
         this.#handleWeekplanning();
 
     }
 
     /**
-     * @returns {Promise<void>}
+     * Handles the week planning by setting up the view with day boxes, activities, and buttons for each day of the week.
+     *
+     * @throws {Error} If an error occurs while handling the week planning.
+     *
+     * @author Hanan Ouardi
      */
-    async #handleWeekplanning(data, dateObj, index) {
+    async #handleWeekplanning() {
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
