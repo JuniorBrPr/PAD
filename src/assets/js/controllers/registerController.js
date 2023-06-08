@@ -1,5 +1,6 @@
 /**
- * Controller for create registration
+ * Controller for creating a user in registration form
+ * @author Hanan Ouardi
  */
 
 import {Controller} from "./controller.js";
@@ -17,17 +18,25 @@ export class RegisterController extends Controller {
         this.#setupView()
     }
 
+    /**
+     * Sets up the view and event listeners for the registration form.
+     * @private
+     * @author Hanan Ouardi
+     */
     async #setupView() {
         this.#registerView = await super.loadHtmlIntoContent("html_views/register.html")
-
         this.#registerView.querySelector(".btn").addEventListener("click", async (event) => {
             event.preventDefault();
             await this.#saveRegister();
         });
     }
-    async #saveRegister(event) {
-        // event.preventDefault();
 
+    /**
+     * Saves the user registration data and performs validation.
+     * @private
+     * @author Hanan Ouardi
+     */
+    async #saveRegister() {
         const errorBox = this.#registerView.querySelector(".error")
         const validBox = this.#registerView.querySelector(".valid-feedback");
         const invalidBox = this.#registerView.querySelector(".invalid-feedback");
@@ -41,37 +50,24 @@ export class RegisterController extends Controller {
         errorBox.innerHTML = "";
         invalidBox.innerHTML = "";
 
-
-
         if (!firstname || !surname || !emailAddress || !password || !confirmPassword) {
             errorBox.innerHTML = "U moet eerst uw gegevens invullen";
         } else if (!validateEmail(emailAddress)) {
             errorBox.innerHTML = "Email klopt niet";
         } else if (password !== confirmPassword) {
             errorBox.innerHTML = "wachtwoorden komen niet overeen!";
-
         } else {
             try {
-
                 const emailExists = await this.#registerRepository.checkEmailExists(emailAddress)
-                    //await this.#registerRepository.checkEmailExists(emailAddress);
-
-                console.log(emailExists)
-
                 if (emailExists.code === 400) {
                     errorBox.innerHTML = "Het opgegeven e-mailadres bestaat al.";
                 } else {
-                    const data = await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
-                    console.log(data);
+                    await this.#registerRepository.createRegister(firstname, surname, emailAddress, password);
                     validBox.innerHTML = "U hebt succesvol geregistreerd, u wordt zo omgeleid naar de vragenlijst";
-                    console.log(firstname + surname + emailAddress + password + confirmPassword);
                     App.loadController(App.CONTROLLER_SURVEY);
-
                 }
             } catch (e) {
-
                 errorBox.innerHTML = e.reason
-                console.log(e)
             }
         }
 
