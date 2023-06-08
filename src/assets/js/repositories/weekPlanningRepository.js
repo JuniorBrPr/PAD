@@ -1,5 +1,6 @@
 /**
- * Ontvangt de data van de database om in de planning te zetten
+ * Retrieves data from the database to populate the week planning
+ * Handles communication with the network manager
  *
  * @author Hanan Ouardi
  */
@@ -9,14 +10,20 @@ export class WeekPlanningRepository {
     #networkManager;
     #route;
 
+    /**
+     * Constructs a WeekPlanningRepository object.
+     * Initializes the route and network manager.
+     */
     constructor() {
         this.#route = "/planning"
         this.#networkManager = new NetworkManager();
     }
+
     /**
      * Retrieves the user goals for the current user.
+     * @returns {Promise<Array>} A promise resolving to an array the user's activities.
      *
-     * @returns {Promise<*>} A promise resolving to the user's goals.
+     * @author Hanan Ouardi
      */
     async userActivities() {
         return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
@@ -24,29 +31,26 @@ export class WeekPlanningRepository {
     }
 
     /**
+     * Updates the completed status of a user activity.
+     * @param {string} userId - The ID of the user.
+     * @param {boolean} completed - The completion status of the activity.
+     * @param {string} selectedDate - The selected date for the activity.
+     * @param {Array<string>} userActivityId - The IDs of the user activities.
+     * @returns {Promise<Array>} A promise resolving to an array of the updated user activities.
      *
-     * @param selectedDate
-     * @param cloneButtonComplete
-     * @param cloneButtonDelete
-     * @returns {Promise<*>}
+     * @author Hanan Ouardi
      */
+    async userCompletedActivity(userId, completed, selectedDate, userActivityId) {
+        const testPromise = userActivityId.map(userActivityId => {
+            return this.#networkManager.doRequest(`${this.#route}`, "POST", {
+                "userId": userId,
+                "completed": completed,
+                "date": selectedDate,
+                "usergoalID": userActivityId
 
-   async userCompletedActivity(userId, completed, selectedDate, userActivityId ) {
-       const testPromise = userActivityId.map(userActivityId => {
-        return this.#networkManager.doRequest(`${this.#route}`, "POST", {
-           "userId": userId,
-            "completed": completed,
-            "date": selectedDate,
-            "usergoalID": userActivityId
-
+            });
         });
-       });
         return Promise.all(testPromise);
     }
-
-    // async userWeekPlanningUpdate(userGoalID) {
-    //     return await this.#networkManager.doRequest(`${this.#route}`, "PUT", userGoalID);
-    // }
-
 
 }
