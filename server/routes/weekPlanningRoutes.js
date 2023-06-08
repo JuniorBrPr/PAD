@@ -67,21 +67,21 @@ class WeekPlanningRoutes {
         });
     }
 
-    // #userWeekPlanningUpdate(){
-    //     this.#app.put("/planning", this.#JWTHelper.verifyJWTToken, async (req, res) => {
-    //         try {
-    //             const data = await this.#databaseHelper.handleQuery({
-    //                 query: `UPDATE goal
-    //                         SET completed = 0
-    //                         WHERE usergoalID = ?`,
-    //                 values: [req.body.usergoalID]
-    //             })
-    //             res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
-    //         } catch (e) {
-    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
-    //         }
-    //     });
-    // }
+    #userWeekPlanningUpdate(){
+        this.#app.put("/planning", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+                const data = await this.#databaseHelper.handleQuery({
+                    query: `UPDATE goal
+                            SET completed = 0
+                            WHERE usergoalID = ?`,
+                    values: [req.body.usergoalID]
+                })
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
 
 
 }
