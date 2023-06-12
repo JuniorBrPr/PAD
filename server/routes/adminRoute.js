@@ -98,13 +98,13 @@ class adminRoute {
                     values: [this.#constant.SURVEY_TYPE.Nutrition]
                 });
 
-                for(let i = 0; i < questions.length; i++) {
-                    questions[i].answers = await this.#databaseHelper.handleQuery({
+                for(const question of questions) {
+                    question.answers = await this.#databaseHelper.handleQuery({
                         query: `SELECT questionoption.value
                                 FROM questionoption
                                          JOIN question ON questionoption.questionId = question.id
                                 WHERE question.surveyId = ? AND question.id = ?;`,
-                        values: [questions[i].surveyId, questions[i].id]
+                        values: [question.surveyId, question.id]
                     });
                 }
 
@@ -139,13 +139,13 @@ class adminRoute {
                     values: [this.#constant.SURVEY_TYPE.Exercise]
                 });
 
-                for(let i = 0; i < questions.length; i++) {
-                    questions[i].answers = await this.#databaseHelper.handleQuery({
+                for(const question of questions) {
+                    question.answers = await this.#databaseHelper.handleQuery({
                         query: `SELECT questionoption.value
                                 FROM questionoption
                                          JOIN question ON questionoption.questionId = question.id
                                 WHERE question.surveyId = ? AND question.id = ?;`,
-                        values: [questions[i].surveyId, questions[i].id]
+                        values: [question.surveyId, question.id]
                     });
                 }
 

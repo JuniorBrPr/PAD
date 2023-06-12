@@ -1,15 +1,68 @@
-//Context: Edit profile
-describe("Edit Profile",  () => {
+describe("Edit Profile", () => {
     const endpoint = "/editProfile/:userId";
 
-        //Run before each test in this context
-        beforeEach(() => {
-        //Set user as logged in
-            const session = {"user_id": "1"};
-            localStorage.setItem("session", JSON.stringify(session));
-        //Go to the specified URL
-            cy.visit("http://localhost:8080/#editProfile");
+    // Run before each test in this context
+    beforeEach(() => {
+
+        cy.intercept('GET', '/home/data', {
+            statusCode: 200,
+            body: {
+                "video": "https://www.youtube.com/embed/IfdFyeZTrFI",
+                "board_message": "Blijf gezond eten!"
+            }
+        }).as('getData');
+
+
+        const mockedResponse = {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwMCwiZmlyc3RuYW1lIjoiSm9leVBlcm1LZXkiLCJyb2xlIjoxfQ.xXSJo2LZFyLbR_HbSg1Dwd83VuODwKyXKwu0uPrJ76Q"};
+        cy.intercept('POST', '/users/login', {
+            statusCode: 200,
+            body: mockedResponse,
+        }).as('login');
+
+        cy.intercept('GET', '/users/isAdmin', {
+            statusCode: 200,
+            body: {"isAdmin": false},
+        }).as('isAdmin');
+
+        cy.visit('http://localhost:8080/#login')
+        //Find the field for the email and type the text "test".
+        cy.get("#InputEmailAddress").type("test");
+
+        //Find the field for the password and type the text "test".
+        cy.get("#InputPassword").type("test");
+
+        //Find the button to login and click it
+        console.log(cy.get(".login-form button"));
+        cy.get(".login-form button").click();
+
+        //Wait for the @login-stub to be called by the click-event.
+        cy.wait("@login");
+
+        //The @login-stub is called, check the contents of the incoming request.
+        cy.get("@login").should((xhr) => {
+            //The email should match what we typed earlier
+            const body = xhr.request.body;
+            expect(body.emailAddress).equals("test");
+
+            //The password should match what we typed earlier
+            expect(body.password).equals("test");
         });
+
+        cy.intercept('GET', '/profile', {
+            statusCode: 200,
+            body: {
+                    firstname: 'John',
+                    surname: 'Doe',
+                    date_of_birth: '1990-01-01',
+                    emailAddress: 'john.doe@example.com',
+                    weight: 70,
+                    height: 180
+            }
+        }).as('getData');
+
+        // Visit the Profile page
+        cy.visit("http://localhost:8080/#editProfile");
+    });
 
     //Test: Validate login form
     it("Valid edit profile form", () => {
@@ -34,12 +87,9 @@ describe("Edit Profile",  () => {
     });
 
     //Test: Successful edit profile
-    it("Successful edit profile",  () => {
-        //Start a fake server
-        cy.server();
-
+    it("Successful edit profile", () => {
         //Add a stub with the URL /editProfile/:userId as a PUT
-        cy.intercept('PUT', '/editProfile/1', {
+        cy.intercept('PUT', '/editProfile', {
             statusCode: 200
             // body: mockedResponse,
         }).as('editProfile');
@@ -62,16 +112,15 @@ describe("Edit Profile",  () => {
         // Find the field for the age, clear its value, and type the date "01-01-2000".
         cy.get("#InputAge").clear().type("2000-01-01");
 
-        //Find the button to login and click it
         console.log(cy.get("#saveProfileBtn"));
         cy.get("#saveProfileBtn").click();
 
         //After a successful login, the URL should now contain #profile.
-        cy.url().should("contain", "#profile");
+        cy.url().should("contain", "http://localhost:8080/#profile");
     });
 
     //Test: Failed edit profile
-    it("Failed edit profile",  () => {
+    it("Failed edit profile", () => {
         //Start a fake server
         cy.server();
 
@@ -95,5 +144,8 @@ describe("Edit Profile",  () => {
 
         //Find the button to login and click it.
         cy.get("#saveProfileBtn").click();
+
+        //After a successful login, the URL should now contain #profile.
+        cy.url().should("contain", "#editProfile");
     });
 });

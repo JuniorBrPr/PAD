@@ -9,7 +9,7 @@ import {App} from "../../app.js";
 
 export class NetworkManager {
 
-    #sessionManager = new SessionManager();
+    #sessionManager
 
     /**
      * Does an AJAX request to server(NodeJS)
@@ -20,6 +20,8 @@ export class NetworkManager {
      */
 
     async doRequest(route, method, data = {},) {
+        this.#sessionManager = new SessionManager()
+
         const url = baseUrl + route
 
         let response;
@@ -44,8 +46,6 @@ export class NetworkManager {
                 json = JSON.stringify(data);
                 options.body = json;
             }
-
-            // console.log(`Doing ${method} request to ${url}\n Sent JSON: ${json}`);
 
             response = await fetch(url, options);
 
@@ -96,7 +96,7 @@ export class NetworkManager {
     async doFileRequest(route, method, formData) {
         const url = baseUrl + route
 
-        if(!formData instanceof FormData) {
+        if (!formData instanceof FormData) {
             console.log("Warning: you are doing a file request but data passed is not of type FormData")
         }
 

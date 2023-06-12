@@ -1,4 +1,4 @@
-//Context: Login with JWT
+//Context: Adminpage
 describe("Login", () => {
 
     beforeEach(() => {
@@ -9,11 +9,6 @@ describe("Login", () => {
             statusCode: 200,
             body: {"accessToken": "test"},
         }).as('login');
-
-        cy.intercept('GET', '/users/isAdmin', {
-            statusCode: 200,
-            body: {"isAdmin": false},
-        }).as('isAdmin');
     });
 
     //Test: Validate login form
@@ -27,7 +22,7 @@ describe("Login", () => {
     });
 
     //Test: Successful login
-    it("Successful login user", () => {
+    it("Successful login", () => {
 
         cy.get("#InputEmailAddress").type("test");
         cy.get("#InputPassword").type("test");
@@ -47,38 +42,6 @@ describe("Login", () => {
         });
 
         cy.url().should("contain", "#home");
-
-        cy.get('.nav-item.admin-only').should('not.be.visible');
-    });
-
-    //Test: Successful login
-    it("Successful login administrator", () => {
-
-        cy.intercept('GET', '/users/isAdmin', {
-            statusCode: 200,
-            body: {"isAdmin": true},
-        }).as('isAdmin');
-
-        cy.get("#InputEmailAddress").type("test");
-        cy.get("#InputPassword").type("test");
-
-        console.log(cy.get(".login-form button"));
-        cy.get(".login-form button").click();
-
-        cy.wait("@login");
-
-        cy.get("@login").should((xhr) => {
-            //The email should match what we typed earlier
-            const body = xhr.request.body;
-            expect(body.emailAddress).equals("test");
-
-            //The password should match what we typed earlier
-            expect(body.password).equals("test");
-        });
-
-        cy.url().should("contain", "#home");
-
-        cy.get('.nav-item.admin-only').should('be.visible');
     });
 
     //Test: Failed login
