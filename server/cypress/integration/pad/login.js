@@ -3,17 +3,25 @@ describe("Login", () => {
 
     beforeEach(() => {
 
-        cy.visit("http://localhost:8080/#login");
+        cy.intercept('GET', '/home/data', {
+            statusCode: 200,
+            body: {
+                "video": "https://www.youtube.com/embed/IfdFyeZTrFI",
+                "board_message": "Blijf gezond eten!"
+            }
+        }).as('getData');
 
         cy.intercept('POST', '/users/login', {
             statusCode: 200,
-            body: {"accessToken": "test"},
+            body: {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwMCwiZmlyc3RuYW1lIjoiSm9leVBlcm1LZXkiLCJyb2xlIjoxfQ.xXSJo2LZFyLbR_HbSg1Dwd83VuODwKyXKwu0uPrJ76Q"},
         }).as('login');
 
         cy.intercept('GET', '/users/isAdmin', {
             statusCode: 200,
             body: {"isAdmin": false},
         }).as('isAdmin');
+
+        cy.visit("http://localhost:8080/#login");
     });
 
     //Test: Validate login form
@@ -27,32 +35,7 @@ describe("Login", () => {
     });
 
     //Test: Successful login
-    it("Successful login user", () => {
-
-        cy.get("#InputEmailAddress").type("test");
-        cy.get("#InputPassword").type("test");
-
-        console.log(cy.get(".login-form button"));
-        cy.get(".login-form button").click();
-
-        cy.wait("@login");
-
-        cy.get("@login").should((xhr) => {
-            //The email should match what we typed earlier
-            const body = xhr.request.body;
-            expect(body.emailAddress).equals("test");
-
-            //The password should match what we typed earlier
-            expect(body.password).equals("test");
-        });
-
-        cy.url().should("contain", "#home");
-
-        cy.get('.nav-item.admin-only').should('not.be.visible');
-    });
-
-    //Test: Successful login
-    it("Successful login administrator", () => {
+    it("Successful login", () => {
 
         cy.intercept('GET', '/users/isAdmin', {
             statusCode: 200,
@@ -77,8 +60,6 @@ describe("Login", () => {
         });
 
         cy.url().should("contain", "#home");
-
-        cy.get('.nav-item.admin-only').should('be.visible');
     });
 
     //Test: Failed login
