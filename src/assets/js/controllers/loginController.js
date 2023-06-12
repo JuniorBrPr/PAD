@@ -60,8 +60,6 @@ export class LoginController extends Controller{
             console.log(App.sessionManager.get("token"));
 
             App.loadController(App.CONTROLLER_HOME);
-
-            window.location.reload();
         } catch(error) {
             //if unauthorized error code, show error message to the user
             if(error.code === 401) {
