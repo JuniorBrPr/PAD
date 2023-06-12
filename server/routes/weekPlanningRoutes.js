@@ -15,7 +15,7 @@ class WeekPlanningRoutes {
      *
      * @param {object} app - The Express app object.
      */
-    constructor(app) {
+    constructor(app) { //initialize the object
         this.#app = app;
 
         this.#userWeekPlanning();

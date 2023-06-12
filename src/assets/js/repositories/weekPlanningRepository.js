@@ -26,6 +26,8 @@ export class WeekPlanningRepository {
      * @author Hanan Ouardi
      */
     async userActivities() {
+        //The await keyword is used to pause the execution of the function until the Promise returned by this.#networkManager.doRequest() is resolved.
+        //no async: doRequest without waiting for the completion, returns unresolved promise
         return await this.#networkManager.doRequest(`${this.#route}`, "GET", {});
 
     }
@@ -41,7 +43,7 @@ export class WeekPlanningRepository {
      * @author Hanan Ouardi
      */
     async userCompletedActivity(userId, completed, selectedDate, userActivityId) {
-        const testPromise = userActivityId.map(userActivityId => {
+        const promiseActivity = userActivityId.map(userActivityId => { //array map to iterate over each userActivityId
             return this.#networkManager.doRequest(`${this.#route}`, "POST", {
                 "userId": userId,
                 "completed": completed,
@@ -50,7 +52,8 @@ export class WeekPlanningRepository {
 
             });
         });
-        return Promise.all(testPromise);
+        //The Promise.all method returns a new promise that resolves to an array of the resolved values.
+        return Promise.all(promiseActivity); //wait for all the promises to resolve before return final result
     }
 
 }
