@@ -52,7 +52,15 @@ class profileRoutes {
                 //if we founnd one record we know the user exists in users table
                 if (data.length === 1) {
                     // Values individually saved
-                    res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                            "firstname": data[0].firstname,
+                            "surname": data[0].surname,
+                            "date_of_birth": data[0].date_of_birth,
+                            "emailAddress": data[0].emailAddress,
+                            "weight": data[0].weight,
+                            "height": data[0].height
+                        }
+                    );
                 } else {
                     //wrong username
                     res.status(this.#errorCodes.AUTHORIZATION_ERROR_CODE).json({reason: "Gebruiker bestaat niet"});
@@ -228,7 +236,9 @@ class profileRoutes {
                             WHERE usergoalID = ?`,
                     values: [req.params.usergoalID]
                 })
-                res.status(this.#errorCodes.HTTP_OK_CODE).json({data});
+                res.status(this.#errorCodes.HTTP_OK_CODE).json({
+                    goalCount: data[0].goalCount
+                });
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }

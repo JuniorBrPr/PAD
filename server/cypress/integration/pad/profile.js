@@ -4,8 +4,13 @@
 describe("Profile", () => {
     // Run before each test in this context
     beforeEach(() => {
-        //Start a fake server
-        cy.server();
+        cy.intercept('GET', '/home/data', {
+            statusCode: 200,
+            body: {
+                "video": "https://www.youtube.com/embed/IfdFyeZTrFI",
+                "board_message": "Blijf gezond eten!"
+            }
+        }).as('getData');
 
         const mockedResponse = {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwMCwiZmlyc3RuYW1lIjoiSm9leVBlcm1LZXkiLCJyb2xlIjoxfQ.xXSJo2LZFyLbR_HbSg1Dwd83VuODwKyXKwu0uPrJ76Q"};
         cy.intercept('POST', '/users/login', {
@@ -42,6 +47,18 @@ describe("Profile", () => {
             expect(body.password).equals("test");
         });
 
+        cy.intercept('GET', '/profile', {
+            statusCode: 200,
+            body: {
+                firstname: 'John',
+                surname: 'Doe',
+                date_of_birth: '1990-01-01',
+                emailAddress: 'john.doe@example.com',
+                weight: 70,
+                height: 180
+            }
+        }).as('getData');
+
         // Intercept the request to get our user data and respond with mocked data
         cy.intercept('GET', '/profile/userGoals', {
             statusCode: 200,
@@ -61,21 +78,6 @@ describe("Profile", () => {
             }
         }).as('getUserGoals');
 
-        cy.intercept('GET', '/profile', {
-            statusCode: 200,
-            body: {
-                data:
-                    {
-                        firstname: 'John',
-                        surname: 'Doe',
-                        date_of_birth: '1990-01-01',
-                        emailAddress: 'john.doe@example.com',
-                        weight: 70,
-                        height: 180
-                    }
-            }
-        }).as('getData');
-
         // Visit the Profile page
         cy.visit("http://localhost:8080/#profile");
     });
@@ -85,8 +87,8 @@ describe("Profile", () => {
      */
     it('should check if a clone of usergoalTemplate exists', () => {
         // Check if a clone of usergoalTemplate exists
-        cy.get('#usergoalTemplate').siblings('.activity-body').should('exist');
-    });
+        cy.get('.activity-body').should('exist');
+    })
 
     /**
      * Test case to verify the ability to complete an activity.
@@ -95,24 +97,33 @@ describe("Profile", () => {
         // Click the completed button of the activity
         cy.get("#activity-btn-completed").click();
 
-        cy.intercept('POST', '/profile/insertGoal/1', {
+        cy.intercept('GET', '/profile/checkIfGoalExists/1', {
+            statusCode: 200,
+            body: {
+                data: [
+                    {
+                        goalCount: 0
+                    }
+                ]
+            }
+        }).as('checkIfGoalExists');
+
+        cy.intercept('POST', '/profile/insertGoal/*', {
             statusCode: 200,
             body: {
                 data: [
                     {
                         userId: 1,
                         value: 1,
-                        completed: false,
+                        completed: 1,
                         usergoalID: 1,
                         date: new Date()
                     }
                 ]
             }
-        }).as('Post UserGoal');
+        }).as('insertGoal');
 
-        // Wait 1 second
-        cy.wait(1000)
         // Check if a clone of usergoalTemplate exists
-        cy.get('#usergoalTemplate').siblings('.activity-body').should('not.exist');
+        cy.get('.activity-body').should('not.exist');
     });
 });

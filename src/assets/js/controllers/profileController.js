@@ -12,9 +12,7 @@ import {App} from "../app.js";
 export class profileController extends Controller {
     #createProfileView
     #profileRepository
-    #data
-    #app
-
+    
     /**
      * Constructs a new profileController instance.
      */
@@ -29,12 +27,16 @@ export class profileController extends Controller {
      * @private
      */
     async #setupView() {
-        this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
-        await this.#fetchUserData();
-        document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
-        await this.#displayWeeklyGoalCompletion()
-        await this.#setupGoals()
-        await this.#displayDailyGoalCompletionPercentage()
+        try {
+            this.#createProfileView = await super.loadHtmlIntoContent("html_views/profile.html")
+            await this.#fetchUserData();
+            document.getElementById("buttonWijzig").addEventListener("click", (event) => App.loadController(App.CONTROLLER_EDITPROFILE));
+            await this.#setupGoals()
+            await this.#displayWeeklyGoalCompletion()
+            await this.#displayDailyGoalCompletionPercentage()
+        } catch (e) {
+            console.log("Error while loading", e)
+        }
     }
 
     /**
@@ -44,11 +46,11 @@ export class profileController extends Controller {
     async #fetchUserData() {
         try {
             const data = await this.#profileRepository.getData();
-            document.getElementById("profileFullName").innerHTML = data.data[0].firstname + " " + data.data[0].surname
-            document.getElementById("profileEmail").innerHTML = data.data[0].emailAddress
-            document.getElementById("profileAge").innerHTML = this.#calculateAge(data.data[0].date_of_birth) + " Jaar"
-            document.getElementById("profileHeight").innerHTML = data.data[0].height + " CM"
-            document.getElementById("profileWeight").innerHTML = data.data[0].weight + " Kilo"
+            document.getElementById("profileFullName").innerHTML = data.firstname + " " + data.surname
+            document.getElementById("profileEmail").innerHTML = data.emailAddress
+            document.getElementById("profileAge").innerHTML = this.#calculateAge(data.date_of_birth) + " Jaar"
+            document.getElementById("profileHeight").innerHTML = data.height + " CM"
+            document.getElementById("profileWeight").innerHTML = data.weight + " Kilo"
         } catch (e) {
             console.log("Error while loading", e)
         }
@@ -99,7 +101,7 @@ export class profileController extends Controller {
                     clone.querySelector("#activity-btn-completed").addEventListener("click", async (e) => {
                         try {
                             const checkIfGoalExists = await self.#profileRepository.checkIfGoalExists(usergoal.usergoalID);
-                            if (checkIfGoalExists.data[0].goalCount === 0) {
+                            if (checkIfGoalExists.goalCount === 0) {
                                 await self.#profileRepository.insertGoal(usergoal.usergoalID, value);
                             } else {
                                 await self.#profileRepository.updateGoalCompletion(usergoal.usergoalID);
