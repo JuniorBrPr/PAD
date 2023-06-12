@@ -151,7 +151,8 @@ export class App {
             case App.CONTROLLER_ADMIN:
                 App.isAdmin(
                     () => new AdminController(),
-                    () => new ErrorController({errorCode: 403, errorMessage: "Access Forbidden"})
+                    () => new ErrorController(
+                        {errorCode: 403, errorMessage: "Access Forbidden"})
                 )
                 break;
 
@@ -358,8 +359,6 @@ export class App {
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);
-
-        window.location.reload();
     }
 }
 
