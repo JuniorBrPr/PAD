@@ -21,7 +21,7 @@ export class RegisterController extends Controller {
     /**
      * Sets up the view and event listeners for the registration form.
      * @private
-     * @author Hanan Ouardi
+     *
      */
     async #setupView() {
         this.#registerView = await super.loadHtmlIntoContent("html_views/register.html")
@@ -41,11 +41,11 @@ export class RegisterController extends Controller {
         const validBox = this.#registerView.querySelector(".valid-feedback");
         const invalidBox = this.#registerView.querySelector(".invalid-feedback");
 
-        let firstname = this.#registerView.querySelector("#inputFirstName").value.trim();
-        let surname = this.#registerView.querySelector("#inputLastName").value.trim();
-        let emailAddress = this.#registerView.querySelector("#inputEmail").value.trim();
-        let password = this.#registerView.querySelector("#inputPassword").value.trim();
-        let confirmPassword = this.#registerView.querySelector("#inputConfirmPassword").value.trim();
+        const firstname = this.#registerView.querySelector("#inputFirstName").value.trim();
+        const surname = this.#registerView.querySelector("#inputLastName").value.trim();
+        const emailAddress = this.#registerView.querySelector("#inputEmail").value.trim();
+        const password = this.#registerView.querySelector("#inputPassword").value.trim();
+        const confirmPassword = this.#registerView.querySelector("#inputConfirmPassword").value.trim();
 
         errorBox.innerHTML = "";
         invalidBox.innerHTML = "";
@@ -71,6 +71,13 @@ export class RegisterController extends Controller {
             }
         }
 
+        /**
+         * Checks email format
+         * @param email
+         * @returns {boolean}
+         *
+         * @author Hanan Ouardi
+         */
         function validateEmail(email) {
             const emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
             return emailFormat.test(email);

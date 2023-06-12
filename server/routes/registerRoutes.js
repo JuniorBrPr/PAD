@@ -34,11 +34,11 @@ class RegisterRoutes {
                     query: "SELECT * FROM user WHERE emailAddress = ?",
                     values: [req.body.emailAddress],
                 });
-                if (emailExists.length === 1) {
+                if (emailExists.length === 1) { //email already exists
                     res.status(this.#httpErrorCodes.BAD_REQUEST_CODE).json({reason: "Email already exists"});
                     return;
                 }
-                res.status(this.#httpErrorCodes.HTTP_OK_CODE).json({reason: 'Everything is gucci'})
+                res.status(this.#httpErrorCodes.HTTP_OK_CODE).json({reason: "Email is good"})
             } catch (e) {
                 res.status(this.#httpErrorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
