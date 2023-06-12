@@ -7,7 +7,7 @@ describe("Profile", () => {
         //Start a fake server
         cy.server();
 
-        const mockedResponse = {"accessToken": "test"};
+        const mockedResponse = {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwMCwiZmlyc3RuYW1lIjoiSm9leVBlcm1LZXkiLCJyb2xlIjoxfQ.xXSJo2LZFyLbR_HbSg1Dwd83VuODwKyXKwu0uPrJ76Q"};
         cy.intercept('POST', '/users/login', {
             statusCode: 200,
             body: mockedResponse,
@@ -60,6 +60,21 @@ describe("Profile", () => {
                 ]
             }
         }).as('getUserGoals');
+
+        cy.intercept('GET', '/profile', {
+            statusCode: 200,
+            body: {
+                data:
+                    {
+                        firstname: 'John',
+                        surname: 'Doe',
+                        date_of_birth: '1990-01-01',
+                        emailAddress: 'john.doe@example.com',
+                        weight: 70,
+                        height: 180
+                    }
+            }
+        }).as('getData');
 
         // Visit the Profile page
         cy.visit("http://localhost:8080/#profile");

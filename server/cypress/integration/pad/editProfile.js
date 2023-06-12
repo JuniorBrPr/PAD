@@ -3,10 +3,17 @@ describe("Edit Profile", () => {
 
     // Run before each test in this context
     beforeEach(() => {
-        //Start a fake server
-        cy.server();
 
-        const mockedResponse = {"accessToken": "test"};
+        cy.intercept('GET', '/home/data', {
+            statusCode: 200,
+            body: {
+                "video": "https://www.youtube.com/embed/IfdFyeZTrFI",
+                "board_message": "Blijf gezond eten!"
+            }
+        }).as('getData');
+
+
+        const mockedResponse = {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwMCwiZmlyc3RuYW1lIjoiSm9leVBlcm1LZXkiLCJyb2xlIjoxfQ.xXSJo2LZFyLbR_HbSg1Dwd83VuODwKyXKwu0uPrJ76Q"};
         cy.intercept('POST', '/users/login', {
             statusCode: 200,
             body: mockedResponse,
@@ -41,6 +48,18 @@ describe("Edit Profile", () => {
             expect(body.password).equals("test");
         });
 
+        cy.intercept('GET', '/profile', {
+            statusCode: 200,
+            body: {
+                    firstname: 'John',
+                    surname: 'Doe',
+                    date_of_birth: '1990-01-01',
+                    emailAddress: 'john.doe@example.com',
+                    weight: 70,
+                    height: 180
+            }
+        }).as('getData');
+
         // Visit the Profile page
         cy.visit("http://localhost:8080/#editProfile");
     });
@@ -70,7 +89,7 @@ describe("Edit Profile", () => {
     //Test: Successful edit profile
     it("Successful edit profile", () => {
         //Add a stub with the URL /editProfile/:userId as a PUT
-        cy.intercept('PUT', '/editProfile/1', {
+        cy.intercept('PUT', '/editProfile', {
             statusCode: 200
             // body: mockedResponse,
         }).as('editProfile');
@@ -97,7 +116,7 @@ describe("Edit Profile", () => {
         cy.get("#saveProfileBtn").click();
 
         //After a successful login, the URL should now contain #profile.
-        cy.url().should("contain", "#profile");
+        cy.url().should("contain", "http://localhost:8080/#profile");
     });
 
     //Test: Failed edit profile

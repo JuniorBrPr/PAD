@@ -30,13 +30,13 @@ export class editProfileController extends Controller {
         document.getElementById("backToProfile").addEventListener("click", (event) => App.loadController(App.CONTROLLER_PROFILE));
 
         // Load all existing data of the user as standard values
-        let data = await this.#editProfileRepository.getData(0);
-        document.getElementById("InputFirstname").value = data.data[0].firstname
-        document.getElementById("InputSurname").value = data.data[0].surname
-        document.getElementById("InputEmail").value = data.data[0].emailAddress
-        document.getElementById("InputAge").value = new Date(data.data[0].date_of_birth).toISOString().split('T')[0]
-        document.getElementById("InputHeight").value = data.data[0].height
-        document.getElementById("InputWeight").value = data.data[0].weight
+        let data = await this.#editProfileRepository.getData();
+        document.getElementById("InputFirstname").value = data.firstname
+        document.getElementById("InputSurname").value = data.surname
+        document.getElementById("InputEmail").value = data.emailAddress
+        document.getElementById("InputAge").value = new Date(data.date_of_birth).toISOString().split('T')[0]
+        document.getElementById("InputHeight").value = data.height
+        document.getElementById("InputWeight").value = data.weight
     }
 
     /**
@@ -51,15 +51,15 @@ export class editProfileController extends Controller {
         let weight = this.#correctWeightOrHeight(document.getElementById("InputWeight").value)
         let age = document.getElementById("InputAge").value
         try {
-            const checkFirstname = await this.#checkFirstName(firstname);
+            const checkFirstname = this.#checkFirstName(firstname);
 
-            const calculateMinBirthDayResult = await this.#calculateMinBirthDay(age);
+            const calculateMinBirthDayResult = this.#calculateMinBirthDay(age);
 
-            const checkWeightValueResult = await this.#checkWeightValue(weight);
+            const checkWeightValueResult = this.#checkWeightValue(weight);
 
-            const checkHeightValueResult = await this.#checkHeightValue(height);
+            const checkHeightValueResult = this.#checkHeightValue(height);
 
-            const checkEmailValueResult = await this.#checkEmailValue(email);
+            const checkEmailValueResult = this.#checkEmailValue(email);
 
             if (
                 checkFirstname === true &&
@@ -84,7 +84,7 @@ export class editProfileController extends Controller {
      * @param {} inputDate - The input date as a string.
      * @returns {Promise<boolean>} - A that resolves to true if the age is valid, false otherwise.
      */
-    async #calculateMinBirthDay(inputDate) {
+    #calculateMinBirthDay(inputDate) {
         let minAge = 18
         let maxAge = 100
         let InputAge = document.getElementById('InputAge')
@@ -111,9 +111,9 @@ export class editProfileController extends Controller {
      * Checks if the input weight is within an acceptable range.
      * @private
      * @param {number} weight - The input weight value.
-     * @returns {Promise<boolean>} - that resolves to true if the weight is valid, false otherwise.
+     * @returns {boolean} - that resolves to true if the weight is valid, false otherwise.
      */
-    async #checkWeightValue(weight) {
+    #checkWeightValue(weight) {
         let minWeight = 50
         let maxWeight = 200
         let InputWeight = document.getElementById('InputWeight')
@@ -135,9 +135,9 @@ export class editProfileController extends Controller {
      * Checks if the input height is within an acceptable range.
      * @private
      * @param {number} height - The input height value.
-     * @returns {Promise<boolean>} - A promise that resolves to true if the height is valid, false otherwise.
+     * @returns {boolean} - A promise that resolves to true if the height is valid, false otherwise.
      */
-    async #checkHeightValue(height) {
+    #checkHeightValue(height) {
         let minHeight = 100
         let maxHeight = 250
         let InputHeight = document.getElementById('InputHeight')
@@ -159,9 +159,9 @@ export class editProfileController extends Controller {
      * Checks if the input email is valid.
      * @private
      * @param {string} email - The input email value.
-     * @returns {Promise<boolean>} - A promise that resolves to true if the email is valid, false otherwise.
+     * @returns {boolean} - A promise that resolves to true if the email is valid, false otherwise.
      */
-    async #checkEmailValue(email) {
+    #checkEmailValue(email) {
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
         let InputEmail = document.getElementById('InputEmail')
         let invalidEmail = document.getElementById('invalidEmail')
@@ -178,7 +178,7 @@ export class editProfileController extends Controller {
         }
     }
 
-    async #checkFirstName(firstname) {
+    #checkFirstName(firstname) {
         let inputFirstName = document.getElementById('InputFirstname')
         let invalidFirstname = document.getElementById('invalidFirstname')
         invalidFirstname.innerHTML = `Voornaam is verplicht`
@@ -197,7 +197,7 @@ export class editProfileController extends Controller {
      * Checks if the input email is valid.
      * @private
      * @param {string} email - The input email value.
-     * @returns {Promise<boolean>} - A promise that resolves to true if the email is valid, false otherwise.
+     * @returns {string} - A promise that resolves to true if the email is valid, false otherwise.
      */
     #correctWeightOrHeight(inputValue) {
         let inputValueWithDot = inputValue.replace(',', '.');
