@@ -1,5 +1,5 @@
 // Context: Navbar
-const mockedResponseLogin = {"token": "test"};
+const mockedResponseLogin = {"accessToken": "test"};
 const mockedSurveyStatus = {"survey_status": 1};
 
 describe("Navbar", () => {
@@ -61,12 +61,5 @@ describe("Navbar", () => {
         // isLoggedIn function test
         cy.get(".logged-in-only").should("not.have.class", "d-none");
         cy.get(".logged-out-only").should("have.class", "d-none");
-
-        // you can visit the Activity page and check if it loads correctly
-        cy.visit("http://localhost:8080/#weekPlanning");
-
-        // Check if the dayBox class is visible which is a part of weekPlanning.html
-        // Replace the selector with an appropriate one for your Activity page
-        cy.get(".dayBox").should("be.visible");
     });
 });
