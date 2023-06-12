@@ -249,7 +249,17 @@ export class App {
                                 navElement.classList.remove("d-none");
                             }
                         }
-                    })
+                    },
+                    () => {
+                        for (const navElement of navElements) {
+                            if (navElement.classList.contains("admin-only")) {
+                                navElement.classList.add("d-none");
+                            } else {
+                                navElement.classList.remove("d-none");
+                            }
+                        }
+                    }
+                );
             },
             () => {
                 for (const navElement of navElements) {

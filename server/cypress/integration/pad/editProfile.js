@@ -1,4 +1,3 @@
-//Context: Edit profile
 describe("Edit Profile", () => {
     const endpoint = "/editProfile/:userId";
 
@@ -13,9 +12,9 @@ describe("Edit Profile", () => {
             body: mockedResponse,
         }).as('login');
 
-        cy.intercept('POST', '/users/admin', {
+        cy.intercept('GET', '/users/isAdmin', {
             statusCode: 200,
-            body: false,
+            body: {"isAdmin": false},
         }).as('isAdmin');
 
         cy.visit('http://localhost:8080/#login')

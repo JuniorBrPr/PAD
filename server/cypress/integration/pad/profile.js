@@ -13,9 +13,9 @@ describe("Profile", () => {
             body: mockedResponse,
         }).as('login');
 
-        cy.intercept('POST', '/users/admin', {
+        cy.intercept('GET', '/users/isAdmin', {
             statusCode: 200,
-            body: false,
+            body: {"isAdmin": false},
         }).as('isAdmin');
 
         cy.visit('http://localhost:8080/#login')
@@ -79,6 +79,22 @@ describe("Profile", () => {
     it('should be able to complete an activity', () => {
         // Click the completed button of the activity
         cy.get("#activity-btn-completed").click();
+
+        cy.intercept('POST', '/profile/insertGoal/1', {
+            statusCode: 200,
+            body: {
+                data: [
+                    {
+                        userId: 1,
+                        value: 1,
+                        completed: false,
+                        usergoalID: 1,
+                        date: new Date()
+                    }
+                ]
+            }
+        }).as('Post UserGoal');
+
         // Wait 1 second
         cy.wait(1000)
         // Check if a clone of usergoalTemplate exists
