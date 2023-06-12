@@ -14,10 +14,17 @@ class HomeRoute {
     constructor(app) {
         this.app = app;
 
-        this.#registerRoutes(); // Register the routes with the Express app
+        this.#getHomeData(); // Register the routes with the Express app
     }
 
-    #registerRoutes() {
+    /**
+     * @author Jayden.G
+     * Route for getting home page data.
+     *
+     * Gets back the video and a board message which we dont really use to be honest.
+     */
+
+    #getHomeData() {
         this.app.get("/home/data", async (req, res) => {
             try {
                 const data = await this.#databaseHelper.handleQuery({

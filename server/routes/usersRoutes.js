@@ -45,7 +45,7 @@ class UsersRoutes {
                         const payload = {
                             userId: data[0].id,
                             firstname: data[0].firstname,
-                            role: data[0].role,
+                            role: data[0].role
                         };
 
                         const accessToken = this.#JWTHelper.createJWTToken(payload);
