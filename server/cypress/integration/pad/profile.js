@@ -123,6 +123,10 @@ describe("Profile", () => {
             }
         }).as('insertGoal');
 
+        cy.intercept('PUT', '/profile/goalCompletion/*', {
+            statusCode: 200
+        }).as('updateGoalCompletion');
+
         // Check if a clone of usergoalTemplate exists
         cy.get('.activity-body').should('not.exist');
     });
