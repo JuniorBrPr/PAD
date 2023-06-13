@@ -2,6 +2,12 @@ import {Controller} from "./controller.js";
 import {recommendationsRepository} from "../repositories/recommendationsRepository.js";
 import {SurveyRepository} from "../repositories/surveyRepository.js";
 
+/**
+ * Controller for managing recommendations.
+ * @class
+ * @extends Controller
+ * @author Junior Javier Brito Perez
+ */
 export class RecommendationsController extends Controller {
 
     #activityView
@@ -23,6 +29,12 @@ export class RecommendationsController extends Controller {
         }
     }
 
+    /**
+     * Loads the recommended goals.
+     * @private
+     * @async
+     * @author Junior Javier Brito Perez
+     */
     async #loadRecommendedGoals() {
         const data = await this.#fetchRecommendations();
         const goalTemplate = this.#activityView.querySelector("#goalTemplate").cloneNode(true);
@@ -78,6 +90,14 @@ export class RecommendationsController extends Controller {
         }
     }
 
+    /**
+     * Returns an array of goal data for the selected days.
+     * @private
+     * @param {HTMLElement} card - The card element containing the goal data.
+     * @param {Array} days - An array of selected days.
+     * @returns {Array} An array of goal data for the selected days.
+     * @author Junior Javier Brito Perez
+     */
     #getGoalData(card, days) {
         let goals = [];
         for (const day of days) {
@@ -91,12 +111,27 @@ export class RecommendationsController extends Controller {
         return goals;
     }
 
+    /**
+     * Saves a goal to the recommendations repository.
+     * @private
+     * @async
+     * @param {Array} goal - An array containing the goal data to be saved.
+     * @returns {boolean} Returns true if the goal was successfully saved.
+     * @author Junior Javier Brito Perez
+     */
     async #saveGoal(goal) {
         await this.#recommendationsRepository.postGoals(goal);
         this.#showAlert("Success! Uw doel is opgeslagen.", true);
         return true;
     }
 
+    /**
+     * Checks if the user has completed the survey and displays an alert if not.
+     * @private
+     * @async
+     * @returns {boolean} Returns true if the user has completed the survey, false otherwise.
+     * @author Junior Javier Brito Perez
+     */
     async #checkSurveysCompleted() {
         const surveyStatus = await this.#surveyRepository.getSurveyStatus();
         if (surveyStatus.survey_status !== 1) {
@@ -109,6 +144,13 @@ export class RecommendationsController extends Controller {
         return true;
     }
 
+    /**
+     * Retrieves the selected days from the given card element.
+     * @private
+     * @param {HTMLElement} card - The card element containing the selected days.
+     * @returns {Array} An array of selected days.
+     * @author Junior Javier Brito Perez
+     */
     #retrieveSelectedDays(card) {
         const days = [];
         card.querySelectorAll(".dayBtn").forEach((dayBtn) => {
@@ -119,6 +161,14 @@ export class RecommendationsController extends Controller {
         return days;
     }
 
+    /**
+     * Shows an alert message on the view.
+     * @private
+     * @param {string} message - The message to display in the alert.
+     * @param succes - True if the alert is a success alert, false otherwise.
+     * @returns {void}
+     * @author Junior Javier Brito Perez
+     */
     #showAlert(message, succes) {
         const alert = this.#activityView.querySelector("#alert").content.cloneNode(true);
         if (succes) {
@@ -130,6 +180,13 @@ export class RecommendationsController extends Controller {
         this.#activityView.querySelector(".alert-container").appendChild(alert);
     }
 
+    /**
+     * Fetches exercise and nutrition recommendations from the recommendations repository.
+     * @private
+     * @async
+     * @returns {Array} An array of exercise and nutrition recommendations.
+     * @author Junior Javier Brito Perezer
+     */
     async #fetchRecommendations() {
         const exercise = await this.#recommendationsRepository.getExerciseRecommendations();
         const nutrition = await this.#recommendationsRepository.getNutritionRecommendations();
