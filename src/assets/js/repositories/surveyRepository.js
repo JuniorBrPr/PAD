@@ -1,14 +1,9 @@
 import {NetworkManager} from "../framework/utils/networkManager.js";
 
 /**
- * Repository for survey related requests.
- *
- * @class SurveyRepository
- * @classdesc Sends requests relating to the surveys and returns the responses.
- * @property {string} #route - The route to the survey api.
- * @property {NetworkManager} #networkManager - The network manager to handle requests.
- * @memberof repositories
- * @author Junior Javier Brito Perez
+ * A repository for handling survey-related API requests.
+ * @class
+ * @public
  */
 export class SurveyRepository {
     #route
@@ -22,11 +17,11 @@ export class SurveyRepository {
         this.#networkManager = new NetworkManager();
     }
 
+
     /**
-     * Get all surveys that the user has not answered.
+     * Get all the unanswered surveys for the current user.
      * @async
      * @public
-     * @function getUnansweredSurveys
      * @returns {Promise<*>} - The response from the server
      * @author Junior Javier Brito Perez
      */
@@ -36,72 +31,58 @@ export class SurveyRepository {
     }
 
     /**
-     * Get all the questions in the database.
+     * Get a survey by its ID.
      * @async
      * @public
-     * @function getAll
-     * @returns {Promise<*>} - The response from the server
+     * @param {number} surveyId - The ID of the survey to get.
+     * @returns {Promise<*>} - The response from the server.
      * @author Junior Javier Brito Perez
      */
-    async getAll() {
+    async getSurvey(surveyId) {
         return await this.#networkManager
-            .doRequest(`${this.#route}all`, "GET");
+            .doRequest(`${this.#route}${surveyId}`, "GET");
     }
 
     /**
-     * Get all the questions in the nutrition survey.
+     * Get all the questions for a survey.
      * @async
      * @public
-     * @returns {Promise<*>}
+     * @param {number} surveyId - The ID of the survey to get the questions for.
+     * @returns {Promise<*>} - The response from the server.
      * @author Junior Javier Brito Perez
      */
-    async getNutritionSurvey() {
-        const data = await this.#networkManager
-            .doRequest(`${this.#route}nutrition`, "GET");
-
-        return await this.getOptions(data);
-    }
-
-    /**
-     * Get all the options for the questions.
-     * @async
-     * @public
-     * @param {[Object]} data - The questions to get the options for.
-     * @returns {Promise<*>} - The response from the server
-     * @author Junior Javier Brito Perez
-     */
-    async getOptions(data) {
-        for (let i = 0; i < data.length; i++) {
-            const question = data[i];
-            if (question.type === "multipleChoice" || question.type === "singleChoice") {
-                if (question.type === "multipleChoice" || question.type === "singleChoice") {
-                    question.options = await this.#networkManager
-                        .doRequest(`${this.#route}options/${question.id}`, "GET", {});
-                }
-            }
-        }
-        return data;
-    }
-
     async getQuestions(surveyId) {
         return await this.#networkManager
-            .doRequest(`${this.#route}questions`, "POST", {surveyId: surveyId});
+            .doRequest(`${this.#route}questions/${surveyId}`, "GET");
     }
 
     /**
-     * Get all the questions in the physical activity survey.
+     * Get all the options for a question.
      * @async
      * @public
-     * @param {{surveyId: number, data: {id: number, options: {text: string, open: boolean}[]}[]}} data - The questions to get the options for.
-     * @returns {Promise<*>} - The response from the server
+     * @param {number} questionId - The ID of the question to get the options for.
+     * @returns {Promise<*>} - The response from the server.
+     * @author Junior Javier Brito Perez
+     */
+    async getOptions(questionId) {
+        return await this.#networkManager
+            .doRequest(`${this.#route}options/${questionId}`, "GET");
+    }
+
+    /**
+     * Update the survey response for a user.
+     *
+     * @async
+     * @public
+     * @param {Object} data - The survey response data to update.
+     * @returns {Promise<*>} - The response from the server.
+     * @author Junior Javier Brito Perez
      */
     async putSurveyResult(data) {
         return await this.#networkManager
             .doRequest(`${this.#route}response`, "PUT", data);
     }
 
-
-    //TODO: Waarom 2 aparte functies voor het updaten van de survey status? Kan in 1 functie. - Junior
     /**
      *  @author Jayden.G
      *  Method to update the completion status to complete for a user

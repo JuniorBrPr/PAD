@@ -1,4 +1,9 @@
-class recommendationsRoute {
+/**
+ * This class contains all the routes for the recommendations.
+ * @class
+ * @author Junior Javier Brito Perez
+ */
+class recommendationsRoutes {
     #errorCodes = require("../framework/utils/httpErrorCodes")
     #databaseHelper = require("../framework/utils/databaseHelper")
     #JWTHelper = require("../framework/utils/JWTHelper")
@@ -11,6 +16,13 @@ class recommendationsRoute {
         this.#postUserGoal();
     }
 
+    /**
+     * Retrieves nutrition recommendations from the database and sends them as a response to the client.
+     * @private
+     * @function
+     * @returns {Promise<void>} A promise that resolves when the nutrition recommendations have been sent to the client.
+     * @author Junior Javier Brito Perez
+     */
     #getNutritionRecommendations() {
         this.#app.get("/recommendations/nutrition", this.#JWTHelper.verifyJWTToken, async (req, res) => {
 
@@ -59,6 +71,13 @@ class recommendationsRoute {
         });
     }
 
+    /**
+     * Retrieves exercise recommendations from the database and sends them as a response to the client.
+     * @private
+     * @function
+     * @returns {Promise<void>} A promise that resolves when the exercise recommendations have been retrieved from the database and sent to the client.
+     * @author Junior Javier Brito Perez
+     */
     #getExerciseRecommendations() {
         this.#app.get("/recommendations/exercise", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -76,10 +95,13 @@ class recommendationsRoute {
                               AND answer.answer REGEXP '^minutes: ';`,
                     values: [req.user.userId]
                 });
+
                 let totalModeratelyActiveMinutes = 0;
+                const HEAVY_ACTIVITY_ID = 51;
+
                 activeMinutes.forEach((answer) => {
                     if (answer.answer.includes("Gemiddeld") || answer.answer.includes("Snel")
-                        || answer.activityId === 51) {
+                        || answer.activityId === HEAVY_ACTIVITY_ID) {
                         totalModeratelyActiveMinutes += parseInt(answer.answer.split(": ")[1]);
                     }
                 });
@@ -94,7 +116,11 @@ class recommendationsRoute {
                                        activity.unit,
                                        30 AS recommendedValue
                                 FROM activity
-                                WHERE activity.id IN (11, 13, 14)
+                                WHERE activity.id IN (SELECT activity.id
+                                                      FROM activity
+                                                               INNER JOIN exercise_activity_attribute eaa
+                                                                          ON activity.id = eaa.activityId
+                                                      WHERE eaa.cardio = 1)
                                   AND activity.id NOT IN (SELECT usergoal.activityId
                                                           FROM usergoal
                                                           WHERE usergoal.userId = ?);`,
@@ -108,6 +134,13 @@ class recommendationsRoute {
         });
     }
 
+    /**
+     * Handles the POST request to add user goals to the database.
+     * @private
+     * @function
+     * @returns {Object} - Returns a JSON object with a success message if the request is successful.
+     * @author Junior Javier Brito Perez
+     */
     #postUserGoal() {
         this.#app.post("/recommendations", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
@@ -126,8 +159,6 @@ class recommendationsRoute {
             }
         });
     }
-
-
 }
 
-module.exports = recommendationsRoute
+module.exports = recommendationsRoutes

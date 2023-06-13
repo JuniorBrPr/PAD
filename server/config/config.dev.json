@@ -5,7 +5,7 @@
     "timeout": 30000,
     "username": "pad_nut_2",
     "password": "KdPKYNboQxAu8pOb",
-    "database": "pad_nut_2_dev",
+    "database": "pad_nut_2_live",
     "connectionLimit": 1
   }
 }

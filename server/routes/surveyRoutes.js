@@ -16,10 +16,12 @@ class surveyRoutes {
         this.#getAllQuestions();
         this.#putSurveyResult();
         this.#getUnansweredSurveys();
-        this.#getSurvey();
+        // this.#getSurvey();
         this.#setSurveyComplete();
         this.#setSurveyIncomplete();
-        this.#getSurveyStatus()
+        this.#getSurveyStatus();
+        this.#getOptions();
+        this.#getQuestions();
     }
 
     /**
@@ -90,13 +92,62 @@ class surveyRoutes {
      * @returns {Promise<>} - All questions from the survey that the user has not answered.
      * @author Junior Javier Brito Perez
      */
-    #getSurvey() {
-        this.#app.post("/survey/questions", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+    // #getSurvey() {
+    //     this.#app.get("/survey/:surveyId", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+    //
+    //         const userId = req.user.userId;
+    //
+    //         try {
+    //             const response = await this.#databaseHelper.handleQuery({
+    //                 query: `SELECT question.id           AS id,
+    //                                question.questionText AS text,
+    //                                questionType.type     AS type,
+    //                                question.surveyId     AS surveyId
+    //                         FROM question
+    //                                  INNER JOIN questionType ON question.questionTypeId = questionType.id
+    //                         WHERE question.surveyId = ?
+    //                           AND question.id NOT IN (SELECT questionId
+    //                                                   FROM answer
+    //                                                            INNER JOIN response ON response.id = answer.responseId
+    //                                                   WHERE response.userId = ?)
+    //                         ORDER BY question.order;`,
+    //                 values: [req.params.surveyId, userId]
+    //             });
+    //
+    //             const options = await this.#databaseHelper.handleQuery({
+    //                 query: `SELECT questionoption.id         AS id,
+    //                                questionoption.questionId as questionId,
+    //                                questionoption.value      AS text,
+    //                                questionoption.openOption AS open
+    //                         FROM questionoption
+    //                         WHERE questionId IN (?)
+    //                         ORDER BY questionoption.order;`,
+    //                 values: [response.map(question => question.id)]
+    //             });
+    //
+    //             for (let i = 0; i < response.length; i++) {
+    //                 response[i].options = options.filter(option => option.questionId === response[i].id);
+    //             }
+    //
+    //             res.status(this.#errorCodes.HTTP_OK_CODE).json(response);
+    //         } catch (e) {
+    //             res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+    //         }
+    //     });
+    // }
 
-            const userId = req.user.userId;
-
+    /**
+     * Gets all questions from the survey that the user has not answered. The questions are ordered by
+     * the order column.
+     * @private
+     * @returns {Promise<>} - All questions from the survey that the user has not answered.
+     * @throws {Error} - If there is an error while querying the database.
+     * @author Junior Javier Brito Perez
+     */
+    #getQuestions() {
+        this.#app.get("/survey/questions/:surveyId", this.#JWTHelper.verifyJWTToken, async (req, res) => {
             try {
-                const response = await this.#databaseHelper.handleQuery({
+                const data = await this.#databaseHelper.handleQuery({
                     query: `SELECT question.id           AS id,
                                    question.questionText AS text,
                                    questionType.type     AS type,
@@ -109,45 +160,79 @@ class surveyRoutes {
                                                                INNER JOIN response ON response.id = answer.responseId
                                                       WHERE response.userId = ?)
                             ORDER BY question.order;`,
-                    values: [req.body.surveyId, userId]
+                    values: [req.params.surveyId, req.user.userId]
                 });
-
-                const options = await this.#databaseHelper.handleQuery({
-                    query: `SELECT questionoption.id         AS id,
-                                   questionoption.questionId as questionId,
-                                   questionoption.value      AS text,
-                                   questionoption.openOption AS open
-                            FROM questionoption
-                            WHERE questionId IN (?)
-                            ORDER BY questionoption.order;`,
-                    values: [response.map(question => question.id)]
-                });
-
-                for (let i = 0; i < response.length; i++) {
-                    response[i].options = options.filter(option => option.questionId === response[i].id);
-                }
-
-                res.status(this.#errorCodes.HTTP_OK_CODE).json(response);
+                res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
             } catch (e) {
                 res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
             }
         });
     }
 
+    /**
+     * Gets the options for a specific question in a survey. The options are returned as an array of objects,
+     * where each object represents an option.
+     * @private
+     * @returns {Promise<Array>} - An array of objects representing the options for the specified question.
+     * @throws {Error} - If there is an error while querying the database.
+     * @author Junior Javier Brito Perez
+     */
+    #getOptions() {
+        this.#app.get("/survey/options/:questionId", this.#JWTHelper.verifyJWTToken, async (req, res) => {
+            try {
+                const uniqueOptions = await this.#databaseHelper.handleQuery({
+                    query: `SELECT questiontype.unique_options AS uniqueOptions
+                            FROM question
+                                     INNER JOIN questiontype ON question.questionTypeId = questiontype.id
+                            WHERE question.id = ?;`,
+                    values: [req.params.questionId]
+                });
+                if (uniqueOptions[0].uniqueOptions === 1) {
+                    const data = await this.#databaseHelper.handleQuery({
+                        query: `SELECT questionoption.id         AS id,
+                                       questionoption.questionId AS questionId,
+                                       questionoption.value      AS text,
+                                       questionoption.openOption AS open
+                                FROM questionoption
+                                WHERE questionId = ?
+                                ORDER BY questionoption.order;`,
+                        values: [req.params.questionId]
+                    });
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+                } else if (uniqueOptions[0].uniqueOptions === 0) {
+                    const data = await this.#databaseHelper.handleQuery({
+                        query: `SELECT questionoption.id         AS id,
+                                       questionoption.questionId AS questionId,
+                                       questionoption.value      AS text,
+                                       questionoption.openOption AS open
+                                FROM questionoption
+                                WHERE questionoption.id IN (SELECT question_option_id
+                                                            FROM question_type_option
+                                                                     INNER JOIN questiontype ON question_type_option.question_type_id = questiontype.id
+                                                            WHERE questiontype.id =
+                                                                  (SELECT question.questionTypeId AS questionTypeId
+                                                                   FROM question
+                                                                   WHERE question.id = ?))
+                                ORDER BY questionoption.order;`,
+                        values: [req.params.questionId, req.params.questionId]
+                    });
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json(data);
+                } else if (uniqueOptions[0].uniqueOptions === null) {
+                    res.status(this.#errorCodes.HTTP_OK_CODE).json([]);
+                } else {
+                    res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: "Invalid unique options value"});
+                }
+            } catch (e) {
+                res.status(this.#errorCodes.BAD_REQUEST_CODE).json({reason: e});
+            }
+        });
+    }
 
     /**
-     * Puts the survey result in the database. The survey result is a JSON object with the following structure:
+     * Saves the answers for a survey response.
+     *
+     * @returns {Promise<boolean>} A Promise that resolves to true if the survey result was successfully updated, or false otherwise.
      * @private
-     * @example
-     * {
-     *  "surveyId": 1,
-     *  "data": [
-     *      {
-     *      "id": 1,
-     *      "answer": "Yes"
-     *      },
-     * }
-     * @returns {Promise<>}
      * @author Junior Javier Brito Perez
      */
     #putSurveyResult() {
