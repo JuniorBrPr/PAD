@@ -26,8 +26,10 @@ export class SurveyRepository {
      * @author Junior Javier Brito Perez
      */
     async getUnansweredSurveys() {
-        return await this.#networkManager
+        const response = await this.#networkManager
             .doRequest(`${this.#route}answered`, "GET");
+        console.log(response);
+        return response;
     }
 
     /**
@@ -52,8 +54,10 @@ export class SurveyRepository {
      * @author Junior Javier Brito Perez
      */
     async getQuestions(surveyId) {
-        return await this.#networkManager
+        const response = await this.#networkManager
             .doRequest(`${this.#route}questions/${surveyId}`, "GET");
+        console.log(response);
+        return response;
     }
 
     /**
@@ -65,8 +69,10 @@ export class SurveyRepository {
      * @author Junior Javier Brito Perez
      */
     async getOptions(questionId) {
-        return await this.#networkManager
+        const response = await this.#networkManager
             .doRequest(`${this.#route}options/${questionId}`, "GET");
+        console.log(response);
+        return response;
     }
 
     /**
