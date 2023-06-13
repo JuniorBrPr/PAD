@@ -151,7 +151,8 @@ export class App {
             case App.CONTROLLER_ADMIN:
                 App.isAdmin(
                     () => new AdminController(),
-                    () => new ErrorController({errorCode: 403, errorMessage: "Access Forbidden"})
+                    () => new ErrorController(
+                        {errorCode: 403, errorMessage: "Access Forbidden"})
                 )
                 break;
 
@@ -232,6 +233,14 @@ export class App {
         App.isLoggedIn(
             () => {
 
+                for (const navElement of navElements) {
+                    if (navElement.classList.contains("logged-out-only") || navElement.classList.contains("admin-only")) {
+                        navElement.classList.add("d-none");
+                    } else {
+                        navElement.classList.remove("d-none");
+                    }
+                }
+
                 App.isAdmin(
                     () => {
                         for (const navElement of navElements) {
@@ -241,15 +250,17 @@ export class App {
                                 navElement.classList.remove("d-none");
                             }
                         }
-                    })
-
-                for (const navElement of navElements) {
-                    if (navElement.classList.contains("logged-out-only") || navElement.classList.contains("admin-only")) {
-                        navElement.classList.add("d-none");
-                    } else {
-                        navElement.classList.remove("d-none");
+                    },
+                    () => {
+                        for (const navElement of navElements) {
+                            if (navElement.classList.contains("admin-only")) {
+                                navElement.classList.add("d-none");
+                            } else {
+                                navElement.classList.remove("d-none");
+                            }
+                        }
                     }
-                }
+                );
             },
             () => {
                 for (const navElement of navElements) {
@@ -286,6 +297,7 @@ export class App {
      */
 
     static async isAdmin(whenYes, whenNo) {
+        console.log("checking admin status")
         if (await this.adminStatusChecker()) {
             whenYes();
         } else {
@@ -347,8 +359,6 @@ export class App {
 
         //go to login screen
         App.loadController(App.CONTROLLER_LOGIN);
-
-        window.location.reload();
     }
 }
 

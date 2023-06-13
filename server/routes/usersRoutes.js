@@ -30,7 +30,7 @@ class UsersRoutes {
     #login() {
         this.#app.post("/users/login", async (req, res) => {
             const emailAddress = req.body.emailAddress;
-            //TODO: You shouldn't save a password unencrypted!! Improve this by using this.#cryptoHelper functions :)
+
             const enteredpassword = req.body.password;
             try {
                 const data = await this.#databaseHelper.handleQuery({
@@ -45,7 +45,7 @@ class UsersRoutes {
                         const payload = {
                             userId: data[0].id,
                             firstname: data[0].firstname,
-                            role: data[0].role,
+                            role: data[0].role
                         };
 
                         const accessToken = this.#JWTHelper.createJWTToken(payload);

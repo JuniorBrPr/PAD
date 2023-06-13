@@ -1,79 +1,133 @@
-// Import the jsonwebtoken library
-import jwt from 'jsonwebtoken';
-
-// Context: Profile
+/**
+ * Cypress test suite for the Profile page.
+ */
 describe("Profile", () => {
-    const endpoint = "/editProfile/:userId";
-    let token; // Declare the token variable
-
     // Run before each test in this context
     beforeEach(() => {
-        // Generate the JWT token
-        const secretKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'; // Replace with your secret key
-        const expiresIn = '365d'; // Set the expiration time to a long duration (e.g., 365 days)
-
-        const payload = {
-            userId: '1',
-        };
-
-        // Create the token using jwt.sign from the jsonwebtoken library
-        const options = {
-            algorithm: 'HS256', // Specify the signing algorithm (e.g., HS256)
-            expiresIn: expiresIn // Specify the expiration time
-        };
-
-        // Create the token using jwt.sign from the jsonwebtoken library
-        token = Cypress.env('jwt') || jwt.sign(payload, secretKey, options, (err, signedToken) => {
-            if (err) {
-                // Handle the error
-                console.error('Error signing JWT:', err);
-            } else {
-                // Handle the signed token
-                console.log('Signed JWT:', signedToken);
+        cy.intercept('GET', '/home/data', {
+            statusCode: 200,
+            body: {
+                "video": "https://www.youtube.com/embed/IfdFyeZTrFI",
+                "board_message": "Blijf gezond eten!"
             }
-        });
-        Cypress.env('jwt', token);
-
-        // Intercept the HTTP request and send a mocked response
-        cy.server();
-        cy.route({
-            method: 'GET',
-            url: '/profile/getData',
-            response: [{
-                userId: 1,
-                dayOfTheWeek: 1,
-                valueChosenByUser: 5000,
-                unit: "steps",
-                name: "Daily Steps",
-                usergoalID: 1
-            }],
         }).as('getData');
+
+        const mockedResponse = {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwMCwiZmlyc3RuYW1lIjoiSm9leVBlcm1LZXkiLCJyb2xlIjoxfQ.xXSJo2LZFyLbR_HbSg1Dwd83VuODwKyXKwu0uPrJ76Q"};
+        cy.intercept('POST', '/users/login', {
+            statusCode: 200,
+            body: mockedResponse,
+        }).as('login');
+
+        cy.intercept('GET', '/users/isAdmin', {
+            statusCode: 200,
+            body: {"isAdmin": false},
+        }).as('isAdmin');
+
+        cy.visit('http://localhost:8080/#login')
+        //Find the field for the email and type the text "test".
+        cy.get("#InputEmailAddress").type("test");
+
+        //Find the field for the password and type the text "test".
+        cy.get("#InputPassword").type("test");
+
+        //Find the button to login and click it
+        console.log(cy.get(".login-form button"));
+        cy.get(".login-form button").click();
+
+        //Wait for the @login-stub to be called by the click-event.
+        cy.wait("@login");
+
+        //The @login-stub is called, check the contents of the incoming request.
+        cy.get("@login").should((xhr) => {
+            //The email should match what we typed earlier
+            const body = xhr.request.body;
+            expect(body.emailAddress).equals("test");
+
+            //The password should match what we typed earlier
+            expect(body.password).equals("test");
+        });
+
+        cy.intercept('GET', '/profile', {
+            statusCode: 200,
+            body: {
+                firstname: 'John',
+                surname: 'Doe',
+                date_of_birth: '1990-01-01',
+                emailAddress: 'john.doe@example.com',
+                weight: 70,
+                height: 180
+            }
+        }).as('getData');
+
+        // Intercept the request to get our user data and respond with mocked data
+        cy.intercept('GET', '/profile/userGoals', {
+            statusCode: 200,
+            body: {
+                data: [
+                    {
+                        userId: 1,
+                        dayOfTheWeek: new Date().getDay(),
+                        valueChosenByUser: 1,
+                        unit: 'mockedUnit',
+                        name: 'mockedActivity',
+                        completed: false,
+                        value: 0,
+                        usergoalID: 1
+                    }
+                ]
+            }
+        }).as('getUserGoals');
+
+        // Visit the Profile page
+        cy.visit("http://localhost:8080/#profile");
     });
 
-    it('should display mocked data', () => {
-        // Set the token in the localStorage
-        const session = { "token": token }; // Store the token in the session
-        localStorage.setItem("session", JSON.stringify(session));
+    /**
+     * Test case to verify that a clone of usergoalTemplate exists.
+     */
+    it('should check if a clone of usergoalTemplate exists', () => {
+        // Check if a clone of usergoalTemplate exists
+        cy.get('.activity-body').should('exist');
+    })
 
-        cy.visit("http://localhost:8080/#Profile");
+    /**
+     * Test case to verify the ability to complete an activity.
+     */
+    it('should be able to complete an activity', () => {
+        // Click the completed button of the activity
+        cy.get("#activity-btn-completed").click();
 
-        // Wait for the mocked response to be received
-        cy.wait('@getData');
+        cy.intercept('GET', '/profile/checkIfGoalExists/1', {
+            statusCode: 200,
+            body: {
+                data: [
+                    {
+                        goalCount: 0
+                    }
+                ]
+            }
+        }).as('checkIfGoalExists');
 
-        // Assert that the mocked data is displayed
-        cy.contains('Mocked Data');
-    });
+        cy.intercept('POST', '/profile/insertGoal/*', {
+            statusCode: 200,
+            body: {
+                data: [
+                    {
+                        userId: 1,
+                        value: 1,
+                        completed: 1,
+                        usergoalID: 1,
+                        date: new Date()
+                    }
+                ]
+            }
+        }).as('insertGoal');
 
-    it('should display goals and update percentages', () => {
-        // Set the token in the localStorage
-        const session = { "token": token }; // Store the token in the session
-        localStorage.setItem("session", JSON.stringify(session));
+        cy.intercept('PUT', '/profile/goalCompletion/*', {
+            statusCode: 200
+        }).as('updateGoalCompletion');
 
-        cy.visit("http://localhost:8080/#Profile");
-
-        // Wait for the mocked response to be received
-        cy.wait('@getData');
-
-        // Rest of the test code...
+        // Check if a clone of usergoalTemplate exists
+        cy.get('.activity-body').should('not.exist');
     });
 });

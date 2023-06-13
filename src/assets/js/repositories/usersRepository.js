@@ -17,10 +17,6 @@ export class UsersRepository {
         this.#networkManager = new NetworkManager();
     }
 
-    async getAll() {
-
-    }
-
     /**
      * Async function that sends username and password to network manager which will send it to our back-end to see
      * if a user is found with these credentials

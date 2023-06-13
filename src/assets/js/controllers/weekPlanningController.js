@@ -45,34 +45,33 @@ export class WeekPlanningController extends Controller {
         let containerDayBox = document.querySelector("#dayContainer");
         let today = new Date(); //Dag vandaag
         let dateToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1); // Begint bij maandag (- today.getDay() + 1)  => weghaalt, krijg je dag van vandaag
-
-        let deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
-        let completeButtonPlanning = document.querySelector(".completeButtonPlanning");
+        const deleteButtonPlanning = document.querySelector(".deleteButtonPlanning");
+        const completeButtonPlanning = document.querySelector(".completeButtonPlanning");
 
         //Loopt door alle dagen van de week
         for (let i = 0; i < 7; i++) {
             const data = await this.#weekPlanningRepository.userActivities();
-            const dataArray = Array.isArray(data.data) ? data.data : [data.data];
+            //code makes sure dataArray always has an array (existing or not existing)
+            const dataArray = Array.isArray(data.data) ? data.data : [data.data]; //checks data is array - if not [data.data] create new array met data.data
+            //filters dataArray based on dayOfTheWeek value and create new array goals.
+            const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1); //item is each element of dataArray, dayOfTheWeek match current day
+
+            const cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
+            const cloneButtonComplete = completeButtonPlanning.cloneNode(true);
+            //  Verwijdert de orinal html button
+            deleteButtonPlanning.remove();
+            completeButtonPlanning.remove();
+
             //Boxen aangemaakt
             let dayBoxesOfTheWeek = this.#creatElement('containerDiv');
             let dayActivity = document.createElement('div');
             dayActivity.classList.add('dayActivity');
-
-            const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
-
-            let cloneButtonDelete = deleteButtonPlanning.cloneNode(true);
-            let cloneButtonComplete = completeButtonPlanning.cloneNode(true);
-
-            //  Verwijdert de orinal html button
-            deleteButtonPlanning.remove();
-            completeButtonPlanning.remove();
 
             if (goals.length > 0) {
                 // Haal de gewenste waarde op en koppel deze aan dayBoxesOfTheWeek
                 dayActivity.innerHTML = goals.dayOfTheWeek;
                 const activities = goals.map(goal => `${goal.valueChosenByUser} ${goal.unit} ${goal.name}`).join("<br>");
                 dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML} - ${activities}`;
-
             } else {
                 // If no goal is found, display "No activity today"
                 dayActivity.innerHTML = `${dayBoxesOfTheWeek.innerHTML}  Geen activiteit voor vandaag`;
@@ -82,54 +81,53 @@ export class WeekPlanningController extends Controller {
 
             //Box toegevoegd
             containerDayBox.appendChild(dayBoxesOfTheWeek);
-
-            //Verwijdert de orinal html button
-            deleteButtonPlanning.remove();
-            completeButtonPlanning.remove();
-
             //Datums aan box toegevoegd
             dayBoxesOfTheWeek.appendChild(this.#formatDate(dateToday, i, today));
-
-            //data aan box toegevoegd
-            dayBoxesOfTheWeek.appendChild(dayActivity);
-
             // Buttons in box toegevoegd
             dayBoxesOfTheWeek.appendChild(cloneButtonDelete);
             dayBoxesOfTheWeek.appendChild(cloneButtonComplete);
-
+            //data aan box toegevoegd
+            dayBoxesOfTheWeek.appendChild(dayActivity);
 
             cloneButtonComplete.addEventListener("click", async function () {
                 try {
-                    await this.#weekPlanningRepository.userActivities();
-                    const dataArray = Array.isArray(data.data) ? data.data : [data.data];
-                    const goals = dataArray.filter(item => item.dayOfTheWeek === i + 1);
-
+                    // Retrieve necessary data from the goals array
                     const userId = goals[0].userId; // Assuming userId is the same for all goals on a specific day
                     const userActivityId = goals.map(goal => goal.id);
                     const completed = true;
 
+                    // Format the selected date to the required format
                     const selectedDateObj = getDateOfSelectedDay(i)
                     const year = selectedDateObj.getFullYear();
-                    const month = String(selectedDateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with leading zero if necessary
-                    const day = String(selectedDateObj.getDate()).padStart(2, '0'); // Pad with leading zero if necessary
+                    const month = String(selectedDateObj.getMonth() + 1).padStart(2, '0'); //month from 1-12 -
+                    const day = String(selectedDateObj.getDate()).padStart(2, '0');
                     const selectedDate = `${year}-${month}-${day}`;
 
+                    // Call the userCompletedActivity method from the weekPlanningRepository
                     await this.#weekPlanningRepository.userCompletedActivity(userId, completed, selectedDate, userActivityId);
                     this.#handleSuccess();
-
                 } catch (e) {
                     this.#handleError();
                 }
-            }.bind(this));
+            }.bind(this)); //allow access properties and methods within the function
             cloneButtonDelete.addEventListener("click", async function () {
                 window.alert("helaas")
             });
 
 
+            /**
+             * function takes an index representing a day within the week begin at Sunday
+             * Returns the corresponding Date object for that day in the current week.
+             * @param dayIndex
+             * @returns {Date}
+             *
+             * @author Hanan Ouardi
+             */
             function getDateOfSelectedDay(dayIndex) {
                 const selectedDate = new Date(dateToday.getFullYear(), dateToday.getMonth(), dateToday.getDate() - dateToday.getDay() + 1 + dayIndex);
                 return selectedDate;
             }
+
 
             const options = {weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'};
 
